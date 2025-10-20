@@ -1,1 +1,77 @@
 [2025-10-20 10:18:04] ERROR:  Erreur de connexion MongoDB:
+[2025-10-20 12:36:33] ERROR:  Erreur createAdmin: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+ValidationError: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-20 12:36:46] ERROR:  Erreur createAdmin: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+ValidationError: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-20 12:45:08] ERROR:  Erreur createAdmin: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+ValidationError: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-20 12:45:34] ERROR:  Erreur createAdmin: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, motDePasse: Le mot de passe doit contenir au moins 8 caractères, role: Rôle invalide
+ValidationError: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, motDePasse: Le mot de passe doit contenir au moins 8 caractères, role: Rôle invalide
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-20 12:46:34] ERROR:  Erreur createAdmin: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, motDePasse: Le mot de passe doit contenir au moins 8 caractères, role: Rôle invalide
+ValidationError: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, motDePasse: Le mot de passe doit contenir au moins 8 caractères, role: Rôle invalide
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-20 12:47:52] ERROR:  Erreur createAdmin: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+ValidationError: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-20 12:48:08] ERROR:  Erreur createAdmin: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+ValidationError: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-20 12:50:43] ERROR:  Erreur createAdmin: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+ValidationError: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise, role: Rôle invalide
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-20 12:52:32] ERROR:  Erreur createAdmin: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise
+ValidationError: User validation failed: photoIdentite.publicId: Path `photoIdentite.publicId` is required., photoIdentite.url: La photo d'identité est requise, dateNaissance: La date de naissance est requise, carteIdentite: La carte d'identité est requise
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-20 12:57:24] ERROR:  Erreur createAdmin: ROLES is not defined
+ReferenceError: ROLES is not defined
+    at createAdmin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:498:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-20 12:59:30] ERROR:  Erreur createAdmin: ROLES is not defined
+ReferenceError: ROLES is not defined
+    at createAdmin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:499:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-20 13:00:32] ERROR:  Erreur createAdmin: ROLES is not defined
+ReferenceError: ROLES is not defined
+    at createAdmin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:499:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-20 13:01:01] ERROR:  Erreur createAdmin: ROLES is not defined
+ReferenceError: ROLES is not defined
+    at createAdmin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:499:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-20 13:10:13] ERROR:  Erreur createAdmin: User validation failed: motDePasse: Le mot de passe doit contenir au moins 8 caractères
+ValidationError: User validation failed: motDePasse: Le mot de passe doit contenir au moins 8 caractères
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)

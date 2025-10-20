@@ -23,64 +23,74 @@ const createMembre = async (req, res) => {
     const { prenom, nom, email, numeroTelephone, adresse, carteIdentite, dateNaissance } = req.body;
     const admin = req.user;
 
-    //  VÉRIFIER QUE LA PHOTO D'IDENTITÉ EST UPLOADÉE
-    if (!req.file) {
-      return ApiResponse.error(res, 'La photo d\'identité est obligatoire', 400);
+    // Vérifications manuelles pour les champs critiques
+    if (!email) {
+      if (req.file) await deleteImage(req.file.filename);
+      return ApiResponse.error(res, "L'email est requis", 400);
+    }
+    if (!numeroTelephone) {
+      if (req.file) await deleteImage(req.file.filename);
+      return ApiResponse.error(res, "Le numéro de téléphone est requis", 400);
     }
 
     // Vérifications unicité
     if (await User.emailExists(email)) {
-      // Supprimer l'image uploadée si erreur
-      await deleteImage(req.file.filename);
+      if (req.file) await deleteImage(req.file.filename);
       return ApiResponse.conflict(res, 'Un utilisateur avec cet email existe déjà');
     }
 
     const normalizedPhone = normalizePhoneNumber(numeroTelephone);
     if (await User.phoneExists(normalizedPhone)) {
-      await deleteImage(req.file.filename);
+      if (req.file) await deleteImage(req.file.filename);
       return ApiResponse.conflict(res, 'Un utilisateur avec ce numéro existe déjà');
     }
 
-    if (await User.carteIdentiteExists(carteIdentite)) {
-      await deleteImage(req.file.filename);
+    if (carteIdentite && await User.carteIdentiteExists(carteIdentite)) {
+      if (req.file) await deleteImage(req.file.filename);
       return ApiResponse.conflict(res, 'Cette carte d\'identité est déjà enregistrée');
     }
 
-    const age = calculateAge(dateNaissance);
-    if (age < 18) {
-      await deleteImage(req.file.filename);
-      return ApiResponse.error(res, 'L\'utilisateur doit avoir au moins 18 ans', 400);
+    if (dateNaissance) {
+      const age = calculateAge(dateNaissance);
+      if (age < 18) {
+        if (req.file) await deleteImage(req.file.filename);
+        return ApiResponse.error(res, "L'utilisateur doit avoir au moins 18 ans", 400);
+      }
     }
 
     const temporaryPassword = generateTemporaryPassword();
 
-    //  CRÉER AVEC PHOTO D'IDENTITÉ
+    // Préparer l'objet photoIdentite (optionnel)
+    const photoIdentite = req.file
+      ? {
+          url: req.file.path,
+          publicId: req.file.filename,
+          uploadedAt: Date.now(),
+          isLocked: true,
+        }
+      : undefined;
+
     const user = await User.create({
       prenom,
       nom,
       email: email.toLowerCase(),
       numeroTelephone: normalizedPhone,
       adresse,
-      carteIdentite: carteIdentite.toUpperCase(),
+      carteIdentite: carteIdentite?.toUpperCase(),
       dateNaissance,
-      photoIdentite: {
-        url: req.file.path,
-        publicId: req.file.filename,
-        uploadedAt: Date.now(),
-        isLocked: true, // NON MODIFIABLE
-      },
+      photoIdentite, // Undefined si pas de fichier
       motDePasse: temporaryPassword,
       role: ROLES.MEMBRE,
       isFirstLogin: true,
       createdBy: admin._id,
     });
 
-    logger.info(`Membre créé avec photo - ${user.email} par ${admin.email}`);
+    logger.info(`Membre créé${req.file ? ' avec photo' : ' sans photo'} - ${user.email} par ${admin.email}`);
 
     try {
       await emailService.sendAccountCredentials(user, temporaryPassword);
     } catch (emailError) {
-      logger.error(' Erreur envoi email:', emailError);
+      logger.error('Erreur envoi email:', emailError);
     }
 
     return ApiResponse.success(
@@ -93,7 +103,7 @@ const createMembre = async (req, res) => {
           email: user.email,
           numeroTelephone: user.numeroTelephone,
           role: user.role,
-          photoIdentite: user.photoIdentite.url,
+          photoIdentite: user.photoIdentite?.url,
         },
         temporaryPassword: process.env.NODE_ENV === 'development' ? temporaryPassword : undefined,
       },
@@ -101,12 +111,11 @@ const createMembre = async (req, res) => {
       201
     );
   } catch (error) {
-    // En cas d'erreur, supprimer l'image uploadée
     if (req.file) {
       await deleteImage(req.file.filename);
     }
-    logger.error(' Erreur createMembre:', error);
-    return ApiResponse.serverError(res);
+    logger.error('Erreur createMembre:', { message: error.message, stack: error.stack });
+    return ApiResponse.serverError(res, error.message);
   }
 };
 
@@ -120,33 +129,52 @@ const createTresorier = async (req, res) => {
     const { prenom, nom, email, numeroTelephone, adresse, carteIdentite, dateNaissance } = req.body;
     const admin = req.user;
 
-    if (!req.file) {
-      return ApiResponse.error(res, 'La photo d\'identité est obligatoire', 400);
+    // Vérifications manuelles pour les champs critiques
+    if (!email) {
+      if (req.file) await deleteImage(req.file.filename);
+      return ApiResponse.error(res, "L'email est requis", 400);
+    }
+    if (!numeroTelephone) {
+      if (req.file) await deleteImage(req.file.filename);
+      return ApiResponse.error(res, "Le numéro de téléphone est requis", 400);
     }
 
+    // Vérifications unicité
     if (await User.emailExists(email)) {
-      await deleteImage(req.file.filename);
+      if (req.file) await deleteImage(req.file.filename);
       return ApiResponse.conflict(res, 'Un utilisateur avec cet email existe déjà');
     }
 
     const normalizedPhone = normalizePhoneNumber(numeroTelephone);
     if (await User.phoneExists(normalizedPhone)) {
-      await deleteImage(req.file.filename);
+      if (req.file) await deleteImage(req.file.filename);
       return ApiResponse.conflict(res, 'Un utilisateur avec ce numéro existe déjà');
     }
 
-    if (await User.carteIdentiteExists(carteIdentite)) {
-      await deleteImage(req.file.filename);
+    if (carteIdentite && await User.carteIdentiteExists(carteIdentite)) {
+      if (req.file) await deleteImage(req.file.filename);
       return ApiResponse.conflict(res, 'Cette carte d\'identité est déjà enregistrée');
     }
 
-    const age = calculateAge(dateNaissance);
-    if (age < 18) {
-      await deleteImage(req.file.filename);
-      return ApiResponse.error(res, 'L\'utilisateur doit avoir au moins 18 ans', 400);
+    if (dateNaissance) {
+      const age = calculateAge(dateNaissance);
+      if (age < 18) {
+        if (req.file) await deleteImage(req.file.filename);
+        return ApiResponse.error(res, "L'utilisateur doit avoir au moins 18 ans", 400);
+      }
     }
 
     const temporaryPassword = generateTemporaryPassword();
+
+    // Préparer l'objet photoIdentite (optionnel)
+    const photoIdentite = req.file
+      ? {
+          url: req.file.path,
+          publicId: req.file.filename,
+          uploadedAt: Date.now(),
+          isLocked: true,
+        }
+      : undefined;
 
     const user = await User.create({
       prenom,
@@ -154,26 +182,21 @@ const createTresorier = async (req, res) => {
       email: email.toLowerCase(),
       numeroTelephone: normalizedPhone,
       adresse,
-      carteIdentite: carteIdentite.toUpperCase(),
+      carteIdentite: carteIdentite?.toUpperCase(),
       dateNaissance,
-      photoIdentite: {
-        url: req.file.path,
-        publicId: req.file.filename,
-        uploadedAt: Date.now(),
-        isLocked: true,
-      },
+      photoIdentite, // Undefined si pas de fichier
       motDePasse: temporaryPassword,
       role: ROLES.TRESORIER,
       isFirstLogin: true,
       createdBy: admin._id,
     });
 
-    logger.info(` Trésorier créé avec photo - ${user.email} par ${admin.email}`);
+    logger.info(`Trésorier créé${req.file ? ' avec photo' : ' sans photo'} - ${user.email} par ${admin.email}`);
 
     try {
       await emailService.sendAccountCredentials(user, temporaryPassword);
     } catch (emailError) {
-      logger.error(' Erreur envoi email:', emailError);
+      logger.error('Erreur envoi email:', emailError);
     }
 
     return ApiResponse.success(
@@ -186,7 +209,7 @@ const createTresorier = async (req, res) => {
           email: user.email,
           numeroTelephone: user.numeroTelephone,
           role: user.role,
-          photoIdentite: user.photoIdentite.url,
+          photoIdentite: user.photoIdentite?.url,
         },
         temporaryPassword: process.env.NODE_ENV === 'development' ? temporaryPassword : undefined,
       },
@@ -197,11 +220,10 @@ const createTresorier = async (req, res) => {
     if (req.file) {
       await deleteImage(req.file.filename);
     }
-    logger.error(' Erreur createTresorier:', error);
-    return ApiResponse.serverError(res);
+    logger.error('Erreur createTresorier:', { message: error.message, stack: error.stack });
+    return ApiResponse.serverError(res, error.message);
   }
 };
-
 /**
  *  @desc    Mettre à jour la photo de profil (MODIFIABLE)
  * @route   PUT /api/v1/users/me/photo-profil
@@ -211,8 +233,11 @@ const updateProfilePhoto = async (req, res) => {
   try {
     const user = req.user;
 
+    // Si aucun fichier n'est fourni, retourner une réponse sans erreur
     if (!req.file) {
-      return ApiResponse.error(res, 'Aucune photo fournie', 400);
+      return ApiResponse.success(res, {
+        photoProfil: user.photoProfil || null,
+      }, 'Aucune nouvelle photo fournie, profil inchangé');
     }
 
     // Supprimer l'ancienne photo si elle existe
@@ -220,15 +245,15 @@ const updateProfilePhoto = async (req, res) => {
       try {
         await deleteImage(user.photoProfil.publicId);
       } catch (error) {
-        logger.warn(' Impossible de supprimer l\'ancienne photo:', error);
+        logger.warn('Impossible de supprimer l\'ancienne photo:', error);
       }
     }
 
-    // Mettre à jour
+    // Mettre à jour avec la nouvelle photo
     user.updateProfilePhoto(req.file.path, req.file.filename);
     await user.save();
 
-    logger.info(` Photo de profil mise à jour - ${user.email}`);
+    logger.info(`Photo de profil mise à jour - ${user.email}`);
 
     return ApiResponse.success(res, {
       photoProfil: {
@@ -240,11 +265,10 @@ const updateProfilePhoto = async (req, res) => {
     if (req.file) {
       await deleteImage(req.file.filename);
     }
-    logger.error(' Erreur updateProfilePhoto:', error);
+    logger.error('Erreur updateProfilePhoto:', error);
     return ApiResponse.serverError(res);
   }
 };
-
 /**
  *  @desc    Supprimer la photo de profil
  * @route   DELETE /api/v1/users/me/photo-profil

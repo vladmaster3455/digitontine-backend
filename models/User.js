@@ -69,21 +69,18 @@ const UserSchema = new mongoose.Schema(
       },
     },
 
-    //  PHOTOS
+    // PHOTOS
     photoIdentite: {
       url: {
         type: String,
-        required: [true, 'La photo d\'identité est requise'],
       },
       publicId: {
-        type: String,
-        required: true,
+        type: String, 
       },
       uploadedAt: {
         type: Date,
         default: Date.now,
       },
-      //  NON MODIFIABLE après création
       isLocked: {
         type: Boolean,
         default: true,

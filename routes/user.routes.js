@@ -56,7 +56,7 @@ router.post(
   verifyToken,
   isAdmin,
   uploadIdentityPhoto,                    //  Upload du fichier
-  validateFileUpload('photoIdentite'),    //  Vérifier présence
+  //validateFileUpload('photoIdentite'),    //  Vérifier présence
   validateCreateUser,                     //  Valider données
   validate,                               //  Exécuter validation
   auditLog('CREATE_USER', 'User'),
@@ -74,7 +74,7 @@ router.post(
   verifyToken,
   isAdmin,
   uploadIdentityPhoto,                    //  ORDRE CORRIGÉ
-  validateFileUpload('photoIdentite'),    //  AJOUT
+  //validateFileUpload('photoIdentite'),    //  AJOUT
   validateCreateUser,
   validate,
   auditLog('CREATE_USER', 'User'),

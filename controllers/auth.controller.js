@@ -6,6 +6,7 @@ const { generateTokenPair } = require('../config/jwt');
 const { validatePasswordStrength } = require('../utils/helpers');
 const emailService = require('../services/email.service');
 const crypto = require('crypto');
+const { ROLES } = require('../config/constants');
 
 /**
  * @desc    Connexion utilisateur (Admin/Trésorier/Membre)
@@ -433,30 +434,70 @@ const verifyToken = async (req, res) => {
  * @access  Public
  * @warning À DÉSACTIVER EN PRODUCTION
  */
+
 const createAdmin = async (req, res) => {
   try {
-    const { prenom, nom, email, numeroTelephone, motDePasse } = req.body;
+    const { 
+      prenom, 
+      nom, 
+      email, 
+      numeroTelephone, 
+      motDePasse,
+      carteIdentite,
+      photoIdentiteUrl,
+      photoIdentitePublicId,
+      dateNaissance,
+      adresse
+    } = req.body;
 
-    // Vérifier si l'email existe déjà
+    // Vérifier si l'email existe déjà 
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return ApiResponse.error(res, 'Cet email est déjà utilisé', 400);
     }
 
-    // Vérifier si le numéro existe déjà
+    // Vérifier si le numéro existe déjà 
     const existingPhone = await User.findOne({ numeroTelephone });
     if (existingPhone) {
       return ApiResponse.error(res, 'Ce numéro de téléphone est déjà utilisé', 400);
     }
 
-    // Créer l'admin
+    // Vérifier si la carte d'identité existe déjà
+    if (carteIdentite) {
+      const existingCard = await User.findOne({ carteIdentite: carteIdentite.toUpperCase() });
+      if (existingCard) {
+        return ApiResponse.error(res, 'Cette carte d\'identité est déjà utilisée', 400);
+      }
+    }
+
+    // Valider la date de naissance si fournie
+    let dateNaissanceValue = dateNaissance;
+    if (dateNaissanceValue) {
+      const age = Math.floor((Date.now() - new Date(dateNaissanceValue)) / (365.25 * 24 * 60 * 60 * 1000));
+      if (age < 18) {
+        return ApiResponse.error(res, 'L\'admin doit avoir au moins 18 ans', 400);
+      }
+    } else {
+      // Fournir une date par défaut (18 ans d'ici)
+      dateNaissanceValue = new Date(Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000);
+    }
+
+    // Créer l'admin avec les champs obligatoires
     const admin = await User.create({
       prenom,
       nom,
       email: email.toLowerCase(),
       numeroTelephone,
       motDePasse,
-      role: 'admin',
+      carteIdentite: carteIdentite || `TEMP_${Date.now()}`, // ID temporaire si non fourni
+      dateNaissance: dateNaissanceValue,
+      adresse: adresse || '',
+      photoIdentite: {
+        url: photoIdentiteUrl || 'https://via.placeholder.com/200',
+        publicId: photoIdentitePublicId || `temp_${Date.now()}`,
+        isLocked: true,
+      },
+      role: ROLES.ADMIN,
       isActive: true,
       isFirstLogin: false, // Pas de changement de mot de passe obligatoire
     });
@@ -480,7 +521,6 @@ const createAdmin = async (req, res) => {
     return ApiResponse.serverError(res);
   }
 };
-
 module.exports = {
   login,
   firstPasswordChange,

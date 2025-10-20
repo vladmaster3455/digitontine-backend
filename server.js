@@ -16,6 +16,8 @@ const logger = require('./utils/logger');
 // Middleware
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler.middleware');
 const verifyApiKey = require('./middleware/apiKey.middleware');
+//swagger
+const { swaggerSpec, swaggerUi, swaggerUiOptions } = require('./config/swagger');
 
 // Routes
 const authRoutes = require('./routes/auth.routes');
@@ -137,6 +139,156 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+/**
+ * @swagger
+ * /api-docs:
+ *   get:
+ *     summary: Documentation Swagger UI
+ *     tags: [System]
+ *     description: Interface interactive de documentation de l'API
+ *     responses:
+ *       200:
+ *         description: Page de documentation Swagger
+ */
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+
+
+
+/**
+ * @swagger
+ * /test:
+ *   get:
+ *     summary: Test de santé de l'API
+ *     tags: [System]
+ *     description: Vérifier que l'API est en ligne et fonctionnelle
+ *     responses:
+ *       200:
+ *         description: API opérationnelle
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "DigiTontine API est en ligne"
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 environment:
+ *                   type: string
+ *                   example: "development"
+ *                 version:
+ *                   type: string
+ *                   example: "v1"
+ */
+
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: Page d'accueil de l'API
+ *     tags: [System]
+ *     description: Informations générales et liste des endpoints disponibles
+ *     responses:
+ *       200:
+ *         description: Informations API
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Bienvenue sur DigiTontine API"
+ *                 version:
+ *                   type: string
+ *                   example: "v1"
+ *                 documentation:
+ *                   type: string
+ *                   example: "http://localhost:5000/api-docs"
+ *                 endpoints:
+ *                   type: object
+ *                   properties:
+ *                     test:
+ *                       type: string
+ *                       example: "/test"
+ *                     createAdmin:
+ *                       type: string
+ *                       example: "/create-admin-public"
+ *                     auth:
+ *                       type: string
+ *                       example: "/digitontine/auth"
+ *                     users:
+ *                       type: string
+ *                       example: "/digitontine/users"
+ */
+
+/**
+ * @swagger
+ * /create-admin-public:
+ *   post:
+ *     summary: Créer un compte Administrateur (Route publique)
+ *     tags: [System]
+ *     description: |
+ *       Route publique pour créer le premier administrateur.
+ *       ⚠️ À désactiver en production pour des raisons de sécurité.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - prenom
+ *               - nom
+ *               - email
+ *               - numeroTelephone
+ *               - motDePasse
+ *             properties:
+ *               prenom:
+ *                 type: string
+ *                 example: "Super"
+ *               nom:
+ *                 type: string
+ *                 example: "Admin"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "admin@digitontine.com"
+ *               numeroTelephone:
+ *                 type: string
+ *                 example: "+221771234567"
+ *               motDePasse:
+ *                 type: string
+ *                 format: password
+ *                 example: "Admin@2025!ChangeMe"
+ *     responses:
+ *       201:
+ *         description: Administrateur créé avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Success'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         user:
+ *                           $ref: '#/components/schemas/User'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       409:
+ *         description: Email ou téléphone déjà utilisé
+ */
 
 // ========================================
 // ROUTE PUBLIQUE CREATION ADMIN (SANS CLE API)
@@ -192,6 +344,7 @@ const server = app.listen(PORT, () => {
   logger.info(`Cle API: ACTIVEE sur toutes les routes ${API_PREFIX}/*`);
   logger.info(`Route publique admin: ${process.env.BASE_URL || `http://localhost:${PORT}`}/create-admin-public`);
   logger.info(`Test Check: ${process.env.BASE_URL || `http://localhost:${PORT}`}/test`);
+   logger.info(`API DOCS: ${process.env.BASE_URL || `http://localhost:${PORT}`}/api-docs`);
   logger.info('========================================');
 });
 
