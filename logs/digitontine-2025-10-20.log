@@ -1,0 +1,132 @@
+[2025-10-20 04:34:51] INFO: ========================================
+[2025-10-20 04:34:51] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 04:34:51] INFO: Environnement: development
+[2025-10-20 04:34:51] INFO: URL: http://localhost:5000
+[2025-10-20 04:34:51] INFO: API Prefix: /digitontine
+[2025-10-20 04:34:51] INFO: Health Check: http://localhost:5000/health
+[2025-10-20 04:34:51] INFO: ========================================
+[2025-10-20 04:34:53] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-20 04:34:53] INFO:  Base de données: digitontine
+[2025-10-20 04:35:55] INFO: ========================================
+[2025-10-20 04:35:55] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 04:35:55] INFO: Environnement: development
+[2025-10-20 04:35:55] INFO: URL: http://localhost:5000
+[2025-10-20 04:35:55] INFO: API Prefix: /digitontine
+[2025-10-20 04:35:55] INFO: test Check: http://localhost:5000/test
+[2025-10-20 04:35:55] INFO: ========================================
+[2025-10-20 04:35:56] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-20 04:35:56] INFO:  Base de données: digitontine
+[2025-10-20 05:28:40] INFO: ========================================
+[2025-10-20 05:28:40] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 05:28:40] INFO: Environnement: development
+[2025-10-20 05:28:40] INFO: URL: http://localhost:5000
+[2025-10-20 05:28:40] INFO: API Prefix: /digitontine
+[2025-10-20 05:28:40] INFO: 🔒 Clé API: ACTIVÉE sur toutes les routes /digitontine/*
+[2025-10-20 05:28:40] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 05:28:40] INFO: ========================================
+[2025-10-20 05:28:41] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 05:28:41] INFO:  Base de données: digitontine
+[2025-10-20 05:30:28] INFO: ========================================
+[2025-10-20 05:30:28] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 05:30:28] INFO: Environnement: development
+[2025-10-20 05:30:28] INFO: URL: http://localhost:5000
+[2025-10-20 05:30:28] INFO: API Prefix: /digitontine
+[2025-10-20 05:30:28] INFO:  Clé API: ACTIVÉE sur toutes les routes /digitontine/*
+[2025-10-20 05:30:28] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 05:30:28] INFO: ========================================
+[2025-10-20 05:30:29] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-20 05:30:29] INFO:  Base de données: digitontine
+[2025-10-20 09:05:53] WARN:  MongoDB déconnecté
+[2025-10-20 09:11:37] WARN:  MongoDB déconnecté
+[2025-10-20 09:25:22] INFO: ========================================
+[2025-10-20 09:25:22] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 09:25:22] INFO: Environnement: development
+[2025-10-20 09:25:22] INFO: URL: http://localhost:5000
+[2025-10-20 09:25:22] INFO: API Prefix: /digitontine
+[2025-10-20 09:25:22] INFO:  Clé API: ACTIVÉE sur toutes les routes /digitontine/*
+[2025-10-20 09:25:22] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 09:25:22] INFO: ========================================
+[2025-10-20 09:25:23] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 09:25:23] INFO:  Base de données: digitontine
+[2025-10-20 09:36:11] INFO: SIGINT reçu (Ctrl+C). Fermeture en cours...
+[2025-10-20 10:06:49] INFO: ========================================
+[2025-10-20 10:06:49] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 10:06:49] INFO: Environnement: development
+[2025-10-20 10:06:49] INFO: URL: http://localhost:5000
+[2025-10-20 10:06:49] INFO: API Prefix: /digitontine
+[2025-10-20 10:06:49] INFO:  Clé API: ACTIVÉE sur toutes les routes /digitontine/*
+[2025-10-20 10:06:49] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 10:06:49] INFO: ========================================
+[2025-10-20 10:06:51] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-20 10:06:51] INFO:  Base de données: digitontine
+[2025-10-20 10:08:11] INFO: ========================================
+[2025-10-20 10:08:11] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 10:08:11] INFO: Environnement: development
+[2025-10-20 10:08:11] INFO: URL: http://localhost:5000
+[2025-10-20 10:08:11] INFO: API Prefix: /digitontine
+[2025-10-20 10:08:11] INFO:  Clé API: ACTIVÉE sur toutes les routes /digitontine/*
+[2025-10-20 10:08:11] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 10:08:11] INFO: ========================================
+[2025-10-20 10:08:13] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 10:08:13] INFO:  Base de données: digitontine
+[2025-10-20 10:09:35] INFO: ========================================
+[2025-10-20 10:09:35] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 10:09:35] INFO: Environnement: development
+[2025-10-20 10:09:35] INFO: URL: http://localhost:5000
+[2025-10-20 10:09:35] INFO: API Prefix: /digitontine
+[2025-10-20 10:09:35] INFO:  Clé API: ACTIVÉE sur toutes les routes /digitontine/*
+[2025-10-20 10:09:35] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 10:09:35] INFO: ========================================
+[2025-10-20 10:09:37] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-20 10:09:37] INFO:  Base de données: digitontine
+[2025-10-20 10:17:34] INFO: ========================================
+[2025-10-20 10:17:34] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 10:17:34] INFO: Environnement: development
+[2025-10-20 10:17:34] INFO: URL: http://localhost:5000
+[2025-10-20 10:17:34] INFO: API Prefix: /digitontine
+[2025-10-20 10:17:34] INFO:  Clé API: ACTIVÉE sur toutes les routes /digitontine/*
+[2025-10-20 10:17:34] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 10:17:34] INFO: ========================================
+[2025-10-20 10:18:04] ERROR:  Erreur de connexion MongoDB:
+[2025-10-20 10:18:17] INFO: ========================================
+[2025-10-20 10:18:17] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 10:18:17] INFO: Environnement: development
+[2025-10-20 10:18:17] INFO: URL: http://localhost:5000
+[2025-10-20 10:18:17] INFO: API Prefix: /digitontine
+[2025-10-20 10:18:17] INFO:  Clé API: ACTIVÉE sur toutes les routes /digitontine/*
+[2025-10-20 10:18:17] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 10:18:17] INFO: ========================================
+[2025-10-20 10:18:19] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 10:18:19] INFO:  Base de données: digitontine
+[2025-10-20 10:28:04] INFO: ========================================
+[2025-10-20 10:28:04] INFO: DigiTontine API démarré avec succès!
+[2025-10-20 10:28:04] INFO: Environnement: development
+[2025-10-20 10:28:04] INFO: URL: http://localhost:5000
+[2025-10-20 10:28:04] INFO: API Prefix: /digitontine
+[2025-10-20 10:28:04] INFO:  Clé API: ACTIVÉE sur toutes les routes /digitontine/*
+[2025-10-20 10:28:04] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 10:28:04] INFO: ========================================
+[2025-10-20 10:28:06] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-20 10:28:06] INFO:  Base de données: digitontine
+[2025-10-20 10:32:57] INFO: ========================================
+[2025-10-20 10:32:57] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 10:32:57] INFO: Environnement: development
+[2025-10-20 10:32:57] INFO: URL: http://localhost:5000
+[2025-10-20 10:32:57] INFO: API Prefix: /digitontine
+[2025-10-20 10:32:57] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 10:32:57] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 10:32:57] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 10:32:57] INFO: ========================================
+[2025-10-20 10:33:02] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 10:33:02] INFO:  Base de données: digitontine
+[2025-10-20 10:35:33] INFO: ========================================
+[2025-10-20 10:35:33] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 10:35:33] INFO: Environnement: development
+[2025-10-20 10:35:33] INFO: URL: http://localhost:5000
+[2025-10-20 10:35:33] INFO: API Prefix: /digitontine
+[2025-10-20 10:35:33] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 10:35:33] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 10:35:33] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 10:35:33] INFO: ========================================
+[2025-10-20 10:35:35] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-20 10:35:35] INFO:  Base de données: digitontine

@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "logs\\.86ca3aa94e68bbcbf34d76c8bda6dc4f799f67a4-audit.json",
+    "files": [
+        {
+            "date": 1760934058707,
+            "name": "logs\\digitontine-2025-10-20.log",
+            "hash": "87db621d4ee32a56807353f1ad028cb2b03d87373821eb5ae5db51faf912acd2"
+        }
+    ],
+    "hashType": "sha256"
+}
