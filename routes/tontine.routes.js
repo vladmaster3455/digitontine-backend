@@ -219,5 +219,42 @@ router.post(
   auditLog('CLOSE_TONTINE', 'Tontine'),
   closeTontine
 );
+/**
+ * @swagger
+ * /digitontine/tontines:
+ *   post:
+ *     tags: [Tontines]
+ *     summary: Créer une tontine (Admin)
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [nom, montantCotisation, frequence, dateDebut]
+ *             properties:
+ *               nom: { type: string }
+ *               montantCotisation: { type: number }
+ *               frequence: { type: string, enum: [Hebdomadaire, Mensuelle] }
+ *               dateDebut: { type: string, format: date }
+ *     responses:
+ *       201:
+ *         description: Tontine créée
+ */
+
+/**
+ * @swagger
+ * /digitontine/tontines:
+ *   get:
+ *     tags: [Tontines]
+ *     summary: Liste des tontines
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste paginée
+ */
 
 module.exports = router;

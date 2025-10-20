@@ -56,5 +56,21 @@ router.get(
   checkRole('Membre', 'Tresorier', 'Administrateur'),
   tirageController.mesGains
 );
-
+/**
+ * @swagger
+ * /digitontine/tirages/tontine/{tontineId}/automatique:
+ *   post:
+ *     tags: [Tirages]
+ *     summary: Effectuer un tirage automatique
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tontineId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       201:
+ *         description: Tirage effectué
+ */
 module.exports = router;

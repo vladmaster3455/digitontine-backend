@@ -176,5 +176,27 @@ router.post(
   checkNotExpired,
   resendOTP
 );
-
+/**
+ * @swagger
+ * /digitontine/validation/request:
+ *   post:
+ *     tags: [Validations]
+ *     summary: Créer une demande de validation
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [actionType, resourceType, resourceId]
+ *             properties:
+ *               actionType: { type: string }
+ *               resourceType: { type: string }
+ *               resourceId: { type: string }
+ *     responses:
+ *       201:
+ *         description: Demande créée
+ */
 module.exports = router;

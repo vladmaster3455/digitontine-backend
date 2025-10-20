@@ -171,5 +171,38 @@ router.delete(
   validate,
   removeFCMToken
 );
+/**
+ * @swagger
+ * /digitontine/auth/login:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Connexion utilisateur
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [identifier, motDePasse]
+ *             properties:
+ *               identifier: { type: string, example: "membre@example.com" }
+ *               motDePasse: { type: string, example: "Password123!" }
+ *     responses:
+ *       200:
+ *         description: Connexion réussie
+ */
+
+/**
+ * @swagger
+ * /digitontine/auth/me:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Obtenir mon profil
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profil utilisateur
+ */
 
 module.exports = router;

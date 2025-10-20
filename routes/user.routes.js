@@ -238,5 +238,56 @@ router.delete(
   auditLog('DELETE_PROFILE_PHOTO', 'User'),
   deleteProfilePhoto
 );
+/**
+ * @swagger
+ * /digitontine/users/membre:
+ *   post:
+ *     tags: [Users]
+ *     summary: Créer un membre (Admin)
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [prenom, nom, email, numeroTelephone, dateNaissance, carteIdentite]
+ *             properties:
+ *               prenom: { type: string }
+ *               nom: { type: string }
+ *               email: { type: string }
+ *               numeroTelephone: { type: string }
+ *               dateNaissance: { type: string, format: date }
+ *               carteIdentite: { type: string }
+ *               adresse: { type: string }
+ *               photoIdentite: { type: string, format: binary, description: "Photo identité (optionnelle)" }
+ *     responses:
+ *       201:
+ *         description: Membre créé
+ */
+
+/**
+ * @swagger
+ * /digitontine/users:
+ *   get:
+ *     tags: [Users]
+ *     summary: Liste des utilisateurs
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: role
+ *         schema: { type: string, enum: [Membre, Tresorier, Administrateur] }
+ *     responses:
+ *       200:
+ *         description: Liste paginée
+ */
 
 module.exports = router;

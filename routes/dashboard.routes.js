@@ -33,5 +33,16 @@ router.get(
   checkRole('Administrateur'),
   dashboardController.statistiquesGlobales
 );
-
+/**
+ * @swagger
+ * /digitontine/dashboard/tresorier:
+ *   get:
+ *     tags: [Dashboard]
+ *     summary: Tableau de bord Trésorier
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: KPIs et statistiques
+ */
 module.exports = router;

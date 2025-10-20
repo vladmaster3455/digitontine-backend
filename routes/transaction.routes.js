@@ -127,5 +127,27 @@ router.get(
   validate,
   getTransactionDetails
 );
-
+/**
+ * @swagger
+ * /digitontine/transactions:
+ *   post:
+ *     tags: [Transactions]
+ *     summary: Effectuer une cotisation
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [tontineId, montant, moyenPaiement]
+ *             properties:
+ *               tontineId: { type: string }
+ *               montant: { type: number }
+ *               moyenPaiement: { type: string, enum: [Wave, Orange Money, Cash] }
+ *     responses:
+ *       201:
+ *         description: Transaction créée
+ */
 module.exports = router;
