@@ -180,6 +180,13 @@ const options = {
       },
     },
     
+    // 🔐 SÉCURITÉ : Applique l'API Key sur toutes les routes par défaut
+    security: [
+      {
+        ApiKeyAuth: [],
+      },
+    ],
+    
     tags: [
       { name: 'System', description: 'Routes système et santé de l\'API' },
       { name: 'Auth', description: 'Authentification et gestion de session' },
@@ -219,7 +226,7 @@ const swaggerUiOptions = {
       const topbar = document.querySelector('.swagger-ui .topbar');
       if (topbar) {
         const btn = document.createElement('a');
-        btn.textContent = '📥 Télécharger la Spec';
+        btn.textContent = '🔥 Télécharger la Spec';
         btn.href = '/swagger.json';
         btn.download = 'digiTontine-api.json';
         btn.style = 'margin-left:20px;padding:6px 12px;background:#e63946;color:white;border-radius:6px;text-decoration:none;font-weight:bold;';

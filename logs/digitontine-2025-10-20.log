@@ -685,3 +685,276 @@ ValidationError: User validation failed: motDePasse: Le mot de passe doit conten
 [2025-10-20 15:01:02] INFO: ========================================
 [2025-10-20 15:01:03] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
 [2025-10-20 15:01:03] INFO:  Base de données: digitontine
+[2025-10-20 15:01:13] INFO: ========================================
+[2025-10-20 15:01:13] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 15:01:13] INFO: Environnement: development
+[2025-10-20 15:01:13] INFO: URL: http://localhost:5000
+[2025-10-20 15:01:13] INFO: API Prefix: /digitontine
+[2025-10-20 15:01:13] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 15:01:13] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 15:01:13] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 15:01:13] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 15:01:13] INFO: ========================================
+[2025-10-20 15:01:14] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-20 15:01:14] INFO:  Base de données: digitontine
+[2025-10-20 15:02:02] WARN: Origine CORS refusee: http://localhost:5000
+[2025-10-20 15:02:02] ERROR: ❌ Erreur - POST /digitontine/auth/login Non autorise par CORS
+Error: Non autorise par CORS
+    at origin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\server.js:72:16)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at internalNext (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\helmet\index.cjs:537:6)
+[2025-10-20 15:08:39] WARN: Origine CORS refusee: http://localhost:5000
+[2025-10-20 15:08:39] ERROR: ❌ Erreur - POST /digitontine/auth/login Non autorise par CORS
+Error: Non autorise par CORS
+    at origin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\server.js:72:16)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at internalNext (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\helmet\index.cjs:537:6)
+[2025-10-20 15:09:35] WARN: Origine CORS refusee: http://localhost:5000
+[2025-10-20 15:09:35] ERROR: ❌ Erreur - POST /digitontine/auth/login Non autorise par CORS
+Error: Non autorise par CORS
+    at origin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\server.js:72:16)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at internalNext (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\helmet\index.cjs:537:6)
+[2025-10-20 15:09:50] INFO:  Connexion réussie - admin@digitontine.com (Admin)
+[2025-10-20 15:09:50] INFO:  AUDIT: LOGIN on User
+[2025-10-20 15:10:24] WARN: Origine CORS refusee: http://localhost:5000
+[2025-10-20 15:10:24] ERROR: ❌ Erreur - POST /digitontine/auth/login Non autorise par CORS
+Error: Non autorise par CORS
+    at origin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\server.js:72:16)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at internalNext (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\helmet\index.cjs:537:6)
+[2025-10-20 15:10:26] WARN: Origine CORS refusee: http://localhost:5000
+[2025-10-20 15:10:26] ERROR: ❌ Erreur - POST /digitontine/auth/login Non autorise par CORS
+Error: Non autorise par CORS
+    at origin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\server.js:72:16)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at internalNext (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\helmet\index.cjs:537:6)
+[2025-10-20 15:13:02] INFO: ========================================
+[2025-10-20 15:13:02] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 15:13:02] INFO: Environnement: development
+[2025-10-20 15:13:02] INFO: URL: http://localhost:5000
+[2025-10-20 15:13:02] INFO: API Prefix: /digitontine
+[2025-10-20 15:13:02] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 15:13:02] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 15:13:02] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 15:13:02] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 15:13:02] INFO: ========================================
+[2025-10-20 15:13:03] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 15:13:03] INFO:  Base de données: digitontine
+[2025-10-20 15:13:08] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-20 15:13:46] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-20 15:13:51] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-20 15:14:22] ERROR: ❌ Erreur - POST /digitontine/auth/login Expected ',' or '}' after property value in JSON at position 83 (line 4 column 3)
+SyntaxError: Expected ',' or '}' after property value in JSON at position 83 (line 4 column 3)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\types\json.js:92:19)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2025-10-20 15:14:46] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-20 15:15:23] ERROR: ❌ Erreur - POST /digitontine/auth/login Unexpected non-whitespace character after JSON at position 84 (line 4 column 4)
+SyntaxError: Unexpected non-whitespace character after JSON at position 84 (line 4 column 4)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\types\json.js:92:19)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2025-10-20 15:15:25] ERROR: ❌ Erreur - POST /digitontine/auth/login Unexpected non-whitespace character after JSON at position 84 (line 4 column 4)
+SyntaxError: Unexpected non-whitespace character after JSON at position 84 (line 4 column 4)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\types\json.js:92:19)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2025-10-20 15:15:39] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-20 15:18:20] INFO: ========================================
+[2025-10-20 15:18:20] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 15:18:20] INFO: Environnement: development
+[2025-10-20 15:18:20] INFO: URL: http://localhost:5000
+[2025-10-20 15:18:20] INFO: API Prefix: /digitontine
+[2025-10-20 15:18:20] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 15:18:20] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 15:18:20] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 15:18:20] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 15:18:20] INFO: ========================================
+[2025-10-20 15:18:26] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 15:18:26] INFO:  Base de données: digitontine
+[2025-10-20 15:18:55] INFO: ========================================
+[2025-10-20 15:18:55] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 15:18:55] INFO: Environnement: development
+[2025-10-20 15:18:55] INFO: URL: http://localhost:5000
+[2025-10-20 15:18:55] INFO: API Prefix: /digitontine
+[2025-10-20 15:18:55] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 15:18:55] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 15:18:55] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 15:18:55] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 15:18:55] INFO: ========================================
+[2025-10-20 15:18:56] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-20 15:18:56] INFO:  Base de données: digitontine
+[2025-10-20 15:28:53] INFO:  Connexion réussie - admin@digitontine.com (Admin)
+[2025-10-20 15:28:53] INFO:  AUDIT: LOGIN on User
+[2025-10-20 15:29:15] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-20 15:31:20] INFO: ========================================
+[2025-10-20 15:31:20] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 15:31:20] INFO: Environnement: development
+[2025-10-20 15:31:20] INFO: URL: http://localhost:5000
+[2025-10-20 15:31:20] INFO: API Prefix: /digitontine
+[2025-10-20 15:31:20] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 15:31:20] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 15:31:20] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 15:31:20] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 15:31:20] INFO: ========================================
+[2025-10-20 15:31:22] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-20 15:31:22] INFO:  Base de données: digitontine
+[2025-10-20 15:43:41] WARN: 🔍 Route non trouvée: POST /digitontine/create-admin-public - IP: ::1
+[2025-10-20 15:44:06] INFO:  Admin créé via route publique - admin1@digitontine.com
+[2025-10-20 15:44:49] INFO:  Admin créé via route publique - admin2@digitontine.com
+[2025-10-20 15:45:39] INFO:  Admin créé via route publique - ibou@digitontine.com
+[2025-10-20 16:30:10] WARN:  MongoDB déconnecté
+[2025-10-20 21:31:34] WARN:  MongoDB déconnecté
+[2025-10-20 21:38:07] INFO: ========================================
+[2025-10-20 21:38:07] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 21:38:07] INFO: Environnement: development
+[2025-10-20 21:38:07] INFO: URL: http://localhost:5000
+[2025-10-20 21:38:07] INFO: API Prefix: /digitontine
+[2025-10-20 21:38:07] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 21:38:07] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 21:38:07] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 21:38:07] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 21:38:07] INFO: ========================================
+[2025-10-20 21:38:08] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 21:38:08] INFO:  Base de données: digitontine
+[2025-10-20 21:38:18] INFO: ========================================
+[2025-10-20 21:38:18] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 21:38:18] INFO: Environnement: development
+[2025-10-20 21:38:18] INFO: URL: http://localhost:5000
+[2025-10-20 21:38:18] INFO: API Prefix: /digitontine
+[2025-10-20 21:38:18] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 21:38:18] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 21:38:18] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 21:38:18] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 21:38:18] INFO: ========================================
+[2025-10-20 21:38:19] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-20 21:38:19] INFO:  Base de données: digitontine
+[2025-10-20 21:38:40] INFO: ========================================
+[2025-10-20 21:38:40] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 21:38:40] INFO: Environnement: development
+[2025-10-20 21:38:40] INFO: URL: http://localhost:5000
+[2025-10-20 21:38:40] INFO: API Prefix: /digitontine
+[2025-10-20 21:38:40] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 21:38:40] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 21:38:40] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 21:38:40] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 21:38:40] INFO: ========================================
+[2025-10-20 21:38:41] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 21:38:41] INFO:  Base de données: digitontine
+[2025-10-20 21:39:04] INFO: ========================================
+[2025-10-20 21:39:05] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 21:39:05] INFO: Environnement: development
+[2025-10-20 21:39:05] INFO: URL: http://localhost:5000
+[2025-10-20 21:39:05] INFO: API Prefix: /digitontine
+[2025-10-20 21:39:05] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 21:39:05] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 21:39:05] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 21:39:05] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 21:39:05] INFO: ========================================
+[2025-10-20 21:39:06] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 21:39:06] INFO:  Base de données: digitontine
+[2025-10-20 21:39:26] INFO: ========================================
+[2025-10-20 21:39:26] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 21:39:26] INFO: Environnement: development
+[2025-10-20 21:39:26] INFO: URL: http://localhost:5000
+[2025-10-20 21:39:26] INFO: API Prefix: /digitontine
+[2025-10-20 21:39:26] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 21:39:26] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 21:39:26] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 21:39:26] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 21:39:26] INFO: ========================================
+[2025-10-20 21:39:27] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 21:39:27] INFO:  Base de données: digitontine
+[2025-10-20 22:33:55] INFO: ========================================
+[2025-10-20 22:33:55] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 22:33:55] INFO: Environnement: development
+[2025-10-20 22:33:55] INFO: URL: http://localhost:5000
+[2025-10-20 22:33:55] INFO: API Prefix: /digitontine
+[2025-10-20 22:33:55] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 22:33:55] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 22:33:55] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 22:33:55] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 22:33:55] INFO: ========================================
+[2025-10-20 22:33:56] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-20 22:33:56] INFO:  Base de données: digitontine
+[2025-10-20 22:36:05] INFO: ========================================
+[2025-10-20 22:36:05] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 22:36:05] INFO: Environnement: development
+[2025-10-20 22:36:05] INFO: URL: http://localhost:5000
+[2025-10-20 22:36:05] INFO: API Prefix: /digitontine
+[2025-10-20 22:36:05] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 22:36:05] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 22:36:05] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 22:36:05] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 22:36:05] INFO: ========================================
+[2025-10-20 22:36:12] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-20 22:36:12] INFO:  Base de données: digitontine
+[2025-10-20 22:37:34] INFO: ========================================
+[2025-10-20 22:37:34] INFO: DigiTontine API demarre avec succes!
+[2025-10-20 22:37:34] INFO: Environnement: development
+[2025-10-20 22:37:34] INFO: URL: http://localhost:5000
+[2025-10-20 22:37:34] INFO: API Prefix: /digitontine
+[2025-10-20 22:37:34] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-20 22:37:34] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-20 22:37:34] INFO: Test Check: http://localhost:5000/test
+[2025-10-20 22:37:34] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-20 22:37:34] INFO: ========================================
+[2025-10-20 22:37:35] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-20 22:37:35] INFO:  Base de données: digitontine

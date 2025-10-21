@@ -5,7 +5,6 @@ const router = express.Router();
 const {
   createValidationRequest,
   confirmTresorierOTP,
-  confirmAdminOTP,
   rejectValidationRequest,
   getPendingRequests,
   getMyRequests,
@@ -16,7 +15,6 @@ const {
 const {
   validateCreateRequest,
   validateConfirmTresorierOTP,
-  validateConfirmAdminOTP,
   validateRejectRequest,
   validateResendOTP,
   validateListRequests,
@@ -28,27 +26,22 @@ const { verifyToken } = require('../middleware/auth.middleware');
 const { isAdmin, isTresorier, isAdminOrTresorier } = require('../middleware/role.middleware');
 const {
   validateRequestExists,
-  isTresorierInitiator,
-  isAssignedAdmin,
+  isTresorierAssigned,  // ✅ BON NOM
   checkStatusAllowsAction,
   checkNotExpired,
   checkRemainingAttempts,
 } = require('../middleware/doubleValidation.middleware');
 const { auditLog } = require('../middleware/audit.middleware');
 
-// ========================================
-// ROUTES TRÉSORIER
-// ========================================
-
 /**
  * @route   POST /api/v1/validation/request
- * @desc    Créer une demande de validation
- * @access  Trésorier
+ * @desc    Créer une demande de validation (Admin initie)
+ * @access  Admin
  */
 router.post(
   '/request',
   verifyToken,
-  isTresorier,
+  isAdmin,
   validateCreateRequest,
   validate,
   auditLog('CREATE_VALIDATION_REQUEST', 'ValidationRequest'),
@@ -57,8 +50,8 @@ router.post(
 
 /**
  * @route   POST /api/v1/validation/confirm/tresorier/:validationRequestId
- * @desc    Confirmer OTP Trésorier
- * @access  Trésorier (initiateur)
+ * @desc    Confirmer OTP Trésorier (validation finale)
+ * @access  Trésorier (assigné)
  */
 router.post(
   '/confirm/tresorier/:validationRequestId',
@@ -67,7 +60,7 @@ router.post(
   validateConfirmTresorierOTP,
   validate,
   validateRequestExists,
-  isTresorierInitiator,
+  isTresorierAssigned,  // ✅ BON NOM ICI AUSSI
   checkStatusAllowsAction(['pending']),
   checkNotExpired,
   checkRemainingAttempts('tresorier'),
@@ -76,80 +69,52 @@ router.post(
 );
 
 /**
- * @route   GET /api/v1/validation/my-requests
- * @desc    Obtenir mes demandes de validation
+ * @route   GET /api/v1/validation/pending
+ * @desc    Obtenir les demandes en attente (Trésorier)
  * @access  Trésorier
+ */
+router.get(
+  '/pending',
+  verifyToken,
+  isTresorier,
+  getPendingRequests
+);
+
+/**
+ * @route   GET /api/v1/validation/my-requests
+ * @desc    Obtenir mes demandes (Admin)
+ * @access  Admin
  */
 router.get(
   '/my-requests',
   verifyToken,
-  isTresorier,
+  isAdmin,
   validateListRequests,
   validate,
   getMyRequests
 );
 
-// ========================================
-// ROUTES ADMIN
-// ========================================
-
-/**
- * @route   POST /api/v1/validation/confirm/admin/:validationRequestId
- * @desc    Confirmer OTP Admin
- * @access  Admin (assigné)
- */
-router.post(
-  '/confirm/admin/:validationRequestId',
-  verifyToken,
-  isAdmin,
-  validateConfirmAdminOTP,
-  validate,
-  validateRequestExists,
-  isAssignedAdmin,
-  checkStatusAllowsAction(['tresorier_validated']),
-  checkNotExpired,
-  checkRemainingAttempts('admin'),
-  auditLog('CONFIRM_ADMIN_OTP', 'ValidationRequest'),
-  confirmAdminOTP
-);
-
 /**
  * @route   POST /api/v1/validation/reject/:validationRequestId
  * @desc    Rejeter une demande de validation
- * @access  Admin
+ * @access  Trésorier
  */
 router.post(
   '/reject/:validationRequestId',
   verifyToken,
-  isAdmin,
+  isTresorier,
   validateRejectRequest,
   validate,
   validateRequestExists,
-  checkStatusAllowsAction(['pending', 'tresorier_validated']),
+  checkStatusAllowsAction(['pending']),
   auditLog('REJECT_VALIDATION_REQUEST', 'ValidationRequest'),
   rejectValidationRequest
 );
 
 /**
- * @route   GET /api/v1/validation/pending
- * @desc    Obtenir les demandes en attente
- * @access  Admin
- */
-router.get(
-  '/pending',
-  verifyToken,
-  isAdmin,
-  getPendingRequests
-);
-
-// ========================================
-// ROUTES COMMUNES (TRÉSORIER + ADMIN)
-// ========================================
-
-/**
  * @route   GET /api/v1/validation/:validationRequestId
  * @desc    Obtenir détails d'une demande
- * @access  Trésorier (initiateur) ou Admin (assigné)
+ * @access  Admin (initiateur) ou Trésorier (assigné)
  */
 router.get(
   '/:validationRequestId',
@@ -164,39 +129,17 @@ router.get(
 /**
  * @route   POST /api/v1/validation/resend-otp/:validationRequestId
  * @desc    Renvoyer un code OTP
- * @access  Trésorier (pour son OTP) ou Admin (pour son OTP)
+ * @access  Trésorier
  */
 router.post(
   '/resend-otp/:validationRequestId',
   verifyToken,
-  isAdminOrTresorier,
+  isTresorier,
   validateResendOTP,
   validate,
   validateRequestExists,
   checkNotExpired,
   resendOTP
 );
-/**
- * @swagger
- * /digitontine/validation/request:
- *   post:
- *     tags: [Validations]
- *     summary: Créer une demande de validation
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [actionType, resourceType, resourceId]
- *             properties:
- *               actionType: { type: string }
- *               resourceType: { type: string }
- *               resourceId: { type: string }
- *     responses:
- *       201:
- *         description: Demande créée
- */
+
 module.exports = router;

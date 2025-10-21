@@ -75,3 +75,99 @@ ValidationError: User validation failed: motDePasse: Le mot de passe doit conten
     at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
     at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
     at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-20 15:02:02] ERROR: ❌ Erreur - POST /digitontine/auth/login Non autorise par CORS
+Error: Non autorise par CORS
+    at origin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\server.js:72:16)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at internalNext (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\helmet\index.cjs:537:6)
+[2025-10-20 15:08:39] ERROR: ❌ Erreur - POST /digitontine/auth/login Non autorise par CORS
+Error: Non autorise par CORS
+    at origin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\server.js:72:16)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at internalNext (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\helmet\index.cjs:537:6)
+[2025-10-20 15:09:35] ERROR: ❌ Erreur - POST /digitontine/auth/login Non autorise par CORS
+Error: Non autorise par CORS
+    at origin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\server.js:72:16)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at internalNext (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\helmet\index.cjs:537:6)
+[2025-10-20 15:10:24] ERROR: ❌ Erreur - POST /digitontine/auth/login Non autorise par CORS
+Error: Non autorise par CORS
+    at origin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\server.js:72:16)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at internalNext (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\helmet\index.cjs:537:6)
+[2025-10-20 15:10:26] ERROR: ❌ Erreur - POST /digitontine/auth/login Non autorise par CORS
+Error: Non autorise par CORS
+    at origin (C:\Users\simplon\Desktop\soutenance\digitontine-backend\server.js:72:16)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at internalNext (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\helmet\index.cjs:537:6)
+[2025-10-20 15:14:22] ERROR: ❌ Erreur - POST /digitontine/auth/login Expected ',' or '}' after property value in JSON at position 83 (line 4 column 3)
+SyntaxError: Expected ',' or '}' after property value in JSON at position 83 (line 4 column 3)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\types\json.js:92:19)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2025-10-20 15:15:23] ERROR: ❌ Erreur - POST /digitontine/auth/login Unexpected non-whitespace character after JSON at position 84 (line 4 column 4)
+SyntaxError: Unexpected non-whitespace character after JSON at position 84 (line 4 column 4)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\types\json.js:92:19)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2025-10-20 15:15:25] ERROR: ❌ Erreur - POST /digitontine/auth/login Unexpected non-whitespace character after JSON at position 84 (line 4 column 4)
+SyntaxError: Unexpected non-whitespace character after JSON at position 84 (line 4 column 4)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\types\json.js:92:19)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)

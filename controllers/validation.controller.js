@@ -1,4 +1,4 @@
-// controllers/validation.controller.js
+// controllers/validation.controller.js - LOGIQUE CORRIGÉE
 const ValidationRequest = require('../models/ValidationRequest');
 const User = require('../models/User');
 const Tontine = require('../models/Tontine');
@@ -9,18 +9,20 @@ const otpService = require('../services/otp.service');
 const { ROLES } = require('../config/constants');
 
 /**
- * @desc    Créer une demande de validation (Trésorier initie)
+ * @desc    Créer une demande de validation (ADMIN initie)
  * @route   POST /api/v1/validation/request
- * @access  Trésorier
+ * @access  Admin
+ * 
+ *  LOGIQUE CORRIGÉE : C'est l'ADMIN qui initie, pas le Trésorier
  */
 const createValidationRequest = async (req, res) => {
   try {
-    const { actionType, resourceType, resourceId, reason, assignedAdminId } = req.body;
-    const tresorier = req.user;
+    const { actionType, resourceType, resourceId, reason, assignedTresorier } = req.body;
+    const admin = req.user;
 
-    // Vérifier que l'utilisateur est Trésorier
-    if (tresorier.role !== ROLES.TRESORIER) {
-      return ApiResponse.forbidden(res, 'Seul un Trésorier peut créer une demande de validation');
+    //  Vérifier que l'utilisateur est Admin
+    if (admin.role !== ROLES.ADMIN) {
+      return ApiResponse.forbidden(res, 'Seul un Admin peut créer une demande de validation');
     }
 
     // Vérifier si une demande existe déjà pour cette ressource
@@ -47,18 +49,22 @@ const createValidationRequest = async (req, res) => {
       resourceName = resource.nom;
     }
 
-    // Trouver un Admin disponible (ou utiliser celui assigné)
-    let admin;
-    if (assignedAdminId) {
-      admin = await User.findOne({ _id: assignedAdminId, role: ROLES.ADMIN, isActive: true });
-      if (!admin) {
-        return ApiResponse.notFound(res, 'Admin introuvable ou inactif');
+    // Trouver un Trésorier disponible (ou utiliser celui assigné)
+    let tresorier;
+    if (assignedTresorier) {
+      tresorier = await User.findOne({ 
+        _id: assignedTresorier, 
+        role: ROLES.TRESORIER, 
+        isActive: true 
+      });
+      if (!tresorier) {
+        return ApiResponse.notFound(res, 'Trésorier introuvable ou inactif');
       }
     } else {
-      // Trouver le premier Admin actif
-      admin = await User.findOne({ role: ROLES.ADMIN, isActive: true });
-      if (!admin) {
-        return ApiResponse.error(res, 'Aucun Admin disponible pour valider', 500);
+      // Trouver le premier Trésorier actif
+      tresorier = await User.findOne({ role: ROLES.TRESORIER, isActive: true });
+      if (!tresorier) {
+        return ApiResponse.error(res, 'Aucun Trésorier disponible pour valider', 500);
       }
     }
 
@@ -67,9 +73,9 @@ const createValidationRequest = async (req, res) => {
       actionType,
       resourceType,
       resourceId,
-      initiatedBy: tresorier._id,
-      initiatedByRole: tresorier.role,
-      assignedAdmin: admin._id,
+      initiatedBy: admin._id,          //  ADMIN initie
+      initiatedByRole: admin.role,     //  ADMIN
+      assignedTresorier: tresorier._id, //  Trésorier valide
       reason,
       status: 'pending',
       metadata: {
@@ -78,23 +84,27 @@ const createValidationRequest = async (req, res) => {
       },
     });
 
-    // Générer OTP Trésorier
+    //  Générer OTP pour le TRÉSORIER (pas l'Admin)
     const tresorierOTPCode = validationRequest.setTresorierOTP();
 
     // Sauvegarder
     await validationRequest.save();
 
-    // Envoyer OTP par email au Trésorier
+    //  Envoyer OTP par email au TRÉSORIER
     try {
-      await otpService.sendTresorierOTP(tresorier, tresorierOTPCode, actionType, resourceName);
+      await otpService.sendTresorierOTP(
+        tresorier, 
+        tresorierOTPCode, 
+        actionType, 
+        resourceName
+      );
       validationRequest.notificationsSent.tresorierOTPSent = true;
       await validationRequest.save();
     } catch (emailError) {
-      logger.error('❌ Erreur envoi email OTP Trésorier:', emailError);
-      // On continue quand même
+      logger.error('Erreur envoi email OTP Trésorier:', emailError);
     }
 
-    logger.info(`📝 Demande de validation créée - ${actionType} pour ${resourceName} par ${tresorier.email}`);
+    logger.info(` Demande validation créée par ADMIN ${admin.email} - Action: ${actionType} - Validation par Trésorier ${tresorier.email}`);
 
     return ApiResponse.success(
       res,
@@ -102,26 +112,28 @@ const createValidationRequest = async (req, res) => {
         validationRequestId: validationRequest._id,
         actionType,
         resourceName,
-        assignedAdmin: {
-          prenom: admin.prenom,
-          nom: admin.nom,
-          email: admin.email,
+        assignedTresorier: {
+          prenom: tresorier.prenom,
+          nom: tresorier.nom,
+          email: tresorier.email,
         },
-        nextStep: 'Entrez le code OTP reçu par email pour confirmer',
+        nextStep: 'Le Trésorier doit entrer le code OTP reçu par email',
       },
-      'Demande de validation créée. Vérifiez votre email.',
+      'Demande de validation créée. Le Trésorier a reçu le code.',
       201
     );
   } catch (error) {
-    logger.error('❌ Erreur createValidationRequest:', error);
+    logger.error(' Erreur createValidationRequest:', error);
     return ApiResponse.serverError(res);
   }
 };
 
 /**
- * @desc    Confirmer OTP Trésorier
+ * @desc    Confirmer OTP Trésorier (validation finale)
  * @route   POST /api/v1/validation/confirm/tresorier/:validationRequestId
- * @access  Trésorier (initiateur)
+ * @access  Trésorier (assigné)
+ * 
+ *  LOGIQUE CORRIGÉE : Le Trésorier valide et l'action est exécutée
  */
 const confirmTresorierOTP = async (req, res) => {
   try {
@@ -136,80 +148,27 @@ const confirmTresorierOTP = async (req, res) => {
       return ApiResponse.error(res, result.message, 400);
     }
 
-    // Générer OTP Admin maintenant
-    const adminOTPCode = validationRequest.setAdminOTP();
+    //  Validation complète - L'action peut être exécutée
     await validationRequest.save();
 
-    // Récupérer l'Admin
-    const admin = await User.findById(validationRequest.assignedAdmin);
-
-    // Envoyer OTP à l'Admin
-    try {
-      await otpService.sendAdminOTP(
-        admin,
-        adminOTPCode,
-        validationRequest.actionType,
-        validationRequest.metadata.resourceName,
-        user
-      );
-      validationRequest.notificationsSent.adminOTPSent = true;
-      validationRequest.notificationsSent.tresorierConfirmed = true;
-      await validationRequest.save();
-    } catch (emailError) {
-      logger.error('❌ Erreur envoi email OTP Admin:', emailError);
-    }
-
-    logger.info(`✅ Trésorier ${user.email} a validé son OTP - En attente Admin`);
-
-    return ApiResponse.success(res, {
-      status: validationRequest.status,
-      message: 'Code Trésorier validé. L\'Admin a reçu son code de validation.',
-      nextStep: 'Attendre que l\'Admin entre son code OTP',
-    });
-  } catch (error) {
-    logger.error('❌ Erreur confirmTresorierOTP:', error);
-    return ApiResponse.serverError(res);
-  }
-};
-
-/**
- * @desc    Confirmer OTP Admin
- * @route   POST /api/v1/validation/confirm/admin/:validationRequestId
- * @access  Admin (assigné)
- */
-const confirmAdminOTP = async (req, res) => {
-  try {
-    const { code } = req.body;
-    const { validationRequest, user } = req;
-
-    // Vérifier le code
-    const result = validationRequest.verifyAdminOTP(code);
-
-    if (!result.success) {
-      await validationRequest.save(); // Sauvegarder les tentatives
-      return ApiResponse.error(res, result.message, 400);
-    }
-
-    await validationRequest.save();
-
-    // Récupérer le Trésorier
-    const tresorier = await User.findById(validationRequest.initiatedBy);
+    // Récupérer l'Admin initiateur
+    const admin = await User.findById(validationRequest.initiatedBy);
 
     // Envoyer notification de validation complète
     try {
       await otpService.sendValidationCompleteNotification(
-        tresorier,
+        admin,
         user,
         validationRequest.actionType,
         validationRequest.metadata.resourceName
       );
-      validationRequest.notificationsSent.adminConfirmed = true;
+      validationRequest.notificationsSent.tresorierConfirmed = true;
       await validationRequest.save();
     } catch (emailError) {
-      logger.error('❌ Erreur envoi notification complète:', emailError);
+      logger.error(' Erreur envoi notification complète:', emailError);
     }
 
-    logger.info(`✅ Admin ${user.email} a validé - Action ${validationRequest.actionType} autorisée`);
+    logger.info(` Trésorier ${user.email} a validé - Action ${validationRequest.actionType} autorisée`);
 
     return ApiResponse.success(res, {
       status: 'completed',
@@ -219,15 +178,17 @@ const confirmAdminOTP = async (req, res) => {
       resourceId: validationRequest.resourceId,
     });
   } catch (error) {
-    logger.error('❌ Erreur confirmAdminOTP:', error);
+    logger.error(' Erreur confirmTresorierOTP:', error);
     return ApiResponse.serverError(res);
   }
 };
 
 /**
- * @desc    Rejeter une demande de validation (Admin)
+ * @desc    Rejeter une demande de validation (Trésorier)
  * @route   POST /api/v1/validation/reject/:validationRequestId
- * @access  Admin
+ * @access  Trésorier
+ * 
+ *  LOGIQUE CORRIGÉE : Le Trésorier peut rejeter la demande de l'Admin
  */
 const rejectValidationRequest = async (req, res) => {
   try {
@@ -238,41 +199,43 @@ const rejectValidationRequest = async (req, res) => {
     validationRequest.reject(reason);
     await validationRequest.save();
 
-    // Notifier le Trésorier
-    const tresorier = await User.findById(validationRequest.initiatedBy);
+    // Notifier l'Admin
+    const admin = await User.findById(validationRequest.initiatedBy);
     try {
       await otpService.sendRejectionNotification(
-        tresorier,
+        admin,
         validationRequest.actionType,
         validationRequest.metadata.resourceName,
         reason
       );
     } catch (emailError) {
-      logger.error('❌ Erreur envoi notification rejet:', emailError);
+      logger.error(' Erreur envoi notification rejet:', emailError);
     }
 
-    logger.info(`❌ Admin ${user.email} a rejeté la demande - Raison: ${reason}`);
+    logger.info(` Trésorier ${user.email} a rejeté la demande Admin - Raison: ${reason}`);
 
     return ApiResponse.success(res, {
       message: 'Demande rejetée avec succès',
       rejectionReason: reason,
     });
   } catch (error) {
-    logger.error('❌ Erreur rejectValidationRequest:', error);
+    logger.error(' Erreur rejectValidationRequest:', error);
     return ApiResponse.serverError(res);
   }
 };
 
 /**
- * @desc    Obtenir les demandes en attente (Admin)
+ * @desc    Obtenir les demandes en attente (Trésorier)
  * @route   GET /api/v1/validation/pending
- * @access  Admin
+ * @access  Trésorier
+ * 
+ *  LOGIQUE CORRIGÉE : Le Trésorier voit les demandes des Admins
  */
 const getPendingRequests = async (req, res) => {
   try {
-    const admin = req.user;
+    const tresorier = req.user;
 
-    const requests = await ValidationRequest.getPendingForAdmin(admin._id);
+    const requests = await ValidationRequest.getPendingForTresorier(tresorier._id);
 
     return ApiResponse.success(res, {
       total: requests.length,
@@ -288,28 +251,29 @@ const getPendingRequests = async (req, res) => {
         },
         reason: r.reason,
         status: r.status,
-        tresorierValidated: r.tresorierOTP.verified,
         createdAt: r.createdAt,
-        expiresAt: r.adminOTP.codeExpiry || r.tresorierOTP.codeExpiry,
+        expiresAt: r.tresorierOTP.codeExpiry,
       })),
     });
   } catch (error) {
-    logger.error('❌ Erreur getPendingRequests:', error);
+    logger.error(' Erreur getPendingRequests:', error);
     return ApiResponse.serverError(res);
   }
 };
 
 /**
- * @desc    Obtenir mes demandes (Trésorier)
+ * @desc    Obtenir mes demandes (Admin)
  * @route   GET /api/v1/validation/my-requests
- * @access  Trésorier
+ * @access  Admin
+ * 
+ *  LOGIQUE CORRIGÉE : L'Admin voit ses propres demandes
  */
 const getMyRequests = async (req, res) => {
   try {
-    const tresorier = req.user;
+    const admin = req.user;
     const { page, limit, skip } = getPaginationParams(req.query);
 
-    const query = { initiatedBy: tresorier._id };
+    const query = { initiatedBy: admin._id };
 
     if (req.query.status) {
       query.status = req.query.status;
@@ -317,7 +281,7 @@ const getMyRequests = async (req, res) => {
 
     const [requests, total] = await Promise.all([
       ValidationRequest.find(query)
-        .populate('assignedAdmin', 'prenom nom email')
+        .populate('assignedTresorier', 'prenom nom email')
         .sort({ createdAt: -1 })
         .limit(limit)
         .skip(skip),
@@ -330,18 +294,17 @@ const getMyRequests = async (req, res) => {
         id: r._id,
         actionType: r.actionType,
         resourceName: r.metadata.resourceName,
-        assignedAdmin: r.assignedAdmin
-          ? `${r.assignedAdmin.prenom} ${r.assignedAdmin.nom}`
+        assignedTresorier: r.assignedTresorier
+          ? `${r.assignedTresorier.prenom} ${r.assignedTresorier.nom}`
           : 'Non assigné',
         status: r.status,
         tresorierValidated: r.tresorierOTP.verified,
-        adminValidated: r.adminOTP.verified,
         createdAt: r.createdAt,
       })),
       { page, limit, total }
     );
   } catch (error) {
-    logger.error('❌ Erreur getMyRequests:', error);
+    logger.error(' Erreur getMyRequests:', error);
     return ApiResponse.serverError(res);
   }
 };
@@ -349,19 +312,19 @@ const getMyRequests = async (req, res) => {
 /**
  * @desc    Obtenir détails d'une demande
  * @route   GET /api/v1/validation/:validationRequestId
- * @access  Trésorier (initiateur) ou Admin (assigné)
+ * @access  Admin (initiateur) ou Trésorier (assigné)
  */
 const getRequestDetails = async (req, res) => {
   try {
     const { validationRequest, user } = req;
 
     // Vérifier autorisation
-    const isTresorier = validationRequest.initiatedBy._id.toString() === user._id.toString();
-    const isAdmin =
-      validationRequest.assignedAdmin &&
-      validationRequest.assignedAdmin._id.toString() === user._id.toString();
+    const isAdmin = validationRequest.initiatedBy._id.toString() === user._id.toString();
+    const isTresorier =
+      validationRequest.assignedTresorier &&
+      validationRequest.assignedTresorier._id.toString() === user._id.toString();
 
-    if (!isTresorier && !isAdmin && user.role !== ROLES.ADMIN) {
+    if (!isAdmin && !isTresorier) {
       return ApiResponse.forbidden(res, 'Vous n\'avez pas accès à cette demande');
     }
 
@@ -376,12 +339,13 @@ const getRequestDetails = async (req, res) => {
         prenom: validationRequest.initiatedBy.prenom,
         nom: validationRequest.initiatedBy.nom,
         email: validationRequest.initiatedBy.email,
+        role: 'Admin',
       },
-      assignedAdmin: validationRequest.assignedAdmin
+      assignedTresorier: validationRequest.assignedTresorier
         ? {
-            prenom: validationRequest.assignedAdmin.prenom,
-            nom: validationRequest.assignedAdmin.nom,
-            email: validationRequest.assignedAdmin.email,
+            prenom: validationRequest.assignedTresorier.prenom,
+            nom: validationRequest.assignedTresorier.nom,
+            email: validationRequest.assignedTresorier.email,
           }
         : null,
       tresorier: {
@@ -390,19 +354,13 @@ const getRequestDetails = async (req, res) => {
         attemptsRemaining: 3 - validationRequest.tresorierOTP.attempts,
         expiresAt: validationRequest.tresorierOTP.codeExpiry,
       },
-      admin: {
-        verified: validationRequest.adminOTP.verified,
-        verifiedAt: validationRequest.adminOTP.verifiedAt,
-        attemptsRemaining: 3 - validationRequest.adminOTP.attempts,
-        expiresAt: validationRequest.adminOTP.codeExpiry,
-      },
       createdAt: validationRequest.createdAt,
       completedAt: validationRequest.completedAt,
       rejectedAt: validationRequest.rejectedAt,
       rejectionReason: validationRequest.rejectionReason,
     });
   } catch (error) {
-    logger.error('❌ Erreur getRequestDetails:', error);
+    logger.error(' Erreur getRequestDetails:', error);
     return ApiResponse.serverError(res);
   }
 };
@@ -410,66 +368,35 @@ const getRequestDetails = async (req, res) => {
 /**
  * @desc    Renvoyer un code OTP
  * @route   POST /api/v1/validation/resend-otp/:validationRequestId
- * @access  Trésorier (pour son OTP) ou Admin (pour son OTP)
+ * @access  Trésorier
  */
 const resendOTP = async (req, res) => {
   try {
-    const { otpType } = req.body;
     const { validationRequest, user } = req;
 
-    if (otpType === 'tresorier') {
-      // Vérifier que c'est le Trésorier initiateur
-      if (validationRequest.initiatedBy._id.toString() !== user._id.toString()) {
-        return ApiResponse.forbidden(res, 'Seul le Trésorier initiateur peut renvoyer son OTP');
-      }
-
-      // Régénérer OTP
-      const newCode = validationRequest.setTresorierOTP();
-      await validationRequest.save();
-
-      // Renvoyer email
-      await otpService.sendTresorierOTP(
-        user,
-        newCode,
-        validationRequest.actionType,
-        validationRequest.metadata.resourceName
-      );
-
-      return ApiResponse.success(res, { message: 'Code Trésorier renvoyé par email' });
-    } else if (otpType === 'admin') {
-      // Vérifier que c'est l'Admin assigné
-      if (
-        !validationRequest.assignedAdmin ||
-        validationRequest.assignedAdmin._id.toString() !== user._id.toString()
-      ) {
-        return ApiResponse.forbidden(res, 'Seul l\'Admin assigné peut renvoyer son OTP');
-      }
-
-      // Vérifier que le Trésorier a déjà validé
-      if (!validationRequest.tresorierOTP.verified) {
-        return ApiResponse.error(res, 'Le Trésorier doit valider en premier', 400);
-      }
-
-      // Régénérer OTP
-      const newCode = validationRequest.setAdminOTP();
-      await validationRequest.save();
-
-      // Renvoyer email
-      const tresorier = await User.findById(validationRequest.initiatedBy);
-      await otpService.sendAdminOTP(
-        user,
-        newCode,
-        validationRequest.actionType,
-        validationRequest.metadata.resourceName,
-        tresorier
-      );
-
-      return ApiResponse.success(res, { message: 'Code Admin renvoyé par email' });
+    // Vérifier que c'est le Trésorier assigné
+    if (
+      !validationRequest.assignedTresorier ||
+      validationRequest.assignedTresorier._id.toString() !== user._id.toString()
+    ) {
+      return ApiResponse.forbidden(res, 'Seul le Trésorier assigné peut renvoyer son OTP');
     }
 
-    return ApiResponse.error(res, 'Type d\'OTP invalide', 400);
+    // Régénérer OTP
+    const newCode = validationRequest.setTresorierOTP();
+    await validationRequest.save();
+
+    // Renvoyer email
+    await otpService.sendTresorierOTP(
+      user,
+      newCode,
+      validationRequest.actionType,
+      validationRequest.metadata.resourceName
+    );
+
+    return ApiResponse.success(res, { message: 'Code Trésorier renvoyé par email' });
   } catch (error) {
-    logger.error('❌ Erreur resendOTP:', error);
+    logger.error(' Erreur resendOTP:', error);
     return ApiResponse.serverError(res);
   }
 };
@@ -477,7 +404,6 @@ const resendOTP = async (req, res) => {
 module.exports = {
   createValidationRequest,
   confirmTresorierOTP,
-  confirmAdminOTP,
   rejectValidationRequest,
   getPendingRequests,
   getMyRequests,

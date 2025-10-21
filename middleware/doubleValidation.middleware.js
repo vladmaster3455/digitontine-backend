@@ -94,7 +94,7 @@ const validateRequestExists = async (req, res, next) => {
 
     const validationRequest = await ValidationRequest.findById(validationRequestId)
       .populate('initiatedBy', 'prenom nom email role')
-      .populate('assignedAdmin', 'prenom nom email')
+      .populate('assignedTresorier', 'prenom nom email')
       .populate('resourceId');
 
     if (!validationRequest) {
@@ -117,6 +117,29 @@ const isTresorierInitiator = (req, res, next) => {
 
   if (validationRequest.initiatedBy._id.toString() !== user._id.toString()) {
     return ApiResponse.forbidden(res, 'Seul le Trésorier initiateur peut valider ce code');
+  }
+
+  next();
+};
+
+/**
+ * Middleware pour vérifier que l'utilisateur est le Trésorier assigné
+ * ✅ FONCTION AJOUTÉE POUR LA LOGIQUE CORRECTE
+ */
+const isTresorierAssigned = (req, res, next) => {
+  const { validationRequest, user } = req;
+
+  if (!validationRequest.assignedTresorier) {
+    return ApiResponse.error(res, 'Aucun Trésorier assigné à cette demande', 400);
+  }
+
+  // Vérifier si l'objet est déjà populé ou non
+  const tresorierAssignedId = validationRequest.assignedTresorier._id 
+    ? validationRequest.assignedTresorier._id.toString() 
+    : validationRequest.assignedTresorier.toString();
+
+  if (tresorierAssignedId !== user._id.toString()) {
+    return ApiResponse.forbidden(res, 'Seul le Trésorier assigné peut valider ce code');
   }
 
   next();
@@ -173,13 +196,6 @@ const checkNotExpired = (req, res, next) => {
     return ApiResponse.error(res, 'Le code Trésorier a expiré', 400);
   }
 
-  // Vérifier expiration OTP Admin
-  if (validationRequest.adminOTP.codeExpiry && now > validationRequest.adminOTP.codeExpiry) {
-    validationRequest.markAsExpired();
-    validationRequest.save();
-    return ApiResponse.error(res, 'Le code Admin a expiré', 400);
-  }
-
   next();
 };
 
@@ -190,7 +206,7 @@ const checkRemainingAttempts = (otpType) => {
   return (req, res, next) => {
     const { validationRequest } = req;
 
-    const otp = otpType === 'tresorier' ? validationRequest.tresorierOTP : validationRequest.adminOTP;
+    const otp = validationRequest.tresorierOTP;
 
     if (otp.attempts >= 3) {
       return ApiResponse.error(
@@ -222,6 +238,7 @@ module.exports = {
   requireDoubleValidation,
   validateRequestExists,
   isTresorierInitiator,
+  isTresorierAssigned,  // ✅ FONCTION AJOUTÉE
   isAssignedAdmin,
   checkStatusAllowsAction,
   checkNotExpired,

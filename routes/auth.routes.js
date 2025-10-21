@@ -12,7 +12,7 @@ const {
   logout,
   registerFCMToken,
   removeFCMToken,
-  verifyToken,
+  verifyToken: verifyTokenController, // ✅ RENOMMÉ POUR ÉVITER LE CONFLIT
 } = require('../controllers/auth.controller');
 
 const {
@@ -101,7 +101,7 @@ router.get(
 router.get(
   '/verify',
   authMiddleware,
-  verifyToken
+  verifyTokenController // ✅ UTILISATION DU NOM RENOMMÉ
 );
 
 /**
@@ -171,38 +171,106 @@ router.delete(
   validate,
   removeFCMToken
 );
+
 /**
  * @swagger
- * /digitontine/auth/login:
+ * /digitontine/auth/forgot-password:
  *   post:
  *     tags: [Auth]
- *     summary: Connexion utilisateur
+ *     summary: Mot de passe oublié
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [identifier, motDePasse]
+ *             required: [email]
  *             properties:
- *               identifier: { type: string, example: "membre@example.com" }
- *               motDePasse: { type: string, example: "Password123!" }
+ *               email: { type: string }
  *     responses:
  *       200:
- *         description: Connexion réussie
+ *         description: Code envoyé
  */
 
 /**
  * @swagger
- * /digitontine/auth/me:
- *   get:
+ * /digitontine/auth/reset-password:
+ *   post:
  *     tags: [Auth]
- *     summary: Obtenir mon profil
+ *     summary: Réinitialiser mot de passe avec code
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, code, nouveauMotDePasse]
+ *             properties:
+ *               email: { type: string }
+ *               code: { type: string }
+ *               nouveauMotDePasse: { type: string }
+ *     responses:
+ *       200:
+ *         description: Mot de passe réinitialisé
+ */
+
+/**
+ * @swagger
+ * /digitontine/auth/first-password-change:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Changement obligatoire première connexion
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [ancienMotDePasse, nouveauMotDePasse]
+ *             properties:
+ *               ancienMotDePasse: { type: string }
+ *               nouveauMotDePasse: { type: string }
+ *     responses:
+ *       200:
+ *         description: Mot de passe changé
+ */
+
+/**
+ * @swagger
+ * /digitontine/auth/change-password:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Changement volontaire de mot de passe
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [ancienMotDePasse, nouveauMotDePasse]
+ *             properties:
+ *               ancienMotDePasse: { type: string }
+ *               nouveauMotDePasse: { type: string }
+ *     responses:
+ *       200:
+ *         description: Mot de passe changé
+ */
+
+/**
+ * @swagger
+ * /digitontine/auth/logout:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Déconnexion
  *     security:
  *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: Profil utilisateur
+ *         description: Déconnexion réussie
  */
 
 module.exports = router;

@@ -1,0 +1,161 @@
+[2025-10-21 08:40:48] WARN:  MongoDB déconnecté
+[2025-10-21 09:04:55] INFO: ========================================
+[2025-10-21 09:04:55] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 09:04:55] INFO: Environnement: development
+[2025-10-21 09:04:55] INFO: URL: http://localhost:5000
+[2025-10-21 09:04:55] INFO: API Prefix: /digitontine
+[2025-10-21 09:04:55] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 09:04:55] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 09:04:55] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 09:04:55] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 09:04:55] INFO: ========================================
+[2025-10-21 09:04:56] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-21 09:04:56] INFO:  Base de données: digitontine
+[2025-10-21 09:05:53] INFO: ========================================
+[2025-10-21 09:05:53] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 09:05:53] INFO: Environnement: development
+[2025-10-21 09:05:53] INFO: URL: http://localhost:5000
+[2025-10-21 09:05:53] INFO: API Prefix: /digitontine
+[2025-10-21 09:05:53] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 09:05:53] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 09:05:53] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 09:05:53] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 09:05:53] INFO: ========================================
+[2025-10-21 09:05:54] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-21 09:05:54] INFO:  Base de données: digitontine
+[2025-10-21 09:40:56] INFO: ========================================
+[2025-10-21 09:40:56] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 09:40:56] INFO: Environnement: development
+[2025-10-21 09:40:56] INFO: URL: http://localhost:5000
+[2025-10-21 09:40:56] INFO: API Prefix: /digitontine
+[2025-10-21 09:40:56] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 09:40:56] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 09:40:56] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 09:40:56] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 09:40:56] INFO: ========================================
+[2025-10-21 09:40:57] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-21 09:40:57] INFO:  Base de données: digitontine
+[2025-10-21 09:41:55] INFO: ========================================
+[2025-10-21 09:41:55] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 09:41:55] INFO: Environnement: development
+[2025-10-21 09:41:55] INFO: URL: http://localhost:5000
+[2025-10-21 09:41:55] INFO: API Prefix: /digitontine
+[2025-10-21 09:41:55] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 09:41:55] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 09:41:55] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 09:41:55] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 09:41:55] INFO: ========================================
+[2025-10-21 09:41:56] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-21 09:41:56] INFO:  Base de données: digitontine
+[2025-10-21 10:00:59] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-21 10:01:46] INFO: ========================================
+[2025-10-21 10:01:46] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 10:01:46] INFO: Environnement: development
+[2025-10-21 10:01:46] INFO: URL: http://localhost:5000
+[2025-10-21 10:01:46] INFO: API Prefix: /digitontine
+[2025-10-21 10:01:46] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 10:01:46] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 10:01:46] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 10:01:46] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 10:01:46] INFO: ========================================
+[2025-10-21 10:02:37] ERROR:  Erreur de connexion MongoDB:
+[2025-10-21 10:02:55] INFO: ========================================
+[2025-10-21 10:02:55] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 10:02:55] INFO: Environnement: development
+[2025-10-21 10:02:55] INFO: URL: http://localhost:5000
+[2025-10-21 10:02:55] INFO: API Prefix: /digitontine
+[2025-10-21 10:02:55] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 10:02:55] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 10:02:55] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 10:02:55] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 10:02:55] INFO: ========================================
+[2025-10-21 10:03:23] ERROR:  Erreur de connexion MongoDB:
+[2025-10-21 10:07:01] INFO: ========================================
+[2025-10-21 10:07:01] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 10:07:01] INFO: Environnement: development
+[2025-10-21 10:07:01] INFO: URL: http://localhost:5000
+[2025-10-21 10:07:01] INFO: API Prefix: /digitontine
+[2025-10-21 10:07:01] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 10:07:01] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 10:07:02] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 10:07:02] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 10:07:02] INFO: ========================================
+[2025-10-21 10:07:02] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-21 10:07:02] INFO:  Base de données: digitontine
+[2025-10-21 10:07:38] INFO:  Admin créé via route publique - moussa@digitontine.com
+[2025-10-21 10:08:57] WARN: 🔍 Route non trouvée: GET /digitontine/auth/login - IP: ::1
+[2025-10-21 10:09:04] INFO:  Connexion réussie - moussa@digitontine.com (Admin)
+[2025-10-21 10:09:04] INFO:  AUDIT: LOGIN on User
+[2025-10-21 10:13:22] INFO: Membre créé sans photo - amadou.sall@example.com par moussa@digitontine.com
+[2025-10-21 10:13:44] ERROR:  Erreur envoi email identifiants: connect ETIMEDOUT 66.102.1.108:587
+Error: connect ETIMEDOUT 66.102.1.108:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:13:44] ERROR: Erreur envoi email: connect ETIMEDOUT 66.102.1.108:587
+Error: connect ETIMEDOUT 66.102.1.108:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:13:44] INFO:  AUDIT: CREATE_USER on User
+[2025-10-21 10:14:24] INFO: Trésorier créé sans photo - amadousall@example.com par moussa@digitontine.com
+[2025-10-21 10:14:45] ERROR:  Erreur envoi email identifiants: connect ETIMEDOUT 66.102.1.108:587
+Error: connect ETIMEDOUT 66.102.1.108:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:14:45] ERROR: Erreur envoi email: connect ETIMEDOUT 66.102.1.108:587
+Error: connect ETIMEDOUT 66.102.1.108:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:14:45] INFO:  AUDIT: CREATE_USER on User
+[2025-10-21 10:15:28] INFO: Membre créé sans photo - amadousalle@example.com par moussa@digitontine.com
+[2025-10-21 10:15:37] INFO:  Email identifiants envoyé à amadousalle@example.com
+[2025-10-21 10:15:37] INFO:  AUDIT: CREATE_USER on User
+[2025-10-21 10:16:06] INFO: Membre créé sans photo - amadsalle@example.com par moussa@digitontine.com
+[2025-10-21 10:16:10] INFO:  Email identifiants envoyé à amadsalle@example.com
+[2025-10-21 10:16:10] INFO:  AUDIT: CREATE_USER on User
+[2025-10-21 10:21:02] WARN: ❌ Erreur de validation - POST /digitontine/tontines
+[2025-10-21 10:22:02] INFO:  Tontine créée - Tontine Solidarité 2024 par moussa@digitontine.com
+[2025-10-21 10:22:02] INFO:  AUDIT: CREATE_TONTINE on Tontine
+[2025-10-21 10:25:26] INFO: Email invitation tontine envoyé à amadousalle@example.com
+[2025-10-21 10:25:42] INFO: Email invitation tontine envoyé à amadsalle@example.com
+[2025-10-21 10:25:42] INFO:  Membres ajoutés à Tontine Solidarité 2024 - 2/2 réussis
+[2025-10-21 10:25:42] INFO:  AUDIT: ADD_MEMBRES_TONTINE on Tontine
+[2025-10-21 10:27:56] ERROR:  Erreur activateTontine: Minimum 3 membres requis (actuellement 2)
+Error: Minimum 3 membres requis (actuellement 2)
+    at TontineSchema.methods.activer (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\Tontine.js:300:11)
+    at activateTontine (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\tontine.controller.js:258:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-21 10:28:28] INFO: Membre créé sans photo - ymadsalle@example.com par moussa@digitontine.com
+[2025-10-21 10:28:49] ERROR:  Erreur envoi email identifiants: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:28:49] ERROR: Erreur envoi email: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:28:49] INFO:  AUDIT: CREATE_USER on User
+[2025-10-21 10:29:33] ERROR: Erreur envoi invitation tontine: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:29:33] ERROR:  Erreur envoi email à ymadsalle@example.com: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:29:33] INFO:  Membres ajoutés à Tontine Solidarité 2024 - 1/3 réussis
+[2025-10-21 10:29:33] INFO:  AUDIT: ADD_MEMBRES_TONTINE on Tontine
+[2025-10-21 10:30:02] INFO: Email activation tontine envoyé à amadousalle@example.com
+[2025-10-21 10:30:19] INFO: Email activation tontine envoyé à amadsalle@example.com
+[2025-10-21 10:30:40] ERROR: Erreur envoi activation tontine: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:30:40] ERROR:  Erreur envoi email à ymadsalle@example.com: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:30:40] INFO:  Tontine activée - Tontine Solidarité 2024 par moussa@digitontine.com
+[2025-10-21 10:30:40] INFO:  AUDIT: ACTIVATE_TONTINE on Tontine
+[2025-10-21 11:07:47] INFO:  Admin créé via route publique - sergesenghor2342@gmail.com
+[2025-10-21 11:11:46] INFO: Trésorier créé sans photo - groupeshinra@gmail.com par moussa@digitontine.com
+[2025-10-21 11:11:54] INFO:  Email identifiants envoyé à groupeshinra@gmail.com
+[2025-10-21 11:11:54] INFO:  AUDIT: CREATE_USER on User
+[2025-10-21 11:13:07] ERROR:  Erreur envoi OTP Trésorier: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 11:13:07] ERROR: Erreur envoi email OTP Trésorier: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 11:13:07] INFO:  Demande validation créée par ADMIN moussa@digitontine.com - Action: DELETE_USER - Validation par Trésorier groupeshinra@gmail.com
+[2025-10-21 11:13:07] INFO:  AUDIT: CREATE_VALIDATION_REQUEST on ValidationRequest
+[2025-10-21 14:48:32] WARN:  MongoDB déconnecté

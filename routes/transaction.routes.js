@@ -116,38 +116,74 @@ router.post(
 );
 
 /**
- * @route   GET /digitontine/transactions/:transactionId
- * @desc    Détails d'une transaction
- * @access  Private (propriétaire ou Trésorier/Admin)
- */
-router.get(
-  '/:transactionId',
-  verifyToken,
-  validateTransactionId,
-  validate,
-  getTransactionDetails
-);
-/**
  * @swagger
- * /digitontine/transactions:
- *   post:
+ * /digitontine/transactions/me:
+ *   get:
  *     tags: [Transactions]
- *     summary: Effectuer une cotisation
+ *     summary: Mes transactions (Membre)
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: statut
+ *         schema: { type: string, enum: [En attente, Validee, Rejetee] }
+ *     responses:
+ *       200:
+ *         description: Liste paginée
+ */
+
+/**
+ * @swagger
+ * /digitontine/transactions/{transactionId}/validate:
+ *   post:
+ *     tags: [Transactions]
+ *     summary: Valider une transaction (Trésorier)
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: transactionId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               notes: { type: string }
+ *     responses:
+ *       200:
+ *         description: Transaction validée
+ */
+
+/**
+ * @swagger
+ * /digitontine/transactions/{transactionId}/reject:
+ *   post:
+ *     tags: [Transactions]
+ *     summary: Rejeter une transaction (Trésorier)
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: transactionId
+ *         required: true
+ *         schema: { type: string }
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [tontineId, montant, moyenPaiement]
+ *             required: [motifRejet]
  *             properties:
- *               tontineId: { type: string }
- *               montant: { type: number }
- *               moyenPaiement: { type: string, enum: [Wave, Orange Money, Cash] }
+ *               motifRejet: { type: string }
  *     responses:
- *       201:
- *         description: Transaction créée
+ *       200:
+ *         description: Transaction rejetée
  */
 module.exports = router;

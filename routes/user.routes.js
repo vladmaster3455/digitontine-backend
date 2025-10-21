@@ -240,10 +240,10 @@ router.delete(
 );
 /**
  * @swagger
- * /digitontine/users/membre:
+ * /digitontine/users/tresorier:
  *   post:
  *     tags: [Users]
- *     summary: Créer un membre (Admin)
+ *     summary: Créer un trésorier (Admin)
  *     security:
  *       - BearerAuth: []
  *     requestBody:
@@ -264,30 +264,208 @@ router.delete(
  *               photoIdentite: { type: string, format: binary, description: "Photo identité (optionnelle)" }
  *     responses:
  *       201:
- *         description: Membre créé
+ *         description: Trésorier créé
  */
 
 /**
  * @swagger
- * /digitontine/users:
+ * /digitontine/users/stats:
  *   get:
  *     tags: [Users]
- *     summary: Liste des utilisateurs
+ *     summary: Statistiques utilisateurs (Admin)
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Statistiques globales
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total: { type: number }
+ *                 active: { type: number }
+ *                 inactive: { type: number }
+ *                 byRole: { type: array }
+ */
+
+/**
+ * @swagger
+ * /digitontine/users/{userId}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Détails d'un utilisateur
  *     security:
  *       - BearerAuth: []
  *     parameters:
- *       - in: query
- *         name: page
- *         schema: { type: integer }
- *       - in: query
- *         name: limit
- *         schema: { type: integer }
- *       - in: query
- *         name: role
- *         schema: { type: string, enum: [Membre, Tresorier, Administrateur] }
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: string }
  *     responses:
  *       200:
- *         description: Liste paginée
+ *         description: Détails utilisateur
+ *       404:
+ *         description: Utilisateur introuvable
+ *   put:
+ *     tags: [Users]
+ *     summary: Modifier un utilisateur (Admin)
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               prenom: { type: string }
+ *               nom: { type: string }
+ *               email: { type: string }
+ *               numeroTelephone: { type: string }
+ *               adresse: { type: string }
+ *               role: { type: string, enum: [Membre, Tresorier] }
+ *     responses:
+ *       200:
+ *         description: Utilisateur modifié
+ *   delete:
+ *     tags: [Users]
+ *     summary: Supprimer un utilisateur (Admin + Double validation)
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [confirmation, validationRequestId]
+ *             properties:
+ *               confirmation: { type: string, example: "SUPPRIMER" }
+ *               validationRequestId: { type: string }
+ *     responses:
+ *       200:
+ *         description: Utilisateur supprimé
  */
+
+/**
+ * @swagger
+ * /digitontine/users/{userId}/toggle-activation:
+ *   post:
+ *     tags: [Users]
+ *     summary: Activer/Désactiver un utilisateur (Admin + Double validation)
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [validationRequestId]
+ *             properties:
+ *               validationRequestId: { type: string }
+ *               raison: { type: string }
+ *     responses:
+ *       200:
+ *         description: Statut modifié
+ */
+
+/**
+ * @swagger
+ * /digitontine/users/{userId}/reset-password:
+ *   post:
+ *     tags: [Users]
+ *     summary: Réinitialiser le mot de passe d'un utilisateur (Admin)
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               notifyUser: { type: boolean, default: true }
+ *     responses:
+ *       200:
+ *         description: Mot de passe réinitialisé
+ */
+
+/**
+ * @swagger
+ * /digitontine/users/me:
+ *   put:
+ *     tags: [Users]
+ *     summary: Modifier mon propre profil
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               numeroTelephone: { type: string }
+ *               adresse: { type: string }
+ *               preferences:
+ *                 type: object
+ *                 properties:
+ *                   receiveEmailNotifications: { type: boolean }
+ *                   receivePushNotifications: { type: boolean }
+ *     responses:
+ *       200:
+ *         description: Profil modifié
+ */
+
+/**
+ * @swagger
+ * /digitontine/users/me/photo-profil:
+ *   put:
+ *     tags: [Users]
+ *     summary: Mettre à jour ma photo de profil
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [photoProfil]
+ *             properties:
+ *               photoProfil: { type: string, format: binary }
+ *     responses:
+ *       200:
+ *         description: Photo mise à jour
+ *   delete:
+ *     tags: [Users]
+ *     summary: Supprimer ma photo de profil
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Photo supprimée
+ */
+
+
 
 module.exports = router;

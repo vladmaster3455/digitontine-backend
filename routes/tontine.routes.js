@@ -221,40 +221,153 @@ router.post(
 );
 /**
  * @swagger
- * /digitontine/tontines:
- *   post:
+ * /digitontine/tontines/{tontineId}:
+ *   get:
  *     tags: [Tontines]
- *     summary: Créer une tontine (Admin)
+ *     summary: Détails d'une tontine
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tontineId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Détails complets
+ *   put:
+ *     tags: [Tontines]
+ *     summary: Modifier une tontine
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tontineId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               description: { type: string }
+ *               tauxPenalite: { type: number }
+ *     responses:
+ *       200:
+ *         description: Tontine modifiée
+ *   delete:
+ *     tags: [Tontines]
+ *     summary: Supprimer une tontine
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tontineId
+ *         required: true
+ *         schema: { type: string }
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [nom, montantCotisation, frequence, dateDebut]
+ *             required: [confirmation]
  *             properties:
- *               nom: { type: string }
- *               montantCotisation: { type: number }
- *               frequence: { type: string, enum: [Hebdomadaire, Mensuelle] }
- *               dateDebut: { type: string, format: date }
+ *               confirmation: { type: string, example: "SUPPRIMER" }
  *     responses:
- *       201:
- *         description: Tontine créée
+ *       200:
+ *         description: Tontine supprimée
  */
 
 /**
  * @swagger
- * /digitontine/tontines:
- *   get:
+ * /digitontine/tontines/{tontineId}/membres:
+ *   post:
  *     tags: [Tontines]
- *     summary: Liste des tontines
+ *     summary: Ajouter des membres
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tontineId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [membresIds]
+ *             properties:
+ *               membresIds: { type: array, items: { type: string } }
  *     responses:
  *       200:
- *         description: Liste paginée
+ *         description: Membres ajoutés
+ */
+
+/**
+ * @swagger
+ * /digitontine/tontines/{tontineId}/activate:
+ *   post:
+ *     tags: [Tontines]
+ *     summary: Activer une tontine
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tontineId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Tontine activée
+ */
+
+/**
+ * @swagger
+ * /digitontine/tontines/{tontineId}/block:
+ *   post:
+ *     tags: [Tontines]
+ *     summary: Bloquer une tontine
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tontineId
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [motif]
+ *             properties:
+ *               motif: { type: string }
+ *     responses:
+ *       200:
+ *         description: Tontine bloquée
+ */
+
+/**
+ * @swagger
+ * /digitontine/tontines/{tontineId}/close:
+ *   post:
+ *     tags: [Tontines]
+ *     summary: Clôturer une tontine
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tontineId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Tontine clôturée
  */
 
 module.exports = router;

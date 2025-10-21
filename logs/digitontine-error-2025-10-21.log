@@ -1,0 +1,43 @@
+[2025-10-21 10:02:37] ERROR:  Erreur de connexion MongoDB:
+[2025-10-21 10:03:23] ERROR:  Erreur de connexion MongoDB:
+[2025-10-21 10:13:44] ERROR:  Erreur envoi email identifiants: connect ETIMEDOUT 66.102.1.108:587
+Error: connect ETIMEDOUT 66.102.1.108:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:13:44] ERROR: Erreur envoi email: connect ETIMEDOUT 66.102.1.108:587
+Error: connect ETIMEDOUT 66.102.1.108:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:14:45] ERROR:  Erreur envoi email identifiants: connect ETIMEDOUT 66.102.1.108:587
+Error: connect ETIMEDOUT 66.102.1.108:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:14:45] ERROR: Erreur envoi email: connect ETIMEDOUT 66.102.1.108:587
+Error: connect ETIMEDOUT 66.102.1.108:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:27:56] ERROR:  Erreur activateTontine: Minimum 3 membres requis (actuellement 2)
+Error: Minimum 3 membres requis (actuellement 2)
+    at TontineSchema.methods.activer (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\Tontine.js:300:11)
+    at activateTontine (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\tontine.controller.js:258:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-21 10:28:49] ERROR:  Erreur envoi email identifiants: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:28:49] ERROR: Erreur envoi email: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:29:33] ERROR: Erreur envoi invitation tontine: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:29:33] ERROR:  Erreur envoi email à ymadsalle@example.com: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:30:40] ERROR: Erreur envoi activation tontine: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 10:30:40] ERROR:  Erreur envoi email à ymadsalle@example.com: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 11:13:07] ERROR:  Erreur envoi OTP Trésorier: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-21 11:13:07] ERROR: Erreur envoi email OTP Trésorier: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)

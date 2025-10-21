@@ -9,6 +9,11 @@
             "date": 1760934058707,
             "name": "logs\\digitontine-2025-10-20.log",
             "hash": "87db621d4ee32a56807353f1ad028cb2b03d87373821eb5ae5db51faf912acd2"
+        },
+        {
+            "date": 1761036048829,
+            "name": "logs\\digitontine-2025-10-21.log",
+            "hash": "fafdfd49165da0246a79b9b4eead1bf85b054c225fc19b0e9be3d2a8d35fe274"
         }
     ],
     "hashType": "sha256"

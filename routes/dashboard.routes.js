@@ -35,14 +35,47 @@ router.get(
 );
 /**
  * @swagger
- * /digitontine/dashboard/tresorier:
+ * /digitontine/dashboard/admin:
  *   get:
  *     tags: [Dashboard]
- *     summary: Tableau de bord Trésorier
+ *     summary: Tableau de bord Admin
  *     security:
  *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: KPIs et statistiques
+ *         description: Statistiques admin
+ */
+
+/**
+ * @swagger
+ * /digitontine/dashboard/membre:
+ *   get:
+ *     tags: [Dashboard]
+ *     summary: Tableau de bord Membre
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Mes tontines et cotisations
+ */
+
+/**
+ * @swagger
+ * /digitontine/dashboard/statistiques:
+ *   get:
+ *     tags: [Dashboard]
+ *     summary: Statistiques globales (Admin)
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: dateDebut
+ *         schema: { type: string, format: date }
+ *       - in: query
+ *         name: dateFin
+ *         schema: { type: string, format: date }
+ *     responses:
+ *       200:
+ *         description: Statistiques globales
  */
 module.exports = router;

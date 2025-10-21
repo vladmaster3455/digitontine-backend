@@ -2,9 +2,10 @@
 const { validationResult } = require('express-validator');
 const ApiResponse = require('../utils/apiResponse');
 const logger = require('../utils/logger');
+const mongoose = require('mongoose');
 
 /**
- * Middleware pour valider les données avec express-validator
+ * Middleware pour valider les résultats de express-validator
  */
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -16,8 +17,9 @@ const validate = (req, res, next) => {
       value: error.value,
     }));
 
-    logger.warn(` Erreur de validation - Endpoint: ${req.originalUrl}`, {
+    logger.warn(`❌ Erreur de validation - ${req.method} ${req.originalUrl}`, {
       errors: formattedErrors,
+      body: req.body,
     });
 
     return ApiResponse.validationError(res, formattedErrors);
@@ -27,40 +29,14 @@ const validate = (req, res, next) => {
 };
 
 /**
- * Middleware pour sanitizer les données MongoDB (prévention injection)
- */
-const sanitizeMongoose = (req, res, next) => {
-  // Supprimer les opérateurs MongoDB dangereux
-  const sanitize = (obj) => {
-    if (typeof obj !== 'object' || obj === null) return obj;
-
-    for (let key in obj) {
-      if (key.startsWith('$') || key.startsWith('_')) {
-        delete obj[key];
-      } else if (typeof obj[key] === 'object') {
-        sanitize(obj[key]);
-      }
-    }
-    return obj;
-  };
-
-  if (req.body) req.body = sanitize(req.body);
-  if (req.params) req.params = sanitize(req.params);
-  if (req.query) req.query = sanitize(req.query);
-
-  next();
-};
-
-/**
- * Middleware pour valider les IDs MongoDB
+ * Middleware pour valider un ID MongoDB
  */
 const validateMongoId = (paramName = 'id') => {
   return (req, res, next) => {
-    const mongoose = require('mongoose');
     const id = req.params[paramName];
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      logger.warn(`  ID MongoDB invalide: ${id}`);
+      logger.warn(`❌ ID MongoDB invalide: ${id}`);
       return ApiResponse.error(res, `ID invalide: ${id}`, 400);
     }
 
@@ -68,8 +44,78 @@ const validateMongoId = (paramName = 'id') => {
   };
 };
 
+/**
+ * Middleware pour valider plusieurs IDs MongoDB
+ */
+const validateMongoIds = (fieldName) => {
+  return (req, res, next) => {
+    const ids = req.body[fieldName];
+
+    if (!Array.isArray(ids)) {
+      return ApiResponse.error(res, `${fieldName} doit être un tableau`, 400);
+    }
+
+    const invalidIds = ids.filter(id => !mongoose.Types.ObjectId.isValid(id));
+
+    if (invalidIds.length > 0) {
+      logger.warn(`❌ IDs MongoDB invalides: ${invalidIds.join(', ')}`);
+      return ApiResponse.error(
+        res,
+        `IDs invalides dans ${fieldName}: ${invalidIds.join(', ')}`,
+        400
+      );
+    }
+
+    next();
+  };
+};
+
+/**
+ * Middleware pour valider la pagination
+ */
+const validatePagination = (req, res, next) => {
+  const { page, limit } = req.query;
+
+  if (page && (isNaN(page) || parseInt(page) < 1)) {
+    return ApiResponse.error(res, 'Le paramètre "page" doit être un nombre positif', 400);
+  }
+
+  if (limit && (isNaN(limit) || parseInt(limit) < 1 || parseInt(limit) > 100)) {
+    return ApiResponse.error(
+      res,
+      'Le paramètre "limit" doit être entre 1 et 100',
+      400
+    );
+  }
+
+  next();
+};
+
+/**
+ * Middleware pour nettoyer les données d'entrée (trim, lowercase pour email)
+ */
+const sanitizeInput = (req, res, next) => {
+  if (req.body) {
+    // Trim tous les strings
+    Object.keys(req.body).forEach(key => {
+      if (typeof req.body[key] === 'string') {
+        req.body[key] = req.body[key].trim();
+      }
+    });
+
+    // Lowercase pour email
+    if (req.body.email) {
+      req.body.email = req.body.email.toLowerCase();
+    }
+  }
+
+  next();
+};
+
 module.exports = {
   validate,
-  sanitizeMongoose,
   validateMongoId,
+  validateMongoIds,
+  validatePagination,
+  sanitizeInput,
 };

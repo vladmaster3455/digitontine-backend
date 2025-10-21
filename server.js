@@ -63,20 +63,27 @@ const allowedOrigins = process.env.CORS_ORIGIN
 
 app.use(cors({
   origin: (origin, callback) => {
+    // Autoriser les requêtes sans origine (Postman, curl, Swagger UI même origine)
     if (!origin) return callback(null, true);
     
+    // Autoriser les origines dans la liste
     if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      logger.warn(`Origine CORS refusee: ${origin}`);
-      callback(new Error('Non autorise par CORS'));
+      return callback(null, true);
     }
+    
+    // Autoriser localhost sur tous les ports (pour développement)
+    if (process.env.NODE_ENV === 'development' && origin.startsWith('http://localhost')) {
+      return callback(null, true);
+    }
+    
+    // Refuser les autres origines
+    logger.warn(`Origine CORS refusee: ${origin}`);
+    callback(new Error('Non autorise par CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
 }));
-
 // Sanitize donnees MongoDB
 app.use(mongoSanitize());
 
