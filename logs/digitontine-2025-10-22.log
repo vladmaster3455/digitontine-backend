@@ -1,0 +1,1277 @@
+[2025-10-22 08:56:48] WARN:  MongoDB déconnecté
+[2025-10-22 09:00:52] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-22 09:01:40] INFO: ========================================
+[2025-10-22 09:01:40] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 09:01:40] INFO: Environnement: development
+[2025-10-22 09:01:40] INFO: URL: http://localhost:5000
+[2025-10-22 09:01:40] INFO: API Prefix: /digitontine
+[2025-10-22 09:01:40] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 09:01:40] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 09:01:40] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 09:01:40] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 09:01:40] INFO: ========================================
+[2025-10-22 09:01:41] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 09:01:41] INFO:  Base de données: digitontine
+[2025-10-22 09:18:19] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-22 09:18:25] INFO: ========================================
+[2025-10-22 09:18:25] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 09:18:25] INFO: Environnement: development
+[2025-10-22 09:18:25] INFO: URL: http://localhost:5000
+[2025-10-22 09:18:25] INFO: API Prefix: /digitontine
+[2025-10-22 09:18:25] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 09:18:25] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 09:18:25] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 09:18:25] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 09:18:25] INFO: ========================================
+[2025-10-22 09:18:55] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 09:19:14] INFO: ========================================
+[2025-10-22 09:19:14] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 09:19:14] INFO: Environnement: development
+[2025-10-22 09:19:14] INFO: URL: http://localhost:5000
+[2025-10-22 09:19:14] INFO: API Prefix: /digitontine
+[2025-10-22 09:19:14] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 09:19:14] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 09:19:14] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 09:19:14] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 09:19:14] INFO: ========================================
+[2025-10-22 09:19:20] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-22 09:20:28] INFO: ========================================
+[2025-10-22 09:20:28] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 09:20:28] INFO: Environnement: development
+[2025-10-22 09:20:28] INFO: URL: http://localhost:5000
+[2025-10-22 09:20:28] INFO: API Prefix: /digitontine
+[2025-10-22 09:20:28] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 09:20:28] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 09:20:28] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 09:20:28] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 09:20:28] INFO: ========================================
+[2025-10-22 09:20:33] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 09:20:33] INFO:  Base de données: digitontine
+[2025-10-22 09:20:39] INFO:  Admin créé via route publique - baibousy1997@gmail.com
+[2025-10-22 09:21:26] INFO:  Connexion réussie - baibousy1997@gmail.com (Admin)
+[2025-10-22 09:21:26] INFO:  AUDIT: LOGIN on User
+[2025-10-22 09:22:29] INFO: Membre créé sans photo - adamabaye1997@gmail.com par baibousy1997@gmail.com
+[2025-10-22 09:22:51] ERROR:  Erreur envoi email identifiants: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-22 09:22:51] ERROR: Erreur envoi email: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-22 09:22:51] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 09:24:35] INFO: Membre créé sans photo - groupeshinra@gmail.com par baibousy1997@gmail.com
+[2025-10-22 09:24:36] INFO:  Email identifiants envoyé à groupeshinra@gmail.com
+[2025-10-22 09:24:36] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 09:27:37] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-22 09:28:08] WARN:  Tentative reset MDP - Email inexistant: ttoure@simplon.co
+[2025-10-22 09:28:08] INFO:  AUDIT: FORGOT_PASSWORD on User
+[2025-10-22 09:34:54] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-22 09:37:18] WARN: 🔍 Route non trouvée: GET /digitontine/auth/change-password - IP: ::1
+[2025-10-22 09:37:27] WARN:  Token JWT invalide - IP: ::1
+[2025-10-22 09:37:49] WARN: ❌ Erreur de validation - POST /digitontine/auth/change-password
+[2025-10-22 09:37:59] WARN: ❌ Erreur de validation - POST /digitontine/auth/change-password
+[2025-10-22 09:48:32] INFO:  Admin créé via route publique - admin@digitontine.com
+[2025-10-22 09:55:27] INFO: ========================================
+[2025-10-22 09:55:27] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 09:55:27] INFO: Environnement: development
+[2025-10-22 09:55:27] INFO: URL: http://localhost:5000
+[2025-10-22 09:55:27] INFO: API Prefix: /digitontine
+[2025-10-22 09:55:27] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 09:55:27] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 09:55:27] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 09:55:27] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 09:55:27] INFO: ========================================
+[2025-10-22 09:55:57] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 09:56:30] INFO: ========================================
+[2025-10-22 09:56:30] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 09:56:30] INFO: Environnement: development
+[2025-10-22 09:56:30] INFO: URL: http://localhost:5000
+[2025-10-22 09:56:30] INFO: API Prefix: /digitontine
+[2025-10-22 09:56:30] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 09:56:30] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 09:56:30] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 09:56:30] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 09:56:30] INFO: ========================================
+[2025-10-22 09:56:51] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 09:57:05] INFO: ========================================
+[2025-10-22 09:57:05] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 09:57:05] INFO: Environnement: development
+[2025-10-22 09:57:05] INFO: URL: http://localhost:5000
+[2025-10-22 09:57:05] INFO: API Prefix: /digitontine
+[2025-10-22 09:57:05] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 09:57:05] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 09:57:05] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 09:57:05] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 09:57:05] INFO: ========================================
+[2025-10-22 09:57:40] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-22 09:57:53] INFO: ========================================
+[2025-10-22 09:57:53] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 09:57:53] INFO: Environnement: development
+[2025-10-22 09:57:53] INFO: URL: http://localhost:5000
+[2025-10-22 09:57:53] INFO: API Prefix: /digitontine
+[2025-10-22 09:57:53] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 09:57:53] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 09:57:53] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 09:57:53] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 09:57:53] INFO: ========================================
+[2025-10-22 09:58:23] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 09:59:14] INFO: ========================================
+[2025-10-22 09:59:14] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 09:59:14] INFO: Environnement: development
+[2025-10-22 09:59:14] INFO: URL: http://localhost:5000
+[2025-10-22 09:59:14] INFO: API Prefix: /digitontine
+[2025-10-22 09:59:14] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 09:59:14] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 09:59:14] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 09:59:14] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 09:59:14] INFO: ========================================
+[2025-10-22 09:59:45] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 10:00:28] INFO: ========================================
+[2025-10-22 10:00:28] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:00:28] INFO: Environnement: development
+[2025-10-22 10:00:28] INFO: URL: http://localhost:5000
+[2025-10-22 10:00:28] INFO: API Prefix: /digitontine
+[2025-10-22 10:00:28] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:00:28] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:00:28] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:00:28] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:00:28] INFO: ========================================
+[2025-10-22 10:00:41] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 10:00:41] INFO:  Base de données: digitontine
+[2025-10-22 10:00:59] WARN: Tentative reset MDP - Email inexistant: ttoure@simplon.co
+[2025-10-22 10:02:32] INFO: ========================================
+[2025-10-22 10:02:32] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:02:32] INFO: Environnement: development
+[2025-10-22 10:02:32] INFO: URL: http://localhost:5000
+[2025-10-22 10:02:32] INFO: API Prefix: /digitontine
+[2025-10-22 10:02:32] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:02:32] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:02:33] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:02:33] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:02:33] INFO: ========================================
+[2025-10-22 10:02:39] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 10:02:39] INFO:  Base de données: digitontine
+[2025-10-22 10:03:21] INFO:  Code reset envoyé à baibousy1997@gmail.com
+[2025-10-22 10:03:21] INFO: Code reset envoyé à baibousy1997@gmail.com
+[2025-10-22 10:03:21] INFO:  AUDIT: FORGOT_PASSWORD on User
+[2025-10-22 10:04:29] INFO: ========================================
+[2025-10-22 10:04:29] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:04:29] INFO: Environnement: development
+[2025-10-22 10:04:29] INFO: URL: http://localhost:5000
+[2025-10-22 10:04:29] INFO: API Prefix: /digitontine
+[2025-10-22 10:04:29] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:04:29] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:04:29] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:04:29] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:04:29] INFO: ========================================
+[2025-10-22 10:04:31] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 10:04:31] INFO:  Base de données: digitontine
+[2025-10-22 10:06:12] WARN: ❌ Erreur de validation - POST /digitontine/auth/reset-password
+[2025-10-22 10:06:41] INFO:  Code reset envoyé à baibousy1997@gmail.com
+[2025-10-22 10:06:41] INFO: Code reset envoyé à baibousy1997@gmail.com
+[2025-10-22 10:06:41] INFO:  AUDIT: FORGOT_PASSWORD on User
+[2025-10-22 10:07:00] WARN: ❌ Erreur de validation - POST /digitontine/auth/reset-password
+[2025-10-22 10:11:54] INFO: Reset MDP réussi - baibousy1997@gmail.com
+[2025-10-22 10:11:56] INFO:  Confirmation MDP envoyée à baibousy1997@gmail.com
+[2025-10-22 10:11:56] INFO:  AUDIT: RESET_PASSWORD on User
+[2025-10-22 10:12:31] WARN:  Mot de passe incorrect pour: baibousy1997@gmail.com
+[2025-10-22 10:12:38] INFO:  Connexion réussie - baibousy1997@gmail.com (Admin)
+[2025-10-22 10:12:38] INFO:  AUDIT: LOGIN on User
+[2025-10-22 10:15:10] INFO:  Connexion réussie - groupeshinra@gmail.com (Membre)
+[2025-10-22 10:15:10] INFO:  AUDIT: LOGIN on User
+[2025-10-22 10:18:59] INFO: ========================================
+[2025-10-22 10:18:59] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:18:59] INFO: Environnement: development
+[2025-10-22 10:18:59] INFO: URL: http://localhost:5000
+[2025-10-22 10:18:59] INFO: API Prefix: /digitontine
+[2025-10-22 10:18:59] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:18:59] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:18:59] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:18:59] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:18:59] INFO: ========================================
+[2025-10-22 10:19:01] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 10:19:01] INFO:  Base de données: digitontine
+[2025-10-22 10:19:13] INFO: ========================================
+[2025-10-22 10:19:13] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:19:13] INFO: Environnement: development
+[2025-10-22 10:19:13] INFO: URL: http://localhost:5000
+[2025-10-22 10:19:13] INFO: API Prefix: /digitontine
+[2025-10-22 10:19:13] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:19:13] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:19:13] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:19:13] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:19:13] INFO: ========================================
+[2025-10-22 10:19:14] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 10:19:14] INFO:  Base de données: digitontine
+[2025-10-22 10:19:24] INFO: ========================================
+[2025-10-22 10:19:24] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:19:24] INFO: Environnement: development
+[2025-10-22 10:19:24] INFO: URL: http://localhost:5000
+[2025-10-22 10:19:24] INFO: API Prefix: /digitontine
+[2025-10-22 10:19:24] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:19:24] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:19:24] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:19:24] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:19:24] INFO: ========================================
+[2025-10-22 10:19:25] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 10:19:25] INFO:  Base de données: digitontine
+[2025-10-22 10:22:36] INFO: ========================================
+[2025-10-22 10:22:36] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:22:36] INFO: Environnement: development
+[2025-10-22 10:22:36] INFO: URL: http://localhost:5000
+[2025-10-22 10:22:36] INFO: API Prefix: /digitontine
+[2025-10-22 10:22:36] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:22:36] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:22:36] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:22:36] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:22:36] INFO: ========================================
+[2025-10-22 10:22:37] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 10:22:37] INFO:  Base de données: digitontine
+[2025-10-22 10:23:32] INFO: ========================================
+[2025-10-22 10:23:32] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:23:32] INFO: Environnement: development
+[2025-10-22 10:23:32] INFO: URL: http://localhost:5000
+[2025-10-22 10:23:32] INFO: API Prefix: /digitontine
+[2025-10-22 10:23:32] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:23:32] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:23:32] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:23:32] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:23:32] INFO: ========================================
+[2025-10-22 10:23:34] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 10:23:34] INFO:  Base de données: digitontine
+[2025-10-22 10:28:30] INFO: ========================================
+[2025-10-22 10:28:30] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:28:30] INFO: Environnement: development
+[2025-10-22 10:28:30] INFO: URL: http://localhost:5000
+[2025-10-22 10:28:30] INFO: API Prefix: /digitontine
+[2025-10-22 10:28:30] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:28:30] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 10:28:30] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:28:30] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:28:30] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:28:30] INFO: ========================================
+[2025-10-22 10:28:32] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 10:28:32] INFO:  Base de données: digitontine
+[2025-10-22 10:28:33] INFO: Connexion réussie - groupeshinra@gmail.com (Membre)
+[2025-10-22 10:28:34] INFO:  AUDIT: LOGIN on User
+[2025-10-22 10:29:27] WARN:  Token JWT expiré - IP: ::1
+[2025-10-22 10:30:00] INFO: Connexion réussie - groupeshinra@gmail.com (Membre)
+[2025-10-22 10:30:00] INFO:  AUDIT: LOGIN on User
+[2025-10-22 10:30:23] WARN: ❌ Erreur de validation - POST /digitontine/auth/first-password-change
+[2025-10-22 10:30:51] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:30:53] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:31:01] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-22 10:31:06] INFO: ========================================
+[2025-10-22 10:31:06] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:31:06] INFO: Environnement: development
+[2025-10-22 10:31:06] INFO: URL: http://localhost:5000
+[2025-10-22 10:31:06] INFO: API Prefix: /digitontine
+[2025-10-22 10:31:06] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:31:06] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 10:31:06] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:31:06] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:31:06] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:31:06] INFO: ========================================
+[2025-10-22 10:31:08] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 10:31:08] INFO:  Base de données: digitontine
+[2025-10-22 10:31:18] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:31:28] ERROR: ❌ Erreur - POST /digitontine/auth/first-password-change Expected double-quoted property name in JSON at position 85 (line 6 column 1)
+SyntaxError: Expected double-quoted property name in JSON at position 85 (line 6 column 1)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\types\json.js:92:19)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2025-10-22 10:31:34] WARN: ❌ Erreur de validation - POST /digitontine/auth/first-password-change
+[2025-10-22 10:31:55] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:36:16] INFO: ========================================
+[2025-10-22 10:36:16] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:36:16] INFO: Environnement: development
+[2025-10-22 10:36:16] INFO: URL: http://localhost:5000
+[2025-10-22 10:36:16] INFO: API Prefix: /digitontine
+[2025-10-22 10:36:16] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:36:16] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 10:36:16] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:36:16] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:36:16] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:36:16] INFO: ========================================
+[2025-10-22 10:36:18] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 10:36:18] INFO:  Base de données: digitontine
+[2025-10-22 10:37:03] INFO: ========================================
+[2025-10-22 10:37:03] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:37:03] INFO: Environnement: development
+[2025-10-22 10:37:03] INFO: URL: http://localhost:5000
+[2025-10-22 10:37:03] INFO: API Prefix: /digitontine
+[2025-10-22 10:37:03] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:37:03] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 10:37:03] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:37:03] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:37:03] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:37:03] INFO: ========================================
+[2025-10-22 10:37:04] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 10:37:04] INFO:  Base de données: digitontine
+[2025-10-22 10:37:08] ERROR: ❌ Erreur - POST /digitontine/auth/first-password-change Expected double-quoted property name in JSON at position 85 (line 6 column 1)
+SyntaxError: Expected double-quoted property name in JSON at position 85 (line 6 column 1)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\types\json.js:92:19)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2025-10-22 10:37:12] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:37:15] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:39:17] INFO: ========================================
+[2025-10-22 10:39:17] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:39:17] INFO: Environnement: development
+[2025-10-22 10:39:17] INFO: URL: http://localhost:5000
+[2025-10-22 10:39:17] INFO: API Prefix: /digitontine
+[2025-10-22 10:39:17] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:39:17] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 10:39:17] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:39:17] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:39:17] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:39:17] INFO: ========================================
+[2025-10-22 10:39:21] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 10:39:21] INFO:  Base de données: digitontine
+[2025-10-22 10:39:21] INFO: Tentative changement MDP première connexion - User: groupeshinra@gmail.com, isFirstLogin: true
+[2025-10-22 10:39:21] ERROR: Erreur lors de la comparaison du mot de passe pour groupeshinra@gmail.com: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:141:39)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:43:06] INFO: ========================================
+[2025-10-22 10:43:06] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:43:06] INFO: Environnement: development
+[2025-10-22 10:43:06] INFO: URL: http://localhost:5000
+[2025-10-22 10:43:06] INFO: API Prefix: /digitontine
+[2025-10-22 10:43:06] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:43:06] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 10:43:06] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:43:06] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:43:06] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:43:06] INFO: ========================================
+[2025-10-22 10:43:08] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 10:43:08] INFO:  Base de données: digitontine
+[2025-10-22 10:44:33] INFO: ========================================
+[2025-10-22 10:44:33] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:44:33] INFO: Environnement: development
+[2025-10-22 10:44:33] INFO: URL: http://localhost:5000
+[2025-10-22 10:44:33] INFO: API Prefix: /digitontine
+[2025-10-22 10:44:33] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:44:33] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 10:44:33] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:44:33] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:44:33] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:44:33] INFO: ========================================
+[2025-10-22 10:44:36] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 10:44:36] INFO:  Base de données: digitontine
+[2025-10-22 10:44:36] INFO: Tentative changement MDP première connexion - User: groupeshinra@gmail.com, isFirstLogin: true
+[2025-10-22 10:44:37] INFO: Premier changement de MDP réussi - groupeshinra@gmail.com
+[2025-10-22 10:44:40] INFO:  Confirmation MDP envoyée à groupeshinra@gmail.com
+[2025-10-22 10:44:41] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 10:45:41] INFO:  Admin créé via route publique - sergesenghor2342@gmail.com
+[2025-10-22 10:47:06] INFO: Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-22 10:47:06] INFO:  AUDIT: LOGIN on User
+[2025-10-22 10:48:00] INFO:  Code reset envoyé à sergesenghor2342@gmail.com
+[2025-10-22 10:48:00] INFO: Code reset envoyé à sergesenghor2342@gmail.com
+[2025-10-22 10:48:00] INFO:  AUDIT: FORGOT_PASSWORD on User
+[2025-10-22 10:48:58] INFO: Reset MDP réussi - sergesenghor2342@gmail.com
+[2025-10-22 10:49:01] INFO:  Confirmation MDP envoyée à sergesenghor2342@gmail.com
+[2025-10-22 10:49:01] INFO:  AUDIT: RESET_PASSWORD on User
+[2025-10-22 10:49:57] INFO: Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-22 10:49:57] INFO:  AUDIT: LOGIN on User
+[2025-10-22 10:50:01] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-22 10:53:50] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-22 10:54:02] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-22 10:55:08] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-22 10:57:22] INFO: ========================================
+[2025-10-22 10:57:22] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 10:57:22] INFO: Environnement: development
+[2025-10-22 10:57:22] INFO: URL: http://localhost:5000
+[2025-10-22 10:57:22] INFO: API Prefix: /digitontine
+[2025-10-22 10:57:22] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 10:57:22] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 10:57:22] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 10:57:22] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 10:57:22] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 10:57:22] INFO: ========================================
+[2025-10-22 10:57:24] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 10:57:24] INFO:  Base de données: digitontine
+[2025-10-22 11:00:10] WARN: 🔍 Route non trouvée: GET /digitontine/auth/change-password - IP: ::1
+[2025-10-22 11:00:21] INFO:  Changement MDP volontaire - sergesenghor2342@gmail.com
+[2025-10-22 11:00:23] INFO:  Confirmation MDP envoyée à sergesenghor2342@gmail.com
+[2025-10-22 11:00:23] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 11:00:33] WARN: Mot de passe incorrect pour: sergesenghor2342@gmail.com
+[2025-10-22 11:00:56] INFO: Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-22 11:00:56] INFO:  AUDIT: LOGIN on User
+[2025-10-22 11:03:26] ERROR: ❌ Erreur - POST /digitontine/users/tresorier Cannot read properties of undefined (reading 'isFirstLogin')
+TypeError: Cannot read properties of undefined (reading 'isFirstLogin')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:04:01] INFO: Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-22 11:04:02] INFO:  AUDIT: LOGIN on User
+[2025-10-22 11:04:18] ERROR: ❌ Erreur - POST /digitontine/users/tresorier Cannot read properties of undefined (reading 'isFirstLogin')
+TypeError: Cannot read properties of undefined (reading 'isFirstLogin')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:04:38] ERROR: ❌ Erreur - POST /digitontine/users/membre Cannot read properties of undefined (reading 'isFirstLogin')
+TypeError: Cannot read properties of undefined (reading 'isFirstLogin')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:06:57] ERROR: ❌ Erreur - POST /digitontine/users/tresorier Cannot read properties of undefined (reading 'isFirstLogin')
+TypeError: Cannot read properties of undefined (reading 'isFirstLogin')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:07:12] INFO: ========================================
+[2025-10-22 11:07:12] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:07:12] INFO: Environnement: development
+[2025-10-22 11:07:12] INFO: URL: http://localhost:5000
+[2025-10-22 11:07:12] INFO: API Prefix: /digitontine
+[2025-10-22 11:07:12] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:07:12] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:07:12] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:07:12] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:07:12] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:07:12] INFO: ========================================
+[2025-10-22 11:07:14] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 11:07:14] INFO:  Base de données: digitontine
+[2025-10-22 11:11:07] INFO: ========================================
+[2025-10-22 11:11:07] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:11:07] INFO: Environnement: development
+[2025-10-22 11:11:07] INFO: URL: http://localhost:5000
+[2025-10-22 11:11:07] INFO: API Prefix: /digitontine
+[2025-10-22 11:11:07] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:11:07] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:11:07] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:11:07] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:11:07] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:11:07] INFO: ========================================
+[2025-10-22 11:11:09] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 11:11:09] INFO:  Base de données: digitontine
+[2025-10-22 11:11:14] ERROR: ❌ Erreur - POST /digitontine/users/tresorier Cannot read properties of undefined (reading 'role')
+TypeError: Cannot read properties of undefined (reading 'role')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:11:58] INFO: ========================================
+[2025-10-22 11:11:58] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:11:58] INFO: Environnement: development
+[2025-10-22 11:11:58] INFO: URL: http://localhost:5000
+[2025-10-22 11:11:58] INFO: API Prefix: /digitontine
+[2025-10-22 11:11:58] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:11:58] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:11:58] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:11:58] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:11:58] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:11:58] INFO: ========================================
+[2025-10-22 11:12:03] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 11:12:03] INFO:  Base de données: digitontine
+[2025-10-22 11:12:17] ERROR: ❌ Erreur - POST /digitontine/users/tresorier Cannot read properties of undefined (reading 'role')
+TypeError: Cannot read properties of undefined (reading 'role')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:15:13] INFO: ========================================
+[2025-10-22 11:15:13] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:15:13] INFO: Environnement: development
+[2025-10-22 11:15:13] INFO: URL: http://localhost:5000
+[2025-10-22 11:15:13] INFO: API Prefix: /digitontine
+[2025-10-22 11:15:13] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:15:13] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:15:13] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:15:13] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:15:13] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:15:13] INFO: ========================================
+[2025-10-22 11:15:15] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 11:15:15] INFO:  Base de données: digitontine
+[2025-10-22 11:16:58] INFO: ========================================
+[2025-10-22 11:16:58] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:16:58] INFO: Environnement: development
+[2025-10-22 11:16:58] INFO: URL: http://localhost:5000
+[2025-10-22 11:16:58] INFO: API Prefix: /digitontine
+[2025-10-22 11:16:58] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:16:58] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:16:58] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:16:58] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:16:58] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:16:58] INFO: ========================================
+[2025-10-22 11:17:01] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 11:17:01] INFO:  Base de données: digitontine
+[2025-10-22 11:17:39] INFO: ========================================
+[2025-10-22 11:17:39] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:17:39] INFO: Environnement: development
+[2025-10-22 11:17:39] INFO: URL: http://localhost:5000
+[2025-10-22 11:17:39] INFO: API Prefix: /digitontine
+[2025-10-22 11:17:39] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:17:39] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:17:39] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:17:39] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:17:39] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:17:39] INFO: ========================================
+[2025-10-22 11:17:40] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 11:17:40] INFO:  Base de données: digitontine
+[2025-10-22 11:19:54] INFO: ========================================
+[2025-10-22 11:19:54] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:19:54] INFO: Environnement: development
+[2025-10-22 11:19:54] INFO: URL: http://localhost:5000
+[2025-10-22 11:19:54] INFO: API Prefix: /digitontine
+[2025-10-22 11:19:54] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:19:54] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:19:54] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:19:54] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:19:54] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:19:54] INFO: ========================================
+[2025-10-22 11:19:55] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 11:19:55] INFO:  Base de données: digitontine
+[2025-10-22 11:19:58] INFO: Trésorier créé sans photo - ssenghor001@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 11:20:09] INFO:  Email identifiants envoyé à ssenghor001@gmail.com
+[2025-10-22 11:20:09] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 11:20:46] INFO: Connexion réussie - ssenghor001@gmail.com (Tresorier)
+[2025-10-22 11:20:46] INFO:  AUDIT: LOGIN on User
+[2025-10-22 11:22:31] INFO: ========================================
+[2025-10-22 11:22:31] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:22:31] INFO: Environnement: development
+[2025-10-22 11:22:31] INFO: URL: http://localhost:5000
+[2025-10-22 11:22:31] INFO: API Prefix: /digitontine
+[2025-10-22 11:22:31] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:22:31] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:22:31] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:22:31] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:22:31] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:22:31] INFO: ========================================
+[2025-10-22 11:22:33] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 11:22:33] INFO:  Base de données: digitontine
+[2025-10-22 11:22:33] WARN: Accès bloqué - Changement MDP requis - User: ssenghor001@gmail.com (Tresorier) - Route: /me
+[2025-10-22 11:24:16] INFO:  Changement MDP volontaire - ssenghor001@gmail.com
+[2025-10-22 11:24:18] INFO:  Confirmation MDP envoyée à ssenghor001@gmail.com
+[2025-10-22 11:24:18] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 11:24:48] INFO: Connexion réussie - ssenghor001@gmail.com (Tresorier)
+[2025-10-22 11:24:48] INFO:  AUDIT: LOGIN on User
+[2025-10-22 11:25:20] WARN: Accès bloqué - Changement MDP requis - User: ssenghor001@gmail.com (Tresorier) - Route: /me
+[2025-10-22 11:25:58] INFO: Connexion réussie - ssenghor001@gmail.com (Tresorier)
+[2025-10-22 11:25:58] INFO:  AUDIT: LOGIN on User
+[2025-10-22 11:26:25] WARN: Accès bloqué - Changement MDP requis - User: ssenghor001@gmail.com (Tresorier) - Route: /me
+[2025-10-22 11:28:26] INFO: ========================================
+[2025-10-22 11:28:26] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:28:26] INFO: Environnement: development
+[2025-10-22 11:28:26] INFO: URL: http://localhost:5000
+[2025-10-22 11:28:26] INFO: API Prefix: /digitontine
+[2025-10-22 11:28:26] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:28:26] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:28:26] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:28:26] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:28:26] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:28:26] INFO: ========================================
+[2025-10-22 11:28:28] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 11:28:28] INFO:  Base de données: digitontine
+[2025-10-22 11:29:53] WARN:  Tentative d'accès aux données d'un autre utilisateur - User: ssenghor001@gmail.com
+[2025-10-22 11:33:53] INFO: ========================================
+[2025-10-22 11:33:53] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:33:53] INFO: Environnement: development
+[2025-10-22 11:33:53] INFO: URL: http://localhost:5000
+[2025-10-22 11:33:53] INFO: API Prefix: /digitontine
+[2025-10-22 11:33:53] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:33:53] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:33:53] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:33:53] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:33:53] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:33:53] INFO: ========================================
+[2025-10-22 11:33:55] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 11:33:55] INFO:  Base de données: digitontine
+[2025-10-22 11:34:09] INFO: ========================================
+[2025-10-22 11:34:09] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:34:09] INFO: Environnement: development
+[2025-10-22 11:34:09] INFO: URL: http://localhost:5000
+[2025-10-22 11:34:09] INFO: API Prefix: /digitontine
+[2025-10-22 11:34:09] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:34:09] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:34:09] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:34:09] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:34:09] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:34:09] INFO: ========================================
+[2025-10-22 11:34:10] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 11:34:10] INFO:  Base de données: digitontine
+[2025-10-22 11:34:12] WARN: Accès bloqué - Changement MDP requis - User: ssenghor001@gmail.com (Tresorier) - Route: /me
+[2025-10-22 11:34:35] INFO: Connexion réussie - ssenghor001@gmail.com (Tresorier)
+[2025-10-22 11:34:36] INFO:  AUDIT: LOGIN on User
+[2025-10-22 11:35:08] INFO:  Changement MDP volontaire - ssenghor001@gmail.com
+[2025-10-22 11:35:10] INFO:  Confirmation MDP envoyée à ssenghor001@gmail.com
+[2025-10-22 11:35:10] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 11:35:34] INFO: Connexion réussie - ssenghor001@gmail.com (Tresorier)
+[2025-10-22 11:35:34] INFO:  AUDIT: LOGIN on User
+[2025-10-22 11:36:07] WARN: Accès bloqué - Changement MDP requis - User: ssenghor001@gmail.com (Tresorier) - Route: /me
+[2025-10-22 11:36:22] WARN: Accès bloqué - Changement MDP requis - User: ssenghor001@gmail.com (Tresorier) - Route: /me
+[2025-10-22 11:38:13] INFO: ========================================
+[2025-10-22 11:38:13] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:38:13] INFO: Environnement: development
+[2025-10-22 11:38:13] INFO: URL: http://localhost:5000
+[2025-10-22 11:38:13] INFO: API Prefix: /digitontine
+[2025-10-22 11:38:13] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:38:13] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:38:13] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:38:13] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:38:13] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:38:13] INFO: ========================================
+[2025-10-22 11:38:17] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 11:38:17] INFO:  Base de données: digitontine
+[2025-10-22 11:38:40] INFO: Trésorier créé sans photo - ssenghor002@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 11:38:42] INFO:  Email identifiants envoyé à ssenghor002@gmail.com
+[2025-10-22 11:38:42] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 11:39:48] INFO: Trésorier créé sans photo - sergesenghor6@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 11:39:50] INFO:  Email identifiants envoyé à sergesenghor6@gmail.com
+[2025-10-22 11:39:50] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 11:41:14] WARN: 🔍 Route non trouvée: POST /digitontine/auth/me - IP: ::1
+[2025-10-22 11:41:24] INFO: Connexion réussie - sergesenghor6@gmail.com (Tresorier)
+[2025-10-22 11:41:24] INFO:  AUDIT: LOGIN on User
+[2025-10-22 11:44:03] WARN:  Tentative d'accès aux données d'un autre utilisateur - User: sergesenghor6@gmail.com
+[2025-10-22 11:44:14] INFO:  Changement MDP volontaire - sergesenghor6@gmail.com
+[2025-10-22 11:44:17] INFO:  Confirmation MDP envoyée à sergesenghor6@gmail.com
+[2025-10-22 11:44:17] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 11:44:54] WARN: 🔍 Route non trouvée: GET /digitontine/tontine - IP: ::1
+[2025-10-22 11:45:20] WARN:  Accès refusé - User: sergesenghor6@gmail.com (Tresorier) - Rôles requis: Admin
+[2025-10-22 11:47:42] INFO: Trésorier créé sans photo - sergesenghor@esp.sn par sergesenghor2342@gmail.com
+[2025-10-22 11:47:43] INFO:  Email identifiants envoyé à sergesenghor@esp.sn
+[2025-10-22 11:47:44] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 11:48:47] WARN: Mot de passe incorrect pour: sergesenghor6@gmail.com
+[2025-10-22 11:48:59] INFO: Connexion réussie - sergesenghor@esp.sn (Tresorier)
+[2025-10-22 11:48:59] INFO:  AUDIT: LOGIN on User
+[2025-10-22 11:58:32] INFO: ========================================
+[2025-10-22 11:58:32] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 11:58:32] INFO: Environnement: development
+[2025-10-22 11:58:32] INFO: URL: http://localhost:5000
+[2025-10-22 11:58:32] INFO: API Prefix: /digitontine
+[2025-10-22 11:58:32] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 11:58:32] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 11:58:32] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 11:58:32] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 11:58:32] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 11:58:32] INFO: ========================================
+[2025-10-22 11:58:35] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 11:58:35] INFO:  Base de données: digitontine
+[2025-10-22 11:58:47] WARN: Accès bloqué - Changement MDP requis - User: sergesenghor@esp.sn (Tresorier) - Route: /me
+[2025-10-22 11:59:34] INFO:  Changement MDP volontaire - sergesenghor@esp.sn
+[2025-10-22 11:59:36] INFO:  Confirmation MDP envoyée à sergesenghor@esp.sn
+[2025-10-22 11:59:36] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 12:00:02] INFO: Connexion réussie - sergesenghor@esp.sn (Tresorier)
+[2025-10-22 12:00:02] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:00:28] WARN: Accès bloqué - Changement MDP requis - User: sergesenghor@esp.sn (Tresorier) - Route: /me
+[2025-10-22 12:00:46] INFO: Connexion réussie - sergesenghor@esp.sn (Tresorier)
+[2025-10-22 12:00:46] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:01:10] WARN: Token JWT invalide - IP: ::1
+[2025-10-22 12:01:27] INFO: Connexion réussie - sergesenghor@esp.sn (Tresorier)
+[2025-10-22 12:01:27] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:02:00] WARN: Token JWT invalide - IP: ::1
+[2025-10-22 12:02:09] INFO: Connexion réussie - sergesenghor@esp.sn (Tresorier)
+[2025-10-22 12:02:09] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:17:53] INFO: ========================================
+[2025-10-22 12:17:53] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 12:17:53] INFO: Environnement: development
+[2025-10-22 12:17:53] INFO: URL: http://localhost:5000
+[2025-10-22 12:17:53] INFO: API Prefix: /digitontine
+[2025-10-22 12:17:53] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 12:17:53] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 12:17:53] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 12:17:53] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 12:17:53] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 12:17:53] INFO: ========================================
+[2025-10-22 12:17:55] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 12:17:55] INFO:  Base de données: digitontine
+[2025-10-22 12:19:03] INFO: ✓ Admin créé via route publique - sergesenghor2342@gmail.com
+[2025-10-22 12:20:02] INFO: Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-22 12:20:02] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:21:13] INFO: Trésorier créé sans photo - groupeshinra@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 12:21:15] INFO:  Email identifiants envoyé à groupeshinra@gmail.com
+[2025-10-22 12:21:16] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 12:22:17] INFO: Membre créé sans photo - groupeabonnement2@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 12:22:19] INFO:  Email identifiants envoyé à groupeabonnement2@gmail.com
+[2025-10-22 12:22:19] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 12:23:13] INFO: Connexion réussie - groupeshinra@gmail.com (Tresorier)
+[2025-10-22 12:23:13] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:23:36] WARN: Accès bloqué - Changement MDP requis - User: groupeshinra@gmail.com (Tresorier) - Route: /me
+[2025-10-22 12:24:05] INFO: ✓ Changement MDP volontaire - groupeshinra@gmail.com
+[2025-10-22 12:24:07] INFO:  Confirmation MDP envoyée à groupeshinra@gmail.com
+[2025-10-22 12:24:07] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 12:24:30] INFO: Connexion réussie - groupeshinra@gmail.com (Tresorier)
+[2025-10-22 12:24:30] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:24:53] WARN: Accès bloqué - Changement MDP requis - User: groupeshinra@gmail.com (Tresorier) - Route: /me
+[2025-10-22 12:25:48] INFO: Connexion réussie - groupeshinra@gmail.com (Tresorier)
+[2025-10-22 12:25:48] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:30:47] INFO: ========================================
+[2025-10-22 12:30:47] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 12:30:47] INFO: Environnement: development
+[2025-10-22 12:30:47] INFO: URL: http://localhost:5000
+[2025-10-22 12:30:47] INFO: API Prefix: /digitontine
+[2025-10-22 12:30:47] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 12:30:47] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 12:30:47] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 12:30:47] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 12:30:47] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 12:30:47] INFO: ========================================
+[2025-10-22 12:30:49] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 12:30:49] INFO:  Base de données: digitontine
+[2025-10-22 12:31:18] INFO: Membre créé sans photo - ssenghor001@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 12:31:20] INFO:  Email identifiants envoyé à ssenghor001@gmail.com
+[2025-10-22 12:31:20] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 12:32:17] INFO: Connexion réussie - ssenghor001@gmail.com (Membre)
+[2025-10-22 12:32:17] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:33:13] WARN: Accès bloqué - Changement MDP requis - User: groupeshinra@gmail.com (Tresorier) - Route: /me
+[2025-10-22 12:33:44] INFO: ✓ Changement MDP volontaire - ssenghor001@gmail.com
+[2025-10-22 12:33:46] INFO:  Confirmation MDP envoyée à ssenghor001@gmail.com
+[2025-10-22 12:33:46] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 12:34:07] INFO: Connexion réussie - ssenghor001@gmail.com (Membre)
+[2025-10-22 12:34:08] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:37:51] INFO: ========================================
+[2025-10-22 12:37:51] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 12:37:51] INFO: Environnement: development
+[2025-10-22 12:37:51] INFO: URL: http://localhost:5000
+[2025-10-22 12:37:51] INFO: API Prefix: /digitontine
+[2025-10-22 12:37:51] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 12:37:51] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 12:37:51] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 12:37:51] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 12:37:51] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 12:37:51] INFO: ========================================
+[2025-10-22 12:37:54] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 12:37:54] INFO:  Base de données: digitontine
+[2025-10-22 12:37:55] INFO: Connexion réussie - ssenghor001@gmail.com (Membre)
+[2025-10-22 12:37:55] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:38:30] INFO: ✓ Admin créé via route publique - sergesenghor2342@gmail.com
+[2025-10-22 12:39:14] INFO: Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-22 12:39:14] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:39:58] INFO: Membre créé sans photo - ssenghor2342@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 12:40:00] INFO:  Email identifiants envoyé à ssenghor2342@gmail.com
+[2025-10-22 12:40:00] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 12:41:46] WARN: ❌ Erreur de validation - POST /digitontine/users/membre
+[2025-10-22 12:41:52] WARN: ❌ Erreur de validation - POST /digitontine/users/membre
+[2025-10-22 12:42:09] INFO: Membre créé sans photo - groupeshinra@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 12:42:11] INFO:  Email identifiants envoyé à groupeshinra@gmail.com
+[2025-10-22 12:42:11] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 12:43:18] INFO: Connexion réussie - groupeshinra@gmail.com (Membre)
+[2025-10-22 12:43:18] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:43:58] WARN: Accès bloqué - Changement MDP requis - User: groupeshinra@gmail.com (Membre) - Route: /me
+[2025-10-22 12:44:22] INFO: ✓ Changement MDP volontaire - groupeshinra@gmail.com
+[2025-10-22 12:44:24] INFO:  Confirmation MDP envoyée à groupeshinra@gmail.com
+[2025-10-22 12:44:24] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 12:45:47] WARN:  MongoDB déconnecté
+[2025-10-22 12:45:56] WARN: 🔍 Route non trouvée: POST /digitontine/auth/lo - IP: ::1
+[2025-10-22 12:46:01] INFO: Connexion réussie - groupeshinra@gmail.com (Membre)
+[2025-10-22 12:46:01] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:46:25] WARN: Accès bloqué - Changement MDP requis - User: groupeshinra@gmail.com (Membre) - Route: /me
+[2025-10-22 12:48:59] INFO: ========================================
+[2025-10-22 12:48:59] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 12:48:59] INFO: Environnement: development
+[2025-10-22 12:48:59] INFO: URL: http://localhost:5000
+[2025-10-22 12:48:59] INFO: API Prefix: /digitontine
+[2025-10-22 12:48:59] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 12:48:59] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 12:48:59] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 12:48:59] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 12:48:59] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 12:48:59] INFO: ========================================
+[2025-10-22 12:49:01] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 12:49:01] INFO:  Base de données: digitontine
+[2025-10-22 12:49:15] INFO: ✓ Changement MDP volontaire - groupeshinra@gmail.com
+[2025-10-22 12:49:17] INFO:  Confirmation MDP envoyée à groupeshinra@gmail.com
+[2025-10-22 12:49:18] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 12:54:58] INFO: ========================================
+[2025-10-22 12:54:58] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 12:54:58] INFO: Environnement: development
+[2025-10-22 12:54:58] INFO: URL: http://localhost:5000
+[2025-10-22 12:54:58] INFO: API Prefix: /digitontine
+[2025-10-22 12:54:58] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 12:54:58] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 12:54:58] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 12:54:58] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 12:54:58] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 12:54:58] INFO: ========================================
+[2025-10-22 12:55:01] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 12:55:01] INFO:  Base de données: digitontine
+[2025-10-22 12:55:30] INFO: ========================================
+[2025-10-22 12:55:30] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 12:55:30] INFO: Environnement: development
+[2025-10-22 12:55:30] INFO: URL: http://localhost:5000
+[2025-10-22 12:55:30] INFO: API Prefix: /digitontine
+[2025-10-22 12:55:30] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 12:55:30] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 12:55:30] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 12:55:30] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 12:55:30] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 12:55:30] INFO: ========================================
+[2025-10-22 12:55:31] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 12:55:31] INFO:  Base de données: digitontine
+[2025-10-22 12:55:48] INFO: ✓ Changement MDP volontaire - groupeshinra@gmail.com
+[2025-10-22 12:55:50] INFO:  Confirmation MDP envoyée à groupeshinra@gmail.com
+[2025-10-22 12:55:50] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 12:55:59] WARN: Accès bloqué - Changement MDP requis - User: groupeshinra@gmail.com (Membre) - Route: /me
+[2025-10-22 12:56:12] INFO: Connexion réussie - groupeshinra@gmail.com (Membre)
+[2025-10-22 12:56:12] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:57:05] INFO: ========================================
+[2025-10-22 12:57:05] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 12:57:05] INFO: Environnement: development
+[2025-10-22 12:57:05] INFO: URL: http://localhost:5000
+[2025-10-22 12:57:05] INFO: API Prefix: /digitontine
+[2025-10-22 12:57:05] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 12:57:05] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 12:57:05] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 12:57:05] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 12:57:05] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 12:57:05] INFO: ========================================
+[2025-10-22 12:57:11] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 12:57:11] INFO:  Base de données: digitontine
+[2025-10-22 12:57:28] INFO: ========================================
+[2025-10-22 12:57:28] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 12:57:28] INFO: Environnement: development
+[2025-10-22 12:57:28] INFO: URL: http://localhost:5000
+[2025-10-22 12:57:28] INFO: API Prefix: /digitontine
+[2025-10-22 12:57:28] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 12:57:28] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 12:57:28] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 12:57:28] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 12:57:28] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 12:57:28] INFO: ========================================
+[2025-10-22 12:57:30] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 12:57:30] INFO:  Base de données: digitontine
+[2025-10-22 12:58:16] INFO: ✓ Admin créé via route publique - sergesenghor2342@gmail.com
+[2025-10-22 12:59:08] INFO: Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-22 12:59:08] INFO:  AUDIT: LOGIN on User
+[2025-10-22 12:59:32] INFO: Membre créé sans photo - groupeshinra@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 12:59:34] INFO:  Email identifiants envoyé à groupeshinra@gmail.com
+[2025-10-22 12:59:34] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 13:00:04] INFO: Connexion réussie - groupeshinra@gmail.com (Membre)
+[2025-10-22 13:00:04] INFO:  AUDIT: LOGIN on User
+[2025-10-22 13:03:28] INFO: ========================================
+[2025-10-22 13:03:28] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 13:03:28] INFO: Environnement: development
+[2025-10-22 13:03:28] INFO: URL: http://localhost:5000
+[2025-10-22 13:03:28] INFO: API Prefix: /digitontine
+[2025-10-22 13:03:28] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 13:03:28] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 13:03:28] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 13:03:28] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 13:03:28] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 13:03:28] INFO: ========================================
+[2025-10-22 13:03:32] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 13:03:32] INFO:  Base de données: digitontine
+[2025-10-22 13:03:46] INFO: ========================================
+[2025-10-22 13:03:46] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 13:03:46] INFO: Environnement: development
+[2025-10-22 13:03:46] INFO: URL: http://localhost:5000
+[2025-10-22 13:03:46] INFO: API Prefix: /digitontine
+[2025-10-22 13:03:46] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 13:03:46] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 13:03:46] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 13:03:46] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 13:03:46] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 13:03:46] INFO: ========================================
+[2025-10-22 13:03:48] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 13:03:48] INFO:  Base de données: digitontine
+[2025-10-22 13:04:09] INFO: ========================================
+[2025-10-22 13:04:09] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 13:04:09] INFO: Environnement: development
+[2025-10-22 13:04:09] INFO: URL: http://localhost:5000
+[2025-10-22 13:04:09] INFO: API Prefix: /digitontine
+[2025-10-22 13:04:09] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 13:04:09] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 13:04:09] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 13:04:09] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 13:04:09] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 13:04:09] INFO: ========================================
+[2025-10-22 13:04:11] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 13:04:11] INFO:  Base de données: digitontine
+[2025-10-22 13:05:13] INFO: Connexion réussie - groupeshinra@gmail.com (Membre)
+[2025-10-22 13:05:13] INFO:  AUDIT: LOGIN on User
+[2025-10-22 13:05:58] INFO: ========================================
+[2025-10-22 13:05:58] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 13:05:58] INFO: Environnement: development
+[2025-10-22 13:05:58] INFO: URL: http://localhost:5000
+[2025-10-22 13:05:58] INFO: API Prefix: /digitontine
+[2025-10-22 13:05:58] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 13:05:58] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 13:05:58] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 13:05:58] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 13:05:58] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 13:05:58] INFO: ========================================
+[2025-10-22 13:06:00] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 13:06:00] INFO:  Base de données: digitontine
+[2025-10-22 13:06:03] INFO: Connexion réussie - groupeshinra@gmail.com (Membre)
+[2025-10-22 13:06:03] INFO:  AUDIT: LOGIN on User
+[2025-10-22 13:07:16] INFO: ========================================
+[2025-10-22 13:07:16] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 13:07:16] INFO: Environnement: development
+[2025-10-22 13:07:16] INFO: URL: http://localhost:5000
+[2025-10-22 13:07:16] INFO: API Prefix: /digitontine
+[2025-10-22 13:07:16] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 13:07:16] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 13:07:16] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 13:07:16] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 13:07:16] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 13:07:16] INFO: ========================================
+[2025-10-22 13:07:18] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-22 13:07:18] INFO:  Base de données: digitontine
+[2025-10-22 13:08:27] INFO: Membre créé sans photo - groupeshinrah@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 13:08:29] INFO:  Email identifiants envoyé à groupeshinrah@gmail.com
+[2025-10-22 13:08:30] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 13:08:53] INFO: Membre créé sans photo - groupeshinrahh@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 13:08:56] INFO:  Email identifiants envoyé à groupeshinrahh@gmail.com
+[2025-10-22 13:08:57] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 13:09:30] INFO: Trésorier créé sans photo - groupeshinrahhh@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 13:09:32] INFO:  Email identifiants envoyé à groupeshinrahhh@gmail.com
+[2025-10-22 13:09:32] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 13:10:06] WARN: Token valide mais utilisateur inexistant - UserID: 68f807907e682aa8da3fab89
+[2025-10-22 13:10:49] WARN:  MongoDB déconnecté
+[2025-10-22 13:11:00] WARN: 🔍 Route non trouvée: POST /digitontine/auth/me - IP: ::1
+[2025-10-22 13:11:17] INFO: Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-22 13:11:17] INFO:  AUDIT: LOGIN on User
+[2025-10-22 13:12:22] INFO: Tontine créée - Tontine Solidarité 2024 par sergesenghor2342@gmail.com
+[2025-10-22 13:12:22] INFO:  AUDIT: CREATE_TONTINE on Tontine
+[2025-10-22 13:13:06] WARN: Token valide mais utilisateur inexistant - UserID: 68f807907e682aa8da3fab89
+[2025-10-22 13:14:58] INFO: Email invitation tontine envoyé à groupeshinra@gmail.com
+[2025-10-22 13:15:02] INFO: Email invitation tontine envoyé à groupeshinrah@gmail.com
+[2025-10-22 13:15:05] INFO: Email invitation tontine envoyé à groupeshinrahh@gmail.com
+[2025-10-22 13:15:05] INFO: Membres ajoutés à Tontine Solidarité 2024 - 3/3 réussis
+[2025-10-22 13:15:05] INFO:  AUDIT: ADD_MEMBRES_TONTINE on Tontine
+[2025-10-22 13:16:00] WARN: Token valide mais utilisateur inexistant - UserID: 68f807907e682aa8da3fab89
+[2025-10-22 13:16:56] INFO: Email activation tontine envoyé à groupeshinra@gmail.com
+[2025-10-22 13:16:58] INFO: Email activation tontine envoyé à groupeshinrah@gmail.com
+[2025-10-22 13:17:00] INFO: Email activation tontine envoyé à groupeshinrahh@gmail.com
+[2025-10-22 13:17:00] INFO: Tontine activée - Tontine Solidarité 2024 par sergesenghor2342@gmail.com
+[2025-10-22 13:17:00] INFO:  AUDIT: ACTIVATE_TONTINE on Tontine
+[2025-10-22 13:18:02] WARN: 🔍 Route non trouvée: GET /digitontine/tirages/tontine/68f8d83631a7c15334cc20f7/notify - IP: ::1
+[2025-10-22 13:20:04] WARN:  Accès refusé - User: sergesenghor2342@gmail.com (Admin) - Rôles requis: Administrateur, Tresorier
+[2025-10-22 13:20:28] WARN:  Accès refusé - User: sergesenghor2342@gmail.com (Admin) - Rôles requis: Administrateur, Tresorier
+[2025-10-22 13:28:31] INFO: ========================================
+[2025-10-22 13:28:31] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 13:28:31] INFO: Environnement: development
+[2025-10-22 13:28:31] INFO: URL: http://localhost:5000
+[2025-10-22 13:28:31] INFO: API Prefix: /digitontine
+[2025-10-22 13:28:31] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 13:28:31] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 13:28:31] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 13:28:31] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 13:28:31] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 13:28:31] INFO: ========================================
+[2025-10-22 13:28:33] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-22 13:28:33] INFO:  Base de données: digitontine
+[2025-10-22 13:28:37] INFO: Notification tirage envoyée à groupeshinra@gmail.com
+[2025-10-22 13:28:40] INFO: Notification tirage envoyée à groupeshinrah@gmail.com
+[2025-10-22 13:28:42] INFO: Notification tirage envoyée à groupeshinrahh@gmail.com
+[2025-10-22 13:28:42] INFO: Notifications tirage envoyees pour Tontine Solidarité 2024: 3 reussies, 0 echouees
+[2025-10-22 13:28:42] ERROR: Erreur notification tirage: Cannot read properties of undefined (reading 'success')
+TypeError: Cannot read properties of undefined (reading 'success')
+    at notifyUpcomingTirage (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\tirage.controller.js:193:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-22 13:28:42] ERROR: ERREUR NON GEREE (Unhandled Rejection): Cannot read properties of undefined (reading 'serverError')
+TypeError: Cannot read properties of undefined (reading 'serverError')
+    at notifyUpcomingTirage (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\tirage.controller.js:201:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-22 13:31:25] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-22 13:31:34] INFO: ========================================
+[2025-10-22 13:31:34] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 13:31:34] INFO: Environnement: development
+[2025-10-22 13:31:34] INFO: URL: http://localhost:5000
+[2025-10-22 13:31:34] INFO: API Prefix: /digitontine
+[2025-10-22 13:31:34] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 13:31:34] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 13:31:34] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 13:31:34] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 13:31:34] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 13:31:34] INFO: ========================================
+[2025-10-22 13:31:36] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 13:31:36] INFO:  Base de données: digitontine
+[2025-10-22 13:31:40] INFO: Connexion réussie - groupeshinra@gmail.com (Membre)
+[2025-10-22 13:31:40] INFO:  AUDIT: LOGIN on User
+[2025-10-22 13:32:08] WARN: 🔍 Route non trouvée: GET /digitontine/tontines/68f8d83631a7c15334cc20f7/opt-in - IP: ::1
+[2025-10-22 13:32:18] INFO: groupeshinra@gmail.com participe au tirage Tontine Solidarité 2024
+[2025-10-22 13:32:18] INFO:  AUDIT: TIRAGE_OPT_IN on Tontine
+[2025-10-22 13:33:32] ERROR: ❌ Erreur - POST /digitontine/tirages/tontine/68f8d83631a7c15334cc20f7/automatique 0/3 cotisations validees. Tirage impossible.
+Error: 0/3 cotisations validees. Tirage impossible.
+    at effectuerTirageAutomatique (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\tirage.controller.js:67:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-22 13:37:10] INFO: ========================================
+[2025-10-22 13:37:10] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 13:37:10] INFO: Environnement: development
+[2025-10-22 13:37:10] INFO: URL: http://localhost:5000
+[2025-10-22 13:37:10] INFO: API Prefix: /digitontine
+[2025-10-22 13:37:10] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 13:37:10] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 13:37:10] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 13:37:10] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 13:37:10] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 13:37:10] INFO: ========================================
+[2025-10-22 13:37:12] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 13:37:12] INFO:  Base de données: digitontine
+[2025-10-22 13:37:14] WARN: Cotisations incomplètes pour échéance 1: 0/3 membres ont cotisé
+[2025-10-22 13:37:14] ERROR: ❌ Erreur - POST /digitontine/tirages/tontine/68f8d83631a7c15334cc20f7/automatique 0/3 cotisations validees. Tirage impossible. Tous les membres doivent avoir cotisé.
+Error: 0/3 cotisations validees. Tirage impossible. Tous les membres doivent avoir cotisé.
+    at effectuerTirageAutomatique (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\tirage.controller.js:92:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-22 13:44:55] INFO: Trésorier créé sans photo - ssenghor002@gmail.com par sergesenghor2342@gmail.com
+[2025-10-22 13:44:57] INFO:  Email identifiants envoyé à ssenghor002@gmail.com
+[2025-10-22 13:44:58] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 13:46:08] INFO:  OTP Trésorier envoyé à ssenghor002@gmail.com
+[2025-10-22 13:46:08] INFO:  Demande validation créée par ADMIN sergesenghor2342@gmail.com - Action: DELETE_USER - Validation par Trésorier ssenghor002@gmail.com
+[2025-10-22 13:46:08] INFO:  AUDIT: CREATE_VALIDATION_REQUEST on ValidationRequest
+[2025-10-22 13:50:35] INFO: Connexion réussie - ssenghor002@gmail.com (Tresorier)
+[2025-10-22 13:50:35] INFO:  AUDIT: LOGIN on User
+[2025-10-22 13:51:28] WARN:  Clé API invalide: digitontine_2025_secret_key_change_this_in_productiondigitontine_2025_secret_key_change_this_in_production - IP: ::1
+[2025-10-22 13:51:46] WARN:  Clé API invalide: digitontine_2025_secret_key_change_this_in_productiondigitontine_2025_secret_key_change_this_in_production - IP: ::1
+[2025-10-22 13:52:12] WARN:  Clé API invalide: digitontine_2025_secret_key_change_this_in_productiondigitontine_2025_secret_key_change_this_in_production - IP: ::1
+[2025-10-22 13:53:49] WARN:  Tentative d'accès sans clé API - IP: ::1
+[2025-10-22 13:54:27] WARN: Tentative d'accès sans token - IP: ::1
+[2025-10-22 13:55:07] INFO:  Notifications validation complète envoyées
+[2025-10-22 13:55:08] INFO:  Trésorier ssenghor002@gmail.com a validé - Action DELETE_USER autorisée
+[2025-10-22 13:55:08] INFO:  AUDIT: CONFIRM_TRESORIER_OTP on ValidationRequest
+[2025-10-22 13:58:28] ERROR: Erreur vérification token: getaddrinfo ENOTFOUND ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+MongoServerSelectionError: getaddrinfo ENOTFOUND ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+    at Topology.selectServer (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\sdam\topology.js:327:38)
+    at async tryOperation (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\operations\execute_operation.js:148:18)
+    at async executeOperation (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\operations\execute_operation.js:78:16)
+    at async FindCursor._initialize (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\cursor\find_cursor.js:62:26)
+    at async FindCursor.cursorInit (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\cursor\abstract_cursor.js:632:27)
+    at async FindCursor.fetchBatch (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\cursor\abstract_cursor.js:666:13)
+    at async FindCursor.next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\cursor\abstract_cursor.js:342:17)
+    at async Collection.findOne (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\collection.js:313:24)
+    at async model.Query._findOne (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\query.js:2710:15)
+    at async model.Query.exec (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\query.js:4627:63)
+[2025-10-22 13:58:46] WARN:  MongoDB déconnecté
+[2025-10-22 14:01:18] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-22 14:01:26] INFO: ========================================
+[2025-10-22 14:01:26] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 14:01:26] INFO: Environnement: development
+[2025-10-22 14:01:26] INFO: URL: http://localhost:5000
+[2025-10-22 14:01:26] INFO: API Prefix: /digitontine
+[2025-10-22 14:01:26] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 14:01:26] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 14:01:26] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 14:01:26] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 14:01:26] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 14:01:26] INFO: ========================================
+[2025-10-22 14:01:28] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 14:01:28] INFO:  Base de données: digitontine
+[2025-10-22 14:01:54] INFO: Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-22 14:01:54] INFO:  AUDIT: LOGIN on User
+[2025-10-22 14:37:02] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-22 14:37:48] INFO: ========================================
+[2025-10-22 14:37:48] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 14:37:48] INFO: Environnement: development
+[2025-10-22 14:37:48] INFO: URL: http://localhost:5000
+[2025-10-22 14:37:48] INFO: API Prefix: /digitontine
+[2025-10-22 14:37:48] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 14:37:48] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 14:37:48] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 14:37:48] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 14:37:48] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 14:37:48] INFO: ========================================
+[2025-10-22 14:38:18] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 15:52:13] INFO: ========================================
+[2025-10-22 15:52:13] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 15:52:13] INFO: Environnement: development
+[2025-10-22 15:52:13] INFO: URL: http://localhost:5000
+[2025-10-22 15:52:13] INFO: API Prefix: /digitontine
+[2025-10-22 15:52:13] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 15:52:13] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 15:52:13] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 15:52:13] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 15:52:13] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 15:52:13] INFO: ========================================
+[2025-10-22 15:52:44] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 15:53:15] INFO: ========================================
+[2025-10-22 15:53:15] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 15:53:15] INFO: Environnement: development
+[2025-10-22 15:53:15] INFO: URL: http://localhost:5000
+[2025-10-22 15:53:15] INFO: API Prefix: /digitontine
+[2025-10-22 15:53:15] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 15:53:15] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 15:53:15] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 15:53:15] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 15:53:15] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 15:53:15] INFO: ========================================
+[2025-10-22 15:53:44] INFO: ========================================
+[2025-10-22 15:53:44] INFO: DigiTontine API demarre avec succes!
+[2025-10-22 15:53:44] INFO: Environnement: development
+[2025-10-22 15:53:44] INFO: URL: http://localhost:5000
+[2025-10-22 15:53:44] INFO: API Prefix: /digitontine
+[2025-10-22 15:53:44] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-22 15:53:44] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-22 15:53:44] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-22 15:53:44] INFO: Test Check: http://localhost:5000/test
+[2025-10-22 15:53:44] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-22 15:53:44] INFO: ========================================
+[2025-10-22 15:53:46] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-22 15:53:46] INFO:  Base de données: digitontine
+[2025-10-22 16:05:16] INFO: Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-22 16:05:16] INFO:  AUDIT: LOGIN on User
+[2025-10-22 16:06:36] INFO: Trésorier créé sans photo - ttoure@simplo.co par sergesenghor2342@gmail.com
+[2025-10-22 16:06:38] INFO:  Email identifiants envoyé à ttoure@simplo.co
+[2025-10-22 16:06:38] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 16:07:36] INFO: Trésorier créé sans photo - ttoure@simplon.co par sergesenghor2342@gmail.com
+[2025-10-22 16:07:37] INFO:  Email identifiants envoyé à ttoure@simplon.co
+[2025-10-22 16:07:37] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 16:08:40] INFO: Connexion réussie - ttoure@simplon.co (Tresorier)
+[2025-10-22 16:08:41] INFO:  AUDIT: LOGIN on User
+[2025-10-22 16:09:07] WARN: Tentative d'accès sans token - IP: ::1
+[2025-10-22 16:09:28] WARN: Tentative d'accès sans token - IP: ::1
+[2025-10-22 16:09:56] WARN: Tentative d'accès sans token - IP: ::1
+[2025-10-22 16:10:06] INFO: Connexion réussie - ttoure@simplon.co (Tresorier)
+[2025-10-22 16:10:06] INFO:  AUDIT: LOGIN on User
+[2025-10-22 16:10:30] INFO: ✓ Déconnexion - ttoure@simplon.co
+[2025-10-22 16:10:30] INFO:  AUDIT: LOGOUT on User
+[2025-10-22 16:10:54] WARN: Tentative connexion échouée - Utilisateur introuvable: 771580719
+[2025-10-22 16:12:39] WARN: ❌ Erreur de validation - POST /digitontine/auth/login
+[2025-10-22 16:16:28] WARN: ❌ Erreur de validation - POST /digitontine/auth/login
+[2025-10-22 16:16:36] INFO: Connexion réussie - ttoure@simplon.co (Tresorier)
+[2025-10-22 16:16:36] INFO:  AUDIT: LOGIN on User
+[2025-10-22 16:17:22] INFO:  Code reset envoyé à ttoure@simplon.co
+[2025-10-22 16:17:22] INFO: Code reset envoyé à ttoure@simplon.co
+[2025-10-22 16:17:22] INFO:  AUDIT: FORGOT_PASSWORD on User
+[2025-10-22 16:18:58] WARN: Code reset invalide ou expiré pour: ttoure@simplon.co
+[2025-10-22 16:19:22] INFO: Reset MDP réussi - ttoure@simplon.co
+[2025-10-22 16:19:24] INFO:  Confirmation MDP envoyée à ttoure@simplon.co
+[2025-10-22 16:19:24] INFO:  AUDIT: RESET_PASSWORD on User
+[2025-10-22 16:22:30] INFO: Connexion réussie - ttoure@simplon.co (Tresorier)
+[2025-10-22 16:22:30] INFO:  AUDIT: LOGIN on User
+[2025-10-22 16:23:12] WARN: Token JWT invalide - IP: ::1
+[2025-10-22 16:23:44] INFO: ✓ Changement MDP volontaire - ttoure@simplon.co
+[2025-10-22 16:23:48] INFO:  Confirmation MDP envoyée à ttoure@simplon.co
+[2025-10-22 16:23:48] INFO:  AUDIT: CHANGE_PASSWORD on User
+[2025-10-22 16:26:05] INFO: Membre créé sans photo - ttour2@simplon.co par sergesenghor2342@gmail.com
+[2025-10-22 16:26:07] INFO:  Email identifiants envoyé à ttour2@simplon.co
+[2025-10-22 16:26:07] INFO:  AUDIT: CREATE_USER on User
+[2025-10-22 16:27:32] INFO:  OTP Trésorier envoyé à ttoure@simplon.co
+[2025-10-22 16:27:32] INFO:  Demande validation créée par ADMIN sergesenghor2342@gmail.com - Action: DELETE_USER - Validation par Trésorier ttoure@simplon.co
+[2025-10-22 16:27:32] INFO:  AUDIT: CREATE_VALIDATION_REQUEST on ValidationRequest
+[2025-10-22 16:29:03] WARN: Mot de passe incorrect pour: ttoure@simplon.co
+[2025-10-22 16:29:10] INFO: Connexion réussie - ttoure@simplon.co (Tresorier)
+[2025-10-22 16:29:10] INFO:  AUDIT: LOGIN on User
+[2025-10-22 16:29:47] WARN:  MongoDB déconnecté
+[2025-10-22 16:30:47] INFO:  Notifications validation complète envoyées
+[2025-10-22 16:30:47] INFO:  Trésorier ttoure@simplon.co a validé - Action DELETE_USER autorisée
+[2025-10-22 16:30:47] INFO:  AUDIT: CONFIRM_TRESORIER_OTP on ValidationRequest
+[2025-10-22 19:47:33] WARN:  MongoDB déconnecté

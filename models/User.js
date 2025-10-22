@@ -209,7 +209,8 @@ UserSchema.pre('save', async function (next) {
 
 // Mettre à jour lastModifiedBy
 UserSchema.pre('save', function (next) {
-  if (this.isModified() && !this.isNew) {
+  
+  if (this.isModified() && !this.isNew && this._updateUserId) {
     this.lastModifiedBy = this._updateUserId;
   }
   next();

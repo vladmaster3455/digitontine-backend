@@ -57,30 +57,56 @@ const TontineSchema = new mongoose.Schema(
     dateCloture: Date,
 
     // Membres
-    membres: [
-      {
-        userId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-          required: true,
-        },
-        dateAjout: {
-          type: Date,
-          default: Date.now,
-        },
-        aGagne: {
-          type: Boolean,
-          default: false,
-        },
-        dateGain: Date,
-        montantGagne: Number,
-      },
-    ],
+   membres: [
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    dateAjout: {
+      type: Date,
+      default: Date.now,
+    },
+    aGagne: {
+      type: Boolean,
+      default: false,
+    },
+    dateGain: Date,
+    montantGagne: Number,
+    
+    // NOUVEAUX CHAMPS POUR OPT-IN TIRAGE
+    participeTirage: {
+      type: Boolean,
+      default: true,
+      description: 'Le membre souhaite participer au prochain tirage'
+    },
+    dateOptIn: {
+      type: Date,
+      description: 'Date de dernière confirmation de participation'
+    },
+  },
+],
+    // Trésorier assigné à cette tontine (OBLIGATOIRE pour activation)
+tresorierAssigne: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'User',
+  validate: {
+    validator: async function(userId) {
+      if (!userId) return true;
+      const User = mongoose.model('User');
+      const user = await User.findById(userId);
+      return user && user.role === 'Tresorier' && user.isActive;
+    },
+    message: 'Le trésorier assigné doit être un Trésorier actif'
+  }
+},
     nombreMembresMin: {
       type: Number,
       default: 3,
       min: [2, 'Minimum 2 membres requis'],
     },
+    
     nombreMembresMax: {
       type: Number,
       default: 50,
@@ -301,6 +327,11 @@ TontineSchema.methods.activer = function () {
       `Minimum ${this.nombreMembresMin} membres requis (actuellement ${this.membres.length})`
     );
   }
+  
+  // NOUVELLE VERIFICATION : Trésorier obligatoire
+  if (!this.tresorierAssigne) {
+    throw new Error('Un trésorier doit être assigné avant l\'activation de la tontine');
+  }
 
   // Générer le calendrier si pas déjà fait
   if (this.calendrierCotisations.length === 0) {
@@ -310,7 +341,6 @@ TontineSchema.methods.activer = function () {
   this.statut = TONTINE_STATUS.ACTIVE;
   this.dateActivation = Date.now();
 };
-
 /**
  * Bloquer la tontine
  */

@@ -103,6 +103,11 @@ const validateCreateTontine = [
     .optional()
     .isInt({ min: 0, max: 30 })
     .withMessage('Le délai de grâce doit être entre 0 et 30 jours'),
+     body('tresorierAssigneId')
+  .optional()
+  .isMongoId()
+  .withMessage('ID du trésorier invalide'),
+   
 ];
 
 /**
@@ -157,6 +162,10 @@ const validateUpdateTontine = [
     .optional()
     .isISO8601()
     .withMessage('Format de date invalide'),
+    body('tresorierAssigneId')
+  .optional()
+  .isMongoId()
+  .withMessage('ID du trésorier invalide'),
 ];
 
 /**

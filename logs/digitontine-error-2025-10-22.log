@@ -1,0 +1,221 @@
+[2025-10-22 09:18:55] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 09:22:51] ERROR:  Erreur envoi email identifiants: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-22 09:22:51] ERROR: Erreur envoi email: connect ETIMEDOUT 74.125.206.109:587
+Error: connect ETIMEDOUT 74.125.206.109:587
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+[2025-10-22 09:55:57] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 09:56:51] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 09:58:23] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 09:59:45] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 10:30:51] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:30:53] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:31:18] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:31:28] ERROR: ❌ Erreur - POST /digitontine/auth/first-password-change Expected double-quoted property name in JSON at position 85 (line 6 column 1)
+SyntaxError: Expected double-quoted property name in JSON at position 85 (line 6 column 1)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\types\json.js:92:19)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2025-10-22 10:31:55] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:37:08] ERROR: ❌ Erreur - POST /digitontine/auth/first-password-change Expected double-quoted property name in JSON at position 85 (line 6 column 1)
+SyntaxError: Expected double-quoted property name in JSON at position 85 (line 6 column 1)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\types\json.js:92:19)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2025-10-22 10:37:12] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:37:15] ERROR:  Erreur firstPasswordChange: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:128:43)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 10:39:21] ERROR: Erreur lors de la comparaison du mot de passe pour groupeshinra@gmail.com: Illegal arguments: string, undefined
+Error: Illegal arguments: string, undefined
+    at _async (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:286:46)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:307:17
+    at new Promise (<anonymous>)
+    at bcrypt.compare (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\bcryptjs\dist\bcrypt.js:306:20)
+    at UserSchema.methods.comparePassword (C:\Users\simplon\Desktop\soutenance\digitontine-backend\models\User.js:231:23)
+    at firstPasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\auth.controller.js:141:39)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\route.js:149:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\audit.middleware.js:69:5
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+[2025-10-22 11:03:26] ERROR: ❌ Erreur - POST /digitontine/users/tresorier Cannot read properties of undefined (reading 'isFirstLogin')
+TypeError: Cannot read properties of undefined (reading 'isFirstLogin')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:04:18] ERROR: ❌ Erreur - POST /digitontine/users/tresorier Cannot read properties of undefined (reading 'isFirstLogin')
+TypeError: Cannot read properties of undefined (reading 'isFirstLogin')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:04:38] ERROR: ❌ Erreur - POST /digitontine/users/membre Cannot read properties of undefined (reading 'isFirstLogin')
+TypeError: Cannot read properties of undefined (reading 'isFirstLogin')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:06:57] ERROR: ❌ Erreur - POST /digitontine/users/tresorier Cannot read properties of undefined (reading 'isFirstLogin')
+TypeError: Cannot read properties of undefined (reading 'isFirstLogin')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:11:14] ERROR: ❌ Erreur - POST /digitontine/users/tresorier Cannot read properties of undefined (reading 'role')
+TypeError: Cannot read properties of undefined (reading 'role')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 11:12:17] ERROR: ❌ Erreur - POST /digitontine/users/tresorier Cannot read properties of undefined (reading 'role')
+TypeError: Cannot read properties of undefined (reading 'role')
+    at requirePasswordChange (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\requirePasswordChange.middleware.js:18:12)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:280:10)
+    at verifyApiKey (C:\Users\simplon\Desktop\soutenance\digitontine-backend\middleware\apiKey.middleware.js:30:3)
+    at Layer.handle [as handle_request] (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\express\lib\router\index.js:286:9
+[2025-10-22 13:28:42] ERROR: Erreur notification tirage: Cannot read properties of undefined (reading 'success')
+TypeError: Cannot read properties of undefined (reading 'success')
+    at notifyUpcomingTirage (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\tirage.controller.js:193:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-22 13:28:42] ERROR: ERREUR NON GEREE (Unhandled Rejection): Cannot read properties of undefined (reading 'serverError')
+TypeError: Cannot read properties of undefined (reading 'serverError')
+    at notifyUpcomingTirage (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\tirage.controller.js:201:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-22 13:33:32] ERROR: ❌ Erreur - POST /digitontine/tirages/tontine/68f8d83631a7c15334cc20f7/automatique 0/3 cotisations validees. Tirage impossible.
+Error: 0/3 cotisations validees. Tirage impossible.
+    at effectuerTirageAutomatique (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\tirage.controller.js:67:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-22 13:37:14] ERROR: ❌ Erreur - POST /digitontine/tirages/tontine/68f8d83631a7c15334cc20f7/automatique 0/3 cotisations validees. Tirage impossible. Tous les membres doivent avoir cotisé.
+Error: 0/3 cotisations validees. Tirage impossible. Tous les membres doivent avoir cotisé.
+    at effectuerTirageAutomatique (C:\Users\simplon\Desktop\soutenance\digitontine-backend\controllers\tirage.controller.js:92:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[2025-10-22 13:58:28] ERROR: Erreur vérification token: getaddrinfo ENOTFOUND ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+MongoServerSelectionError: getaddrinfo ENOTFOUND ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+    at Topology.selectServer (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\sdam\topology.js:327:38)
+    at async tryOperation (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\operations\execute_operation.js:148:18)
+    at async executeOperation (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\operations\execute_operation.js:78:16)
+    at async FindCursor._initialize (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\cursor\find_cursor.js:62:26)
+    at async FindCursor.cursorInit (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\cursor\abstract_cursor.js:632:27)
+    at async FindCursor.fetchBatch (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\cursor\abstract_cursor.js:666:13)
+    at async FindCursor.next (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\cursor\abstract_cursor.js:342:17)
+    at async Collection.findOne (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\node_modules\mongodb\lib\collection.js:313:24)
+    at async model.Query._findOne (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\query.js:2710:15)
+    at async model.Query.exec (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\query.js:4627:63)
+[2025-10-22 14:38:18] ERROR:  Erreur de connexion MongoDB:
+[2025-10-22 15:52:44] ERROR:  Erreur de connexion MongoDB:

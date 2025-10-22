@@ -758,7 +758,63 @@ const sendPaymentRejectedNotification = async (user, transaction, motifRejet) =>
     throw error;
   }
 };
+/**
+ * Notifier les membres d'un tirage à venir
+ */
+const sendTirageNotification = async (user, tontine, dateTirage) => {
+  try {
+    const transporter = createTransporter();
+    
+    const dateEcheanceOptOut = new Date();
+    dateEcheanceOptOut.setDate(dateEcheanceOptOut.getDate() + 2);
 
+    const content = `
+      <p>Bonjour <strong>${user.prenom} ${user.nom}</strong>,</p>
+      
+      <div class="info-box">
+        <strong>Tirage au sort prévu</strong><br>
+        <strong>Tontine :</strong> ${tontine.nom}<br>
+        <strong>Date du tirage :</strong> ${formatDate(dateTirage)}<br>
+        <strong>Montant à gagner :</strong> ${formatCurrency(tontine.montantCotisation * tontine.nombreMembres)}
+      </div>
+      
+      <p><strong>Souhaitez-vous participer à ce tirage ?</strong></p>
+      
+      <div class="success-box">
+        Par défaut, vous participez automatiquement au tirage.
+      </div>
+      
+      <div class="warning-box">
+        <strong>Important :</strong> Si vous ne souhaitez PAS participer à ce tirage, 
+        vous devez nous en informer avant le <strong>${formatDate(dateEcheanceOptOut)}</strong>.<br><br>
+        Après cette date, votre participation sera considérée comme confirmée.
+      </div>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${process.env.FRONTEND_URL}/tontines/${tontine._id}/opt-out" class="button" style="background: #dc3545;">
+          Ne pas participer à ce tirage
+        </a>
+      </div>
+      
+      <p style="color: #666; font-size: 14px;">
+        Note : Vous pourrez participer aux tirages suivants même si vous refusez celui-ci.
+      </p>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: user.email,
+      subject: `Tirage au sort - ${tontine.nom}`,
+      html: getEmailTemplate('Tirage au sort', content),
+    });
+
+    logger.info(`Notification tirage envoyée à ${user.email}`);
+    return true;
+  } catch (error) {
+    logger.error('Erreur notification tirage:', error);
+    throw error;
+  }
+};
 
 module.exports = {
   sendAccountCredentials,
@@ -782,5 +838,6 @@ module.exports = {
   
   // MÉTHODES TRANSACTIONS 
   sendPaymentRejectedNotification,
+  sendTirageNotification, 
   
 };

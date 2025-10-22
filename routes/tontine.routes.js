@@ -14,8 +14,9 @@ const {
   deleteTontine,
   listTontines,
   getTontineDetails,
+  optInForTirage,
 } = require('../controllers/tontine.controller');
-
+const { body } = require('express-validator');
 const {
   validateCreateTontine,
   validateUpdateTontine,
@@ -134,6 +135,24 @@ router.post(
   validate,
   auditLog('ADD_MEMBRES_TONTINE', 'Tontine'),
   addMembers
+);
+/**
+ * @route   POST /digitontine/tontines/:tontineId/opt-in
+ * @desc    Confirmer participation au prochain tirage
+ * @access  Private (Membre de la tontine)
+ */
+router.post(
+  '/:tontineId/opt-in',
+  verifyToken,
+  validateTontineId,
+  validate,
+  body('participe')
+    .optional()
+    .isBoolean()
+    .withMessage('participe doit être un booléen'),
+  validate,
+  auditLog('TIRAGE_OPT_IN', 'Tontine'),
+  optInForTirage
 );
 
 /**

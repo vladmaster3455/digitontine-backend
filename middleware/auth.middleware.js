@@ -14,7 +14,7 @@ const verifyToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      logger.warn(` Tentative d'accès sans token - IP: ${req.ip}`);
+      logger.warn(`Tentative d'accès sans token - IP: ${req.ip}`);
       return ApiResponse.unauthorized(res, 'Token d\'authentification requis');
     }
 
@@ -27,13 +27,13 @@ const verifyToken = async (req, res, next) => {
     const user = await User.findById(decoded.userId).select('-motDePasse');
 
     if (!user) {
-      logger.warn(` Token valide mais utilisateur inexistant - UserID: ${decoded.userId}`);
+      logger.warn(`Token valide mais utilisateur inexistant - UserID: ${decoded.userId}`);
       return ApiResponse.unauthorized(res, 'Utilisateur non trouvé');
     }
 
     // Vérifier si le compte est actif
     if (!user.isActive) {
-      logger.warn(` Tentative d'accès avec compte désactivé - UserID: ${user._id}`);
+      logger.warn(`Tentative d'accès avec compte désactivé - UserID: ${user._id}`);
       return ApiResponse.forbidden(res, 'Compte désactivé. Contactez l\'administrateur');
     }
 
@@ -47,12 +47,70 @@ const verifyToken = async (req, res, next) => {
 
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
-      logger.warn(` Token JWT invalide - IP: ${req.ip}`);
+      logger.warn(`Token JWT invalide - IP: ${req.ip}`);
       return ApiResponse.unauthorized(res, 'Token invalide');
     }
 
     if (error.name === 'TokenExpiredError') {
-      logger.warn(` Token JWT expiré - IP: ${req.ip}`);
+      logger.warn(`Token JWT expiré - IP: ${req.ip}`);
+      return ApiResponse.unauthorized(res, 'Token expiré. Veuillez vous reconnecter');
+    }
+
+    logger.error('Erreur vérification token:', error);
+    return ApiResponse.serverError(res, 'Erreur lors de l\'authentification');
+  }
+};
+
+/**
+ * Middleware pour vérifier le token JWT ET inclure le mot de passe
+ * Utilisé pour les routes qui nécessitent la vérification du mot de passe
+ * (changement de mot de passe, etc.)
+ */
+const verifyTokenWithPassword = async (req, res, next) => {
+  try {
+    // Récupérer le token depuis le header Authorization
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      logger.warn(`Tentative d'accès sans token - IP: ${req.ip}`);
+      return ApiResponse.unauthorized(res, 'Token d\'authentification requis');
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    // Vérifier le token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Vérifier si l'utilisateur existe toujours ET inclure le mot de passe
+    const user = await User.findById(decoded.userId).select('+motDePasse');
+
+    if (!user) {
+      logger.warn(`Token valide mais utilisateur inexistant - UserID: ${decoded.userId}`);
+      return ApiResponse.unauthorized(res, 'Utilisateur non trouvé');
+    }
+
+    // Vérifier si le compte est actif
+    if (!user.isActive) {
+      logger.warn(`Tentative d'accès avec compte désactivé - UserID: ${user._id}`);
+      return ApiResponse.forbidden(res, 'Compte désactivé. Contactez l\'administrateur');
+    }
+
+    // Ajouter l'utilisateur à la requête
+    req.user = user;
+    req.userId = user._id;
+    req.userRole = user.role;
+
+    logger.debug(`Authentification réussie (avec mot de passe) - User: ${user.email} (${user.role})`);
+    next();
+
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError') {
+      logger.warn(`Token JWT invalide - IP: ${req.ip}`);
+      return ApiResponse.unauthorized(res, 'Token invalide');
+    }
+
+    if (error.name === 'TokenExpiredError') {
+      logger.warn(`Token JWT expiré - IP: ${req.ip}`);
       return ApiResponse.unauthorized(res, 'Token expiré. Veuillez vous reconnecter');
     }
 
@@ -89,5 +147,6 @@ const optionalAuth = async (req, res, next) => {
 
 module.exports = {
   verifyToken,
+  verifyTokenWithPassword,
   optionalAuth,
 };

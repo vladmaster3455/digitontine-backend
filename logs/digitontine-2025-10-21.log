@@ -159,3 +159,208 @@ Error: connect ETIMEDOUT 74.125.206.109:587
 [2025-10-21 11:13:07] INFO:  Demande validation créée par ADMIN moussa@digitontine.com - Action: DELETE_USER - Validation par Trésorier groupeshinra@gmail.com
 [2025-10-21 11:13:07] INFO:  AUDIT: CREATE_VALIDATION_REQUEST on ValidationRequest
 [2025-10-21 14:48:32] WARN:  MongoDB déconnecté
+[2025-10-21 21:16:22] INFO: ========================================
+[2025-10-21 21:16:22] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:16:22] INFO: Environnement: development
+[2025-10-21 21:16:22] INFO: URL: http://localhost:5000
+[2025-10-21 21:16:22] INFO: API Prefix: /digitontine
+[2025-10-21 21:16:22] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:16:22] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:16:22] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:16:22] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:16:22] INFO: ========================================
+[2025-10-21 21:16:23] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-21 21:16:23] INFO:  Base de données: digitontine
+[2025-10-21 21:16:31] INFO: ========================================
+[2025-10-21 21:16:31] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:16:31] INFO: Environnement: development
+[2025-10-21 21:16:31] INFO: URL: http://localhost:5000
+[2025-10-21 21:16:31] INFO: API Prefix: /digitontine
+[2025-10-21 21:16:31] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:16:31] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:16:31] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:16:31] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:16:31] INFO: ========================================
+[2025-10-21 21:16:32] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-21 21:16:32] INFO:  Base de données: digitontine
+[2025-10-21 21:22:26] INFO: ========================================
+[2025-10-21 21:22:26] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:22:26] INFO: Environnement: development
+[2025-10-21 21:22:26] INFO: URL: http://localhost:5000
+[2025-10-21 21:22:26] INFO: API Prefix: /digitontine
+[2025-10-21 21:22:26] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:22:26] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:22:26] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:22:26] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:22:26] INFO: ========================================
+[2025-10-21 21:22:27] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-21 21:22:27] INFO:  Base de données: digitontine
+[2025-10-21 21:23:53] INFO: ========================================
+[2025-10-21 21:23:53] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:23:53] INFO: Environnement: development
+[2025-10-21 21:23:53] INFO: URL: http://localhost:5000
+[2025-10-21 21:23:53] INFO: API Prefix: /digitontine
+[2025-10-21 21:23:53] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:23:53] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:23:53] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:23:53] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:23:53] INFO: ========================================
+[2025-10-21 21:23:54] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-21 21:23:54] INFO:  Base de données: digitontine
+[2025-10-21 21:24:57] INFO: ========================================
+[2025-10-21 21:24:57] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:24:57] INFO: Environnement: development
+[2025-10-21 21:24:57] INFO: URL: http://localhost:5000
+[2025-10-21 21:24:57] INFO: API Prefix: /digitontine
+[2025-10-21 21:24:57] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:24:57] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:24:57] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:24:57] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:24:57] INFO: ========================================
+[2025-10-21 21:24:58] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-21 21:24:58] INFO:  Base de données: digitontine
+[2025-10-21 21:25:55] INFO: ========================================
+[2025-10-21 21:25:55] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:25:55] INFO: Environnement: development
+[2025-10-21 21:25:55] INFO: URL: http://localhost:5000
+[2025-10-21 21:25:55] INFO: API Prefix: /digitontine
+[2025-10-21 21:25:55] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:25:55] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:25:55] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:25:55] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:25:55] INFO: ========================================
+[2025-10-21 21:26:00] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-21 21:26:00] INFO:  Base de données: digitontine
+[2025-10-21 21:27:20] INFO: ========================================
+[2025-10-21 21:27:20] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:27:20] INFO: Environnement: development
+[2025-10-21 21:27:20] INFO: URL: http://localhost:5000
+[2025-10-21 21:27:20] INFO: API Prefix: /digitontine
+[2025-10-21 21:27:20] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:27:20] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:27:20] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:27:20] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:27:20] INFO: ========================================
+[2025-10-21 21:27:21] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-21 21:27:21] INFO:  Base de données: digitontine
+[2025-10-21 21:28:00] INFO: ========================================
+[2025-10-21 21:28:00] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:28:00] INFO: Environnement: development
+[2025-10-21 21:28:00] INFO: URL: http://localhost:5000
+[2025-10-21 21:28:00] INFO: API Prefix: /digitontine
+[2025-10-21 21:28:00] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:28:00] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:28:00] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:28:00] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:28:00] INFO: ========================================
+[2025-10-21 21:28:01] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-21 21:28:01] INFO:  Base de données: digitontine
+[2025-10-21 21:29:46] INFO: ========================================
+[2025-10-21 21:29:46] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:29:46] INFO: Environnement: development
+[2025-10-21 21:29:46] INFO: URL: http://localhost:5000
+[2025-10-21 21:29:46] INFO: API Prefix: /digitontine
+[2025-10-21 21:29:46] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:29:46] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:29:46] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:29:46] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:29:46] INFO: ========================================
+[2025-10-21 21:29:47] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-21 21:29:47] INFO:  Base de données: digitontine
+[2025-10-21 21:33:58] INFO: ========================================
+[2025-10-21 21:33:58] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:33:58] INFO: Environnement: development
+[2025-10-21 21:33:58] INFO: URL: http://localhost:5000
+[2025-10-21 21:33:58] INFO: API Prefix: /digitontine
+[2025-10-21 21:33:58] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:33:58] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:33:58] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:33:58] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:33:58] INFO: ========================================
+[2025-10-21 21:34:00] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-21 21:34:00] INFO:  Base de données: digitontine
+[2025-10-21 21:37:18] INFO: ========================================
+[2025-10-21 21:37:18] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:37:18] INFO: Environnement: development
+[2025-10-21 21:37:18] INFO: URL: http://localhost:5000
+[2025-10-21 21:37:18] INFO: API Prefix: /digitontine
+[2025-10-21 21:37:18] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:37:18] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:37:18] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:37:18] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:37:18] INFO: ========================================
+[2025-10-21 21:37:21] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-21 21:37:21] INFO:  Base de données: digitontine
+[2025-10-21 21:38:13] INFO: ========================================
+[2025-10-21 21:38:13] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 21:38:13] INFO: Environnement: development
+[2025-10-21 21:38:13] INFO: URL: http://localhost:5000
+[2025-10-21 21:38:13] INFO: API Prefix: /digitontine
+[2025-10-21 21:38:13] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 21:38:13] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 21:38:13] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 21:38:13] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 21:38:13] INFO: ========================================
+[2025-10-21 21:38:14] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-21 21:38:14] INFO:  Base de données: digitontine
+[2025-10-21 22:07:46] INFO: ========================================
+[2025-10-21 22:07:46] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 22:07:46] INFO: Environnement: development
+[2025-10-21 22:07:46] INFO: URL: http://localhost:5000
+[2025-10-21 22:07:46] INFO: API Prefix: /digitontine
+[2025-10-21 22:07:46] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 22:07:46] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 22:07:46] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 22:07:46] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 22:07:46] INFO: ========================================
+[2025-10-21 22:07:47] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-21 22:07:47] INFO:  Base de données: digitontine
+[2025-10-21 22:21:00] INFO: ========================================
+[2025-10-21 22:21:00] INFO: DigiTontine API demarre avec succes!
+[2025-10-21 22:21:00] INFO: Environnement: development
+[2025-10-21 22:21:00] INFO: URL: http://localhost:5000
+[2025-10-21 22:21:00] INFO: API Prefix: /digitontine
+[2025-10-21 22:21:00] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-21 22:21:00] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-21 22:21:00] INFO: Test Check: http://localhost:5000/test
+[2025-10-21 22:21:00] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-21 22:21:00] INFO: ========================================
+[2025-10-21 22:21:01] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-21 22:21:01] INFO:  Base de données: digitontine
+[2025-10-21 22:22:08] INFO:  Admin créé via route publique - sergesenghor2342@gmail.com
+[2025-10-21 22:22:37] WARN:  Token JWT expiré - IP: ::1
+[2025-10-21 22:22:44] WARN:  Token JWT expiré - IP: ::1
+[2025-10-21 22:22:55] INFO:  Connexion réussie - sergesenghor2342@gmail.com (Admin)
+[2025-10-21 22:22:55] INFO:  AUDIT: LOGIN on User
+[2025-10-21 22:23:16] WARN:  Token valide mais utilisateur inexistant - UserID: 68f75b6a3acb57f30ab0bca6
+[2025-10-21 22:23:31] INFO: Trésorier créé sans photo - groupeshinra@gmail.com par sergesenghor2342@gmail.com
+[2025-10-21 22:23:36] INFO:  Email identifiants envoyé à groupeshinra@gmail.com
+[2025-10-21 22:23:36] INFO:  AUDIT: CREATE_USER on User
+[2025-10-21 22:26:17] INFO: Membre créé sans photo - groupeabonnement2@gmail.com par sergesenghor2342@gmail.com
+[2025-10-21 22:26:18] INFO:  Email identifiants envoyé à groupeabonnement2@gmail.com
+[2025-10-21 22:26:18] INFO:  AUDIT: CREATE_USER on User
+[2025-10-21 22:27:00] INFO: Membre créé sans photo - groupeabonnement1@gmail.com par sergesenghor2342@gmail.com
+[2025-10-21 22:27:01] INFO:  Email identifiants envoyé à groupeabonnement1@gmail.com
+[2025-10-21 22:27:01] INFO:  AUDIT: CREATE_USER on User
+[2025-10-21 22:27:26] INFO: Membre créé sans photo - groupeabonnemen1@gmail.com par sergesenghor2342@gmail.com
+[2025-10-21 22:27:27] INFO:  Email identifiants envoyé à groupeabonnemen1@gmail.com
+[2025-10-21 22:27:27] INFO:  AUDIT: CREATE_USER on User
+[2025-10-21 22:28:37] WARN:  Token valide mais utilisateur inexistant - UserID: 68f75b6a3acb57f30ab0bca6
+[2025-10-21 22:28:55] WARN:  Token JWT invalide - IP: ::1
+[2025-10-21 22:29:25] WARN:  Token JWT invalide - IP: ::1
+[2025-10-21 22:29:44] WARN: ❌ Erreur de validation - POST /digitontine/tontines
+[2025-10-21 22:31:14] WARN: ❌ Erreur de validation - POST /digitontine/tontines
+[2025-10-21 22:33:25] INFO: Tontine créée - Tontine Solidarité 2024 par sergesenghor2342@gmail.com
+[2025-10-21 22:33:25] INFO:  AUDIT: CREATE_TONTINE on Tontine
+[2025-10-21 22:34:34] WARN:  Token valide mais utilisateur inexistant - UserID: 68f75b6a3acb57f30ab0bca6
+[2025-10-21 22:35:21] INFO: Email invitation tontine envoyé à groupeabonnement2@gmail.com
+[2025-10-21 22:35:23] INFO: Email invitation tontine envoyé à groupeabonnement1@gmail.com
+[2025-10-21 22:35:24] INFO: Email invitation tontine envoyé à groupeabonnemen1@gmail.com
+[2025-10-21 22:35:24] INFO: Membres ajoutés à Tontine Solidarité 2024 - 3/3 réussis
+[2025-10-21 22:35:24] INFO:  AUDIT: ADD_MEMBRES_TONTINE on Tontine
+[2025-10-21 22:36:08] WARN:  Token valide mais utilisateur inexistant - UserID: 68f75b6a3acb57f30ab0bca6
+[2025-10-21 22:36:28] INFO: Email activation tontine envoyé à groupeabonnement2@gmail.com
+[2025-10-21 22:36:29] INFO: Email activation tontine envoyé à groupeabonnement1@gmail.com
+[2025-10-21 22:36:30] INFO: Email activation tontine envoyé à groupeabonnemen1@gmail.com
+[2025-10-21 22:36:30] INFO: Tontine activée - Tontine Solidarité 2024 par sergesenghor2342@gmail.com
+[2025-10-21 22:36:30] INFO:  AUDIT: ACTIVATE_TONTINE on Tontine

@@ -30,6 +30,7 @@ const validateLogin = [
 
 /**
  * Validation changement de mot de passe (première connexion)
+ * SIMPLIFIÉ : Pas de confirmation requise
  */
 const validateFirstPasswordChange = [
   body('ancienMotDePasse')
@@ -50,15 +51,10 @@ const validateFirstPasswordChange = [
     .matches(/[0-9]/)
     .withMessage('Le mot de passe doit contenir au moins un chiffre')
     .matches(/[@#$%&*!]/)
-    .withMessage('Le mot de passe doit contenir au moins un caractère spécial (@#$%&*!)'),
-
-  body('confirmationMotDePasse')
-    .trim()
-    .notEmpty()
-    .withMessage('La confirmation du mot de passe est requise')
+    .withMessage('Le mot de passe doit contenir au moins un caractère spécial (@#$%&*!)')
     .custom((value, { req }) => {
-      if (value !== req.body.nouveauMotDePasse) {
-        throw new Error('Les mots de passe ne correspondent pas');
+      if (value === req.body.ancienMotDePasse) {
+        throw new Error('Le nouveau mot de passe doit être différent de l\'ancien');
       }
       return true;
     }),
@@ -66,6 +62,7 @@ const validateFirstPasswordChange = [
 
 /**
  * Validation changement de mot de passe volontaire
+ * SIMPLIFIÉ : Pas de confirmation requise
  */
 const validatePasswordChange = [
   body('ancienMotDePasse')
@@ -93,17 +90,6 @@ const validatePasswordChange = [
       }
       return true;
     }),
-
-  body('confirmationMotDePasse')
-    .trim()
-    .notEmpty()
-    .withMessage('La confirmation du mot de passe est requise')
-    .custom((value, { req }) => {
-      if (value !== req.body.nouveauMotDePasse) {
-        throw new Error('Les mots de passe ne correspondent pas');
-      }
-      return true;
-    }),
 ];
 
 /**
@@ -121,6 +107,7 @@ const validateForgotPassword = [
 
 /**
  * Validation réinitialisation de mot de passe avec code
+ * SIMPLIFIÉ : Pas de confirmation requise
  */
 const validateResetPassword = [
   body('email')
@@ -154,17 +141,6 @@ const validateResetPassword = [
     .withMessage('Le mot de passe doit contenir au moins un chiffre')
     .matches(/[@#$%&*!]/)
     .withMessage('Le mot de passe doit contenir au moins un caractère spécial (@#$%&*!)'),
-
-  body('confirmationMotDePasse')
-    .trim()
-    .notEmpty()
-    .withMessage('La confirmation du mot de passe est requise')
-    .custom((value, { req }) => {
-      if (value !== req.body.nouveauMotDePasse) {
-        throw new Error('Les mots de passe ne correspondent pas');
-      }
-      return true;
-    }),
 ];
 
 /**

@@ -1,4 +1,4 @@
-// server.js - Ajout du middleware API Key
+// server.js - Version complète avec middleware requirePasswordChange
 require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
@@ -7,16 +7,18 @@ const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const morgan = require('morgan');
 
-
 // Config & Utils
 const connectDB = require('./config/database');
 const { APP } = require('./config/constants');
 const logger = require('./utils/logger');
+const ApiResponse = require('./utils/apiResponse');
 
 // Middleware
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler.middleware');
 const verifyApiKey = require('./middleware/apiKey.middleware');
-//swagger
+
+
+// Swagger
 const { swaggerSpec, swaggerUi, swaggerUiOptions } = require('./config/swagger');
 
 // Routes
@@ -63,7 +65,7 @@ const allowedOrigins = process.env.CORS_ORIGIN
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Autoriser les requêtes sans origine (Postman, curl, Swagger UI même origine)
+    // Autoriser les requetes sans origine (Postman, curl, Swagger UI meme origine)
     if (!origin) return callback(null, true);
     
     // Autoriser les origines dans la liste
@@ -71,7 +73,7 @@ app.use(cors({
       return callback(null, true);
     }
     
-    // Autoriser localhost sur tous les ports (pour développement)
+    // Autoriser localhost sur tous les ports (pour developpement)
     if (process.env.NODE_ENV === 'development' && origin.startsWith('http://localhost')) {
       return callback(null, true);
     }
@@ -84,6 +86,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
 }));
+
 // Sanitize donnees MongoDB
 app.use(mongoSanitize());
 
@@ -110,67 +113,19 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // ========================================
-// TEST CHECK (SANS CLE API)
+// ROUTES PUBLIQUES (SANS CLE API)
 // ========================================
-app.get('/test', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'DigiTontine API est en ligne',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    version: APP.VERSION,
-  });
-});
-
-// ========================================
-// ROUTE RACINE (SANS CLE API)
-// ========================================
-app.get('/', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: `Bienvenue sur ${APP.NAME} API`,
-    description: APP.DESCRIPTION,
-    version: APP.VERSION,
-    documentation: `${process.env.BASE_URL}/api-docs`,
-    endpoints: {
-      test: '/test',
-      createAdmin: '/create-admin-public',
-      auth: '/digitontine/auth',
-      users: '/digitontine/users',
-      tontines: '/digitontine/tontines',
-      transactions: '/digitontine/transactions',
-      tirages: '/digitontine/tirages',
-      dashboard: '/digitontine/dashboard',
-      validations: '/digitontine/validations',
-    },
-    timestamp: new Date().toISOString(),
-  });
-});
-/**
- * @swagger
- * /api-docs:
- *   get:
- *     summary: Documentation Swagger UI
- *     tags: [System]
- *     description: Interface interactive de documentation de l'API
- *     responses:
- *       200:
- *         description: Page de documentation Swagger
- */
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
-
-
 
 /**
  * @swagger
  * /test:
  *   get:
- *     summary: Test de santé de l'API
+ *     summary: Test de sante de l'API
  *     tags: [System]
- *     description: Vérifier que l'API est en ligne et fonctionnelle
+ *     description: Verifier que l'API est en ligne et fonctionnelle
  *     responses:
  *       200:
- *         description: API opérationnelle
+ *         description: API operationnelle
  *         content:
  *           application/json:
  *             schema:
@@ -192,6 +147,15 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpti
  *                   type: string
  *                   example: "v1"
  */
+app.get('/test', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'DigiTontine API est en ligne',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    version: APP.VERSION,
+  });
+});
 
 /**
  * @swagger
@@ -199,7 +163,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpti
  *   get:
  *     summary: Page d'accueil de l'API
  *     tags: [System]
- *     description: Informations générales et liste des endpoints disponibles
+ *     description: Informations generales et liste des endpoints disponibles
  *     responses:
  *       200:
  *         description: Informations API
@@ -236,16 +200,50 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpti
  *                       type: string
  *                       example: "/digitontine/users"
  */
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: `Bienvenue sur ${APP.NAME} API`,
+    description: APP.DESCRIPTION,
+    version: APP.VERSION,
+    documentation: `${process.env.BASE_URL}/api-docs`,
+    endpoints: {
+      test: '/test',
+      createAdmin: '/create-admin-public',
+      auth: '/digitontine/auth',
+      users: '/digitontine/users',
+      tontines: '/digitontine/tontines',
+      transactions: '/digitontine/transactions',
+      tirages: '/digitontine/tirages',
+      dashboard: '/digitontine/dashboard',
+      validations: '/digitontine/validations',
+    },
+    timestamp: new Date().toISOString(),
+  });
+});
+
+/**
+ * @swagger
+ * /api-docs:
+ *   get:
+ *     summary: Documentation Swagger UI
+ *     tags: [System]
+ *     description: Interface interactive de documentation de l'API
+ *     responses:
+ *       200:
+ *         description: Page de documentation Swagger
+ */
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 /**
  * @swagger
  * /create-admin-public:
  *   post:
- *     summary: Créer un compte Administrateur (Route publique)
+ *     summary: Creer un compte Administrateur (Route publique)
  *     tags: [System]
  *     description: |
- *       Route publique pour créer le premier administrateur.
- *       ⚠️ À désactiver en production pour des raisons de sécurité.
+ *       Route publique pour creer le premier administrateur.
+ *       A desactiver en production pour des raisons de securite.
  *     requestBody:
  *       required: true
  *       content:
@@ -278,7 +276,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpti
  *                 example: "Admin@2025!ChangeMe"
  *     responses:
  *       201:
- *         description: Administrateur créé avec succès
+ *         description: Administrateur cree avec succes
  *         content:
  *           application/json:
  *             schema:
@@ -294,34 +292,35 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpti
  *       400:
  *         $ref: '#/components/responses/ValidationError'
  *       409:
- *         description: Email ou téléphone déjà utilisé
+ *         description: Email ou telephone deja utilise
  */
-
-// ========================================
-// ROUTE PUBLIQUE CREATION ADMIN (SANS CLE API)
-// ATTENTION: A placer AVANT le middleware verifyApiKey
-// ========================================
 app.post('/create-admin-public', createAdmin);
 
 // ========================================
-// MIDDLEWARE CLE API - APPLIQUE SUR TOUTES LES ROUTES /digitontine/*
+// MIDDLEWARE POUR ROUTES PROTEGEES
 // ========================================
 const API_PREFIX = '/digitontine';
 
-// IMPORTANT : Verification de la cle API sur toutes les routes API
+// 1. Verification de la cle API sur toutes les routes /digitontine/*
 app.use(API_PREFIX, verifyApiKey);
 
 // ========================================
 // ROUTES API (PROTEGEES PAR CLE API)
 // ========================================
+
+// Route AUTH (sans verification de changement de mot de passe)
+// Car elle contient /auth/first-password-change
 app.use(`${API_PREFIX}/auth`, authRoutes);
+
+
+
+// 3. Montage des routes protegees
 app.use(`${API_PREFIX}/users`, userRoutes);
 app.use(`${API_PREFIX}/tontines`, tontineRoutes);
 app.use(`${API_PREFIX}/transactions`, transactionRoutes);
 app.use(`${API_PREFIX}/tirages`, tirageRoutes);
 app.use(`${API_PREFIX}/dashboard`, dashboardRoutes);
 app.use(`${API_PREFIX}/validations`, validationRoutes);
-
 
 // ========================================
 // GESTION DES ERREURS
@@ -332,6 +331,8 @@ app.use(notFoundHandler);
 
 // Gestionnaire d'erreurs global
 app.use(errorHandler);
+
+// Gestionnaire d'erreurs final (fallback)
 app.use((err, req, res, next) => {
   logger.error('Erreur non geree:', err);
   return ApiResponse.serverError(res, err.message);
@@ -340,7 +341,7 @@ app.use((err, req, res, next) => {
 // ========================================
 // DEMARRAGE SERVEUR
 // ========================================
-const PORT = APP.PORT;
+const PORT = process.env.PORT || APP.PORT || 5000;
 
 const server = app.listen(PORT, () => {
   logger.info('========================================');
@@ -349,9 +350,10 @@ const server = app.listen(PORT, () => {
   logger.info(`URL: ${process.env.BASE_URL || `http://localhost:${PORT}`}`);
   logger.info(`API Prefix: ${API_PREFIX}`);
   logger.info(`Cle API: ACTIVEE sur toutes les routes ${API_PREFIX}/*`);
+  logger.info(`Middleware Password Change: ACTIF sur routes protegees`);
   logger.info(`Route publique admin: ${process.env.BASE_URL || `http://localhost:${PORT}`}/create-admin-public`);
   logger.info(`Test Check: ${process.env.BASE_URL || `http://localhost:${PORT}`}/test`);
-   logger.info(`API DOCS: ${process.env.BASE_URL || `http://localhost:${PORT}`}/api-docs`);
+  logger.info(`API DOCS: ${process.env.BASE_URL || `http://localhost:${PORT}`}/api-docs`);
   logger.info('========================================');
 });
 

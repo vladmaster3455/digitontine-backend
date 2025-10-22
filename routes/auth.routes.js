@@ -12,7 +12,7 @@ const {
   logout,
   registerFCMToken,
   removeFCMToken,
-  verifyToken: verifyTokenController, // ✅ RENOMMÉ POUR ÉVITER LE CONFLIT
+  verifyToken: verifyTokenController,
 } = require('../controllers/auth.controller');
 
 const {
@@ -25,9 +25,13 @@ const {
 } = require('../validators/auth.validator');
 
 const { validate } = require('../middleware/validator.middleware');
-const { verifyToken: authMiddleware } = require('../middleware/auth.middleware');
+const { 
+  verifyToken: authMiddleware,
+  verifyTokenWithPassword 
+} = require('../middleware/auth.middleware');
 const { loginLimiter, sensitiveActionsLimiter } = require('../middleware/rateLimit.middleware');
 const { auditLog } = require('../middleware/audit.middleware');
+
 
 // ========================================
 // ROUTES PUBLIQUES (sans authentification)
@@ -41,7 +45,7 @@ const { auditLog } = require('../middleware/audit.middleware');
  */
 router.post(
   '/login',
-  loginLimiter, // 5 tentatives max par 15min
+  loginLimiter,
   validateLogin,
   validate,
   auditLog('LOGIN', 'User'),
@@ -56,7 +60,7 @@ router.post(
  */
 router.post(
   '/forgot-password',
-  sensitiveActionsLimiter, // 10 tentatives max par heure
+  sensitiveActionsLimiter,
   validateForgotPassword,
   validate,
   auditLog('FORGOT_PASSWORD', 'User'),
@@ -101,7 +105,7 @@ router.get(
 router.get(
   '/verify',
   authMiddleware,
-  verifyTokenController // ✅ UTILISATION DU NOM RENOMMÉ
+  verifyTokenController
 );
 
 /**
@@ -112,7 +116,7 @@ router.get(
  */
 router.post(
   '/first-password-change',
-  authMiddleware,
+  verifyTokenWithPassword,
   validateFirstPasswordChange,
   validate,
   auditLog('CHANGE_PASSWORD', 'User'),
@@ -127,7 +131,7 @@ router.post(
  */
 router.post(
   '/change-password',
-  authMiddleware,
+  verifyTokenWithPassword,
   validatePasswordChange,
   validate,
   auditLog('CHANGE_PASSWORD', 'User'),
@@ -216,25 +220,44 @@ router.delete(
 
 /**
  * @swagger
- * /digitontine/auth/first-password-change:
+ * /digitontine/auth/forgot-password:
  *   post:
  *     tags: [Auth]
- *     summary: Changement obligatoire première connexion
- *     security:
- *       - BearerAuth: []
+ *     summary: Mot de passe oublié
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [ancienMotDePasse, nouveauMotDePasse]
+ *             required: [email]
  *             properties:
- *               ancienMotDePasse: { type: string }
+ *               email: { type: string }
+ *     responses:
+ *       200:
+ *         description: Code envoyé
+ */
+
+/**
+ * @swagger
+ * /digitontine/auth/reset-password:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Réinitialiser mot de passe avec code
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, code, nouveauMotDePasse]
+ *             properties:
+ *               email: { type: string }
+ *               code: { type: string }
  *               nouveauMotDePasse: { type: string }
  *     responses:
  *       200:
- *         description: Mot de passe changé
+ *         description: Mot de passe réinitialisé
  */
 
 /**
@@ -272,5 +295,6 @@ router.delete(
  *       200:
  *         description: Déconnexion réussie
  */
+
 
 module.exports = router;

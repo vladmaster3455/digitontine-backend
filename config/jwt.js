@@ -14,6 +14,7 @@ const generateAccessToken = (user) => {
       email: user.email,
       role: user.role,
       isActive: user.isActive,
+      isFirstLogin: user.isFirstLogin, //  AJOUT CRITIQUE
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -22,7 +23,7 @@ const generateAccessToken = (user) => {
       audience: 'digitontine-users',
     });
 
-    logger.debug(` Token généré pour ${user.email}`);
+    logger.debug(` Token généré pour ${user.email} (isFirstLogin: ${user.isFirstLogin})`);
     return token;
   } catch (error) {
     logger.error(' Erreur génération token:', error);

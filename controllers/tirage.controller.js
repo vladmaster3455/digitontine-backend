@@ -1,19 +1,26 @@
+// controllers/tirage.controller.js
 const Tirage = require('../models/Tirage');
 const Tontine = require('../models/Tontine');
 const User = require('../models/User');
 const Transaction = require('../models/Transaction');
 const AuditLog = require('../models/AuditLog');
 const emailService = require('../services/email.service');
+const logger = require('../utils/logger');
 const { ApiResponse } = require('../utils/apiResponse');
 const { AppError } = require('../utils/errors');
 
-// US : Tirage automatique aleatoire
-exports.effectuerTirageAutomatique = async (req, res, next) => {
+/**
+ * @desc    Effectuer un tirage automatique
+ * @route   POST /digitontine/tirages/tontine/:tontineId/automatique
+ * @access  Admin/Trésorier
+ */
+
+const effectuerTirageAutomatique = async (req, res, next) => {
   try {
     const { tontineId } = req.params;
 
     const tontine = await Tontine.findById(tontineId)
-      .populate('membres', 'prenom nom email telephone');
+      .populate('membres.userId', 'prenom nom email numeroTelephone');
 
     if (!tontine) {
       throw new AppError('Tontine introuvable', 404);
@@ -23,46 +30,100 @@ exports.effectuerTirageAutomatique = async (req, res, next) => {
       throw new AppError('La tontine doit etre active', 400);
     }
 
-    // Verifier qu'il reste des membres n'ayant pas gagne
+    // Récupérer les tirages existants
     const tiragesExistants = await Tirage.find({ 
-      tontine: tontineId, 
+      tontineId, 
       statut: 'Effectue' 
     }).distinct('beneficiaire');
 
+    // Filtrer les membres éligibles (n'ont pas encore gagné ET participent au tirage)
     const membresEligibles = tontine.membres.filter(
-      m => !tiragesExistants.some(t => t.equals(m._id))
+      m => !tiragesExistants.some(t => t.equals(m.userId._id)) 
+        && m.participeTirage === true
     );
 
     if (membresEligibles.length === 0) {
+      const membresNonGagnants = tontine.membres.filter(
+        m => !tiragesExistants.some(t => t.equals(m.userId._id))
+      );
+      
+      if (membresNonGagnants.length > 0) {
+        throw new AppError(
+          `Aucun membre eligible ne souhaite participer au tirage. ` +
+          `${membresNonGagnants.length} membre(s) n'ont pas confirme leur participation.`,
+          400
+        );
+      }
+      
       throw new AppError('Tous les membres ont deja gagne', 400);
     }
 
-    // Verifier les cotisations validees pour cette echeance
+    // Calculer le numéro d'échéance actuelle
     const echeanceActuelle = tiragesExistants.length + 1;
-    const cotisationsValidees = await Transaction.countDocuments({
-      tontine: tontineId,
-      echeanceNumero: echeanceActuelle,
-      statut: 'Validee',
-      type: 'Cotisation'
-    });
 
-    if (cotisationsValidees < tontine.membres.length) {
+    // CORRECTION: Vérifier les cotisations validées pour cette échéance
+    // On compte les cotisations validées par membre unique pour cette échéance
+    const cotisationsValidees = await Transaction.aggregate([
+      {
+        $match: {
+          tontineId: tontine._id,
+          echeanceNumero: echeanceActuelle,
+          statut: 'Validee',
+          type: 'Cotisation'
+        }
+      },
+      {
+        $group: {
+          _id: '$userId', // Grouper par membre
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const nombreMembresAyantCotise = cotisationsValidees.length;
+
+    // OPTION 1: Vérifier que tous les membres ont cotisé (strict)
+    if (nombreMembresAyantCotise < tontine.membres.length) {
+      logger.warn(
+        `Cotisations incomplètes pour échéance ${echeanceActuelle}: ` +
+        `${nombreMembresAyantCotise}/${tontine.membres.length} membres ont cotisé`
+      );
+      
       throw new AppError(
-        `${cotisationsValidees}/${tontine.membres.length} cotisations validees. Tirage impossible.`,
+        `${nombreMembresAyantCotise}/${tontine.membres.length} cotisations validees. ` +
+        `Tirage impossible. Tous les membres doivent avoir cotisé.`,
         400
       );
     }
 
-    // Tirage aleatoire
+    // OPTION 2: Accepter le tirage si au moins les membres éligibles ont cotisé (moins strict)
+    // Décommentez cette section si vous préférez cette approche
+    /*
+    const membresEligiblesIds = membresEligibles.map(m => m.userId._id.toString());
+    const membresEligiblesAyantCotise = cotisationsValidees.filter(
+      c => membresEligiblesIds.includes(c._id.toString())
+    ).length;
+
+    if (membresEligiblesAyantCotise < membresEligibles.length) {
+      throw new AppError(
+        `${membresEligiblesAyantCotise}/${membresEligibles.length} membres eligibles ont cotisé. ` +
+        `Tirage impossible.`,
+        400
+      );
+    }
+    */
+
+    // Sélectionner un bénéficiaire au hasard parmi les membres éligibles
     const beneficiaire = membresEligibles[
       Math.floor(Math.random() * membresEligibles.length)
     ];
 
     const montantTotal = tontine.montantCotisation * tontine.membres.length;
 
+    // Créer le tirage
     const nouveauTirage = await Tirage.create({
-      tontine: tontineId,
-      beneficiaire: beneficiaire._id,
+      tontineId,
+      beneficiaire: beneficiaire.userId._id,
       montant: montantTotal,
       dateEffective: new Date(),
       typeTirage: 'Automatique',
@@ -70,47 +131,159 @@ exports.effectuerTirageAutomatique = async (req, res, next) => {
       effectuePar: req.user.id
     });
 
-    await nouveauTirage.populate('beneficiaire', 'prenom nom email telephone');
+    await nouveauTirage.populate('beneficiaire', 'prenom nom email numeroTelephone');
 
-    // Audit log
+    // Créer un log d'audit
     await AuditLog.create({
       user: req.user.id,
       action: 'TIRAGE_EFFECTUE',
       details: {
         tirageId: nouveauTirage._id,
         tontineId,
-        beneficiaire: beneficiaire._id,
+        beneficiaire: beneficiaire.userId._id,
         montant: montantTotal,
-        type: 'Automatique'
+        type: 'Automatique',
+        echeanceNumero: echeanceActuelle,
+        membresEligibles: membresEligibles.length
       },
       ipAddress: req.ip
     });
 
-    // Notifier le beneficiaire
-    await emailService.sendEmail(
-      beneficiaire.email,
-      'Felicitations - Vous avez gagne le tirage',
-      `Bonjour ${beneficiaire.prenom},\n\nFelicitations ! Vous avez ete tire au sort pour la tontine "${tontine.nom}".\n\nMontant a recevoir : ${montantTotal} FCFA\n\nLe montant sera verse sous 48h.`
-    );
-
-    // Notifier tous les autres membres
-    const autresMembres = tontine.membres.filter(m => !m._id.equals(beneficiaire._id));
-    for (const membre of autresMembres) {
-      await emailService.sendEmail(
-        membre.email,
-        `Resultat du tirage - Tontine ${tontine.nom}`,
-        `Bonjour ${membre.prenom},\n\nLe tirage pour l'echeance ${echeanceActuelle} a ete effectue.\n\nBeneficiaire : ${beneficiaire.prenom} ${beneficiaire.nom}\nMontant : ${montantTotal} FCFA`
+    // Envoyer notification au gagnant
+    try {
+      await emailService.sendTirageWinnerNotification(
+        beneficiaire.userId,
+        nouveauTirage,
+        tontine
       );
+    } catch (emailError) {
+      logger.error('Erreur envoi email gagnant:', emailError);
     }
 
-    ApiResponse.success(res, nouveauTirage, 'Tirage effectue avec succes', 201);
+    // Notifier les autres membres
+    const autresMembres = tontine.membres.filter(
+      m => !m.userId._id.equals(beneficiaire.userId._id)
+    );
+    
+    for (const membre of autresMembres) {
+      try {
+        await emailService.sendTirageResultNotification(
+          membre.userId,
+          nouveauTirage,
+          tontine,
+          beneficiaire.userId
+        );
+      } catch (emailError) {
+        logger.error(`Erreur envoi email a ${membre.userId.email}:`, emailError);
+      }
+    }
+
+    logger.info(
+      `Tirage automatique effectue - Tontine: ${tontine.nom}, ` +
+      `Gagnant: ${beneficiaire.userId.email}, Montant: ${montantTotal} FCFA`
+    );
+
+    return ApiResponse.success(res, {
+      tirage: {
+        id: nouveauTirage._id,
+        beneficiaire: {
+          id: beneficiaire.userId._id,
+          nom: beneficiaire.userId.nomComplet,
+          email: beneficiaire.userId.email
+        },
+        montant: nouveauTirage.montant,
+        dateEffective: nouveauTirage.dateEffective,
+        typeTirage: nouveauTirage.typeTirage,
+        statut: nouveauTirage.statut
+      },
+      tontine: {
+        id: tontine._id,
+        nom: tontine.nom
+      },
+      details: {
+        echeanceNumero: echeanceActuelle,
+        membresEligibles: membresEligibles.length,
+        membresAyantCotise: nombreMembresAyantCotise
+      }
+    }, 'Tirage effectue avec succes', 201);
   } catch (error) {
     next(error);
   }
 };
+/**
+ * @desc    Notifier les membres avant un tirage
+ * @route   POST /digitontine/tirages/tontine/:tontineId/notify
+ * @access  Admin/Trésorier
+ */
+const notifyUpcomingTirage = async (req, res) => {
+  try {
+    const { tontineId } = req.params;
+    const { dateTirage } = req.body;
 
-// US : Tirage manuel (Admin)
-exports.effectuerTirageManuel = async (req, res, next) => {
+    if (!dateTirage) {
+      return ApiResponse.error(res, 'La date du tirage est requise', 400);
+    }
+
+    const tontine = await Tontine.findById(tontineId)
+      .populate('membres.userId', 'prenom nom email');
+
+    if (!tontine) {
+      throw new AppError('Tontine introuvable', 404);
+    }
+
+    if (tontine.statut !== 'Active') {
+      throw new AppError('La tontine doit etre active', 400);
+    }
+
+    const tiragesExistants = await Tirage.find({ 
+      tontineId, 
+      statut: 'Effectue' 
+    }).distinct('beneficiaire');
+
+    let notificationsSent = 0;
+    let notificationsFailed = 0;
+
+    for (const membre of tontine.membres) {
+      const aDejaGagne = tiragesExistants.some(t => t.equals(membre.userId._id));
+      
+      if (!aDejaGagne) {
+        try {
+          await emailService.sendTirageNotification(
+            membre.userId, 
+            tontine, 
+            new Date(dateTirage)
+          );
+          notificationsSent++;
+        } catch (error) {
+          logger.error(`Erreur notification pour ${membre.userId.email}:`, error);
+          notificationsFailed++;
+        }
+      }
+    }
+
+    logger.info(
+      `Notifications tirage envoyees pour ${tontine.nom}: ` +
+      `${notificationsSent} reussies, ${notificationsFailed} echouees`
+    );
+
+    return ApiResponse.success(res, {
+      message: 'Notifications envoyees',
+      notificationsSent,
+      notificationsFailed,
+      dateTirage,
+    });
+  } catch (error) {
+    logger.error('Erreur notification tirage:', error);
+    return ApiResponse.serverError(res);
+  }
+};
+
+/**
+ * @desc    Effectuer un tirage manuel
+ * @route   POST /digitontine/tirages/tontine/:tontineId/manuel
+ * @access  Admin
+ */
+const effectuerTirageManuel = async (req, res, next) => {
   try {
     const { tontineId } = req.params;
     const { beneficiaireId, raison } = req.body;
@@ -120,7 +293,7 @@ exports.effectuerTirageManuel = async (req, res, next) => {
     }
 
     const tontine = await Tontine.findById(tontineId)
-      .populate('membres', 'prenom nom email telephone');
+      .populate('membres.userId', 'prenom nom email numeroTelephone');
 
     if (!tontine) {
       throw new AppError('Tontine introuvable', 404);
@@ -130,15 +303,16 @@ exports.effectuerTirageManuel = async (req, res, next) => {
       throw new AppError('La tontine doit etre active', 400);
     }
 
-    // Verifier que le beneficiaire est membre
-    const estMembre = tontine.membres.some(m => m._id.equals(beneficiaireId));
+    const estMembre = tontine.membres.some(
+      m => m.userId._id.toString() === beneficiaireId.toString()
+    );
+    
     if (!estMembre) {
       throw new AppError('Le beneficiaire doit etre membre de la tontine', 400);
     }
 
-    // Verifier qu'il n'a pas deja gagne
     const aDejaGagne = await Tirage.exists({
-      tontine: tontineId,
+      tontineId,
       beneficiaire: beneficiaireId,
       statut: 'Effectue'
     });
@@ -150,7 +324,7 @@ exports.effectuerTirageManuel = async (req, res, next) => {
     const montantTotal = tontine.montantCotisation * tontine.membres.length;
 
     const nouveauTirage = await Tirage.create({
-      tontine: tontineId,
+      tontineId,
       beneficiaire: beneficiaireId,
       montant: montantTotal,
       dateEffective: new Date(),
@@ -160,7 +334,7 @@ exports.effectuerTirageManuel = async (req, res, next) => {
       raisonManuelle: raison || 'Tirage manuel administrateur'
     });
 
-    await nouveauTirage.populate('beneficiaire', 'prenom nom email telephone');
+    await nouveauTirage.populate('beneficiaire', 'prenom nom email numeroTelephone');
 
     await AuditLog.create({
       user: req.user.id,
@@ -176,20 +350,29 @@ exports.effectuerTirageManuel = async (req, res, next) => {
     });
 
     const beneficiaire = await User.findById(beneficiaireId);
-    await emailService.sendEmail(
-      beneficiaire.email,
-      'Tirage manuel - Vous avez gagne',
-      `Bonjour ${beneficiaire.prenom},\n\nVous avez ete designe beneficiaire du tirage de la tontine "${tontine.nom}".\n\nMontant : ${montantTotal} FCFA\n\nRaison : ${raison || 'Decision administrative'}`
-    );
+    
+    try {
+      await emailService.sendTirageWinnerNotification(
+        beneficiaire,
+        nouveauTirage,
+        tontine
+      );
+    } catch (emailError) {
+      logger.error('Erreur envoi email:', emailError);
+    }
 
-    ApiResponse.success(res, nouveauTirage, 'Tirage manuel effectue', 201);
+    return ApiResponse.success(res, nouveauTirage, 'Tirage manuel effectue', 201);
   } catch (error) {
     next(error);
   }
 };
 
-// US : Annuler un tirage (Admin uniquement)
-exports.annulerTirage = async (req, res, next) => {
+/**
+ * @desc    Annuler un tirage
+ * @route   PUT /digitontine/tirages/:tirageId/annuler
+ * @access  Admin
+ */
+const annulerTirage = async (req, res, next) => {
   try {
     const { tirageId } = req.params;
     const { raison } = req.body;
@@ -218,7 +401,7 @@ exports.annulerTirage = async (req, res, next) => {
       action: 'TIRAGE_ANNULE',
       details: {
         tirageId,
-        tontineId: tirage.tontine,
+        tontineId: tirage.tontineId,
         beneficiaire: tirage.beneficiaire,
         raison
       },
@@ -226,53 +409,67 @@ exports.annulerTirage = async (req, res, next) => {
     });
 
     const beneficiaire = await User.findById(tirage.beneficiaire);
-    const tontine = await Tontine.findById(tirage.tontine);
+    const tontine = await Tontine.findById(tirage.tontineId);
 
-    await emailService.sendEmail(
-      beneficiaire.email,
-      'Annulation de tirage',
-      `Bonjour ${beneficiaire.prenom},\n\nLe tirage de la tontine "${tontine.nom}" dont vous etiez beneficiaire a ete annule.\n\nRaison : ${raison}\n\nUn nouveau tirage sera effectue prochainement.`
-    );
+    if (beneficiaire && tontine) {
+      try {
+        await emailService.sendEmail(
+          beneficiaire.email,
+          'Annulation de tirage',
+          `Bonjour ${beneficiaire.prenom},\n\nLe tirage de la tontine "${tontine.nom}" dont vous etiez beneficiaire a ete annule.\n\nRaison : ${raison}\n\nUn nouveau tirage sera effectue prochainement.`
+        );
+      } catch (emailError) {
+        logger.error('Erreur envoi email annulation:', emailError);
+      }
+    }
 
-    ApiResponse.success(res, tirage, 'Tirage annule');
+    return ApiResponse.success(res, tirage, 'Tirage annule');
   } catch (error) {
     next(error);
   }
 };
 
-// US : Liste des tirages d'une tontine
-exports.listeTiragesTontine = async (req, res, next) => {
+/**
+ * @desc    Liste des tirages d'une tontine
+ * @route   GET /digitontine/tirages/tontine/:tontineId
+ * @access  Private
+ */
+const listeTiragesTontine = async (req, res, next) => {
   try {
     const { tontineId } = req.params;
     const { statut } = req.query;
 
-    const query = { tontine: tontineId };
+    const query = { tontineId };
     if (statut) query.statut = statut;
 
     const tirages = await Tirage.find(query)
-      .populate('beneficiaire', 'prenom nom email telephone')
+      .populate('beneficiaire', 'prenom nom email numeroTelephone')
       .populate('effectuePar', 'prenom nom')
       .sort({ dateEffective: -1 });
 
-    ApiResponse.success(res, tirages, `${tirages.length} tirage(s) trouve(s)`);
+    return ApiResponse.success(res, tirages, `${tirages.length} tirage(s) trouve(s)`);
   } catch (error) {
     next(error);
   }
 };
 
-// US : Historique de mes gains (Membre)
-exports.mesGains = async (req, res, next) => {
+/**
+ * @desc    Mes gains (Membre)
+ * @route   GET /digitontine/tirages/me/gains
+ * @access  Private (Membre)
+ */
+const mesGains = async (req, res, next) => {
   try {
     const tirages = await Tirage.find({
       beneficiaire: req.user.id,
       statut: 'Effectue'
     })
-      .populate('tontine', 'nom montantCotisation frequence')
+      .populate('tontineId', 'nom montantCotisation frequence')
       .sort({ dateEffective: -1 });
 
     const totalGagne = tirages.reduce((sum, t) => sum + t.montant, 0);
 
-    ApiResponse.success(res, {
+    return ApiResponse.success(res, {
       tirages,
       totalGagne,
       nombreGains: tirages.length
@@ -282,14 +479,18 @@ exports.mesGains = async (req, res, next) => {
   }
 };
 
-// US : Details d'un tirage
-exports.detailsTirage = async (req, res, next) => {
+/**
+ * @desc    Détails d'un tirage
+ * @route   GET /digitontine/tirages/:tirageId
+ * @access  Private
+ */
+const detailsTirage = async (req, res, next) => {
   try {
     const { tirageId } = req.params;
 
     const tirage = await Tirage.findById(tirageId)
-      .populate('beneficiaire', 'prenom nom email telephone')
-      .populate('tontine', 'nom montantCotisation frequence')
+      .populate('beneficiaire', 'prenom nom email numeroTelephone')
+      .populate('tontineId', 'nom montantCotisation frequence')
       .populate('effectuePar', 'prenom nom')
       .populate('annulePar', 'prenom nom');
 
@@ -297,22 +498,32 @@ exports.detailsTirage = async (req, res, next) => {
       throw new AppError('Tirage introuvable', 404);
     }
 
-    // Verifier autorisation
     const estAdmin = req.user.role === 'Administrateur';
     const estTresorier = req.user.role === 'Tresorier';
     const estBeneficiaire = tirage.beneficiaire._id.equals(req.user.id);
 
-    const tontine = await Tontine.findById(tirage.tontine);
-    const estMembreTontine = tontine.membres.some(m => m.equals(req.user.id));
+    const tontine = await Tontine.findById(tirage.tontineId);
+    const estMembreTontine = tontine.membres.some(
+      m => m.userId.toString() === req.user.id.toString()
+    );
 
     if (!estAdmin && !estTresorier && !estBeneficiaire && !estMembreTontine) {
       throw new AppError('Acces refuse', 403);
     }
 
-    ApiResponse.success(res, tirage, 'Details du tirage');
+    return ApiResponse.success(res, tirage, 'Details du tirage');
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = exports;
+// ✅ EXPORT CORRECT
+module.exports = {
+  effectuerTirageAutomatique,
+  effectuerTirageManuel,
+  annulerTirage,
+  listeTiragesTontine,
+  mesGains,
+  detailsTirage,
+  notifyUpcomingTirage,
+};

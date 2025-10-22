@@ -41,6 +41,7 @@ const { isAdmin, isSelfOrAdmin } = require('../middleware/role.middleware');
 const { auditLog } = require('../middleware/audit.middleware');
 const { requireDoubleValidation } = require('../middleware/doubleValidation.middleware');
 
+
 // ========================================
 // ROUTES ADMIN - CRÉATION UTILISATEURS
 // ========================================
