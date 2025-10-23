@@ -30,7 +30,6 @@ const UserSchema = new mongoose.Schema(
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
         'Format d\'email invalide',
       ],
-      index: true,
     },
     numeroTelephone: {
       type: String,
@@ -41,7 +40,6 @@ const UserSchema = new mongoose.Schema(
         /^\+221[7][0-9]{8}$/,
         'Format de téléphone invalide (ex: +221771234567)',
       ],
-      index: true,
     },
     adresse: {
       type: String,
@@ -54,7 +52,6 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       uppercase: true,
-      index: true,
     },
     dateNaissance: {
       type: Date,
@@ -172,9 +169,6 @@ const UserSchema = new mongoose.Schema(
 // ========================================
 // INDEXES
 // ========================================
-UserSchema.index({ email: 1 });
-UserSchema.index({ numeroTelephone: 1 });
-UserSchema.index({ carteIdentite: 1 });
 UserSchema.index({ role: 1, isActive: 1 });
 
 // ========================================
@@ -264,7 +258,7 @@ UserSchema.methods.logLogin = function (ip, userAgent, success) {
     success,
   });
   if (this.loginHistory.length > 50) {
-    this.loginHistory = this.loginHistory.slice(-50);
+    this.loginHistory = this.slice(-50);
   }
 };
 
