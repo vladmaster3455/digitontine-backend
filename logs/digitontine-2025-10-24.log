@@ -374,3 +374,16 @@
 [2025-10-24 14:09:02] INFO: ========================================
 [2025-10-24 14:09:03] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
 [2025-10-24 14:09:03] INFO:  Base de données: digitontine
+[2025-10-24 14:12:35] INFO: ========================================
+[2025-10-24 14:12:35] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 14:12:35] INFO: Environnement: development
+[2025-10-24 14:12:35] INFO: URL: http://localhost:5000
+[2025-10-24 14:12:35] INFO: API Prefix: /digitontine
+[2025-10-24 14:12:35] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 14:12:35] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 14:12:35] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 14:12:35] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 14:12:35] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 14:12:35] INFO: ========================================
+[2025-10-24 14:12:37] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-24 14:12:37] INFO:  Base de données: digitontine
