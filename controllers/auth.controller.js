@@ -8,14 +8,11 @@ const emailService = require('../services/email.service');
 const crypto = require('crypto');
 const { ROLES } = require('../config/constants');
 
-/**
- * @desc    Connexion utilisateur ETAPE 1 - Envoie OTP
- * @route   POST /api/v1/auth/login
- * @access  Public
- */
+// Dans auth.controller.js - Remplace la fonction login
+
 const login = async (req, res) => {
   try {
-    const { identifier, motDePasse } = req.body;
+    const { identifier, motDePasse, skipOTP = false } = req.body;
 
     // Trouver l'utilisateur
     const user = await User.findByEmailOrPhone(identifier);
@@ -41,7 +38,39 @@ const login = async (req, res) => {
       return ApiResponse.unauthorized(res, 'Identifiants incorrects');
     }
 
-    // Generer et envoyer OTP
+    // Si skipOTP = true, connecter directement sans OTP
+    if (skipOTP) {
+      // Logger la connexion
+      user.logLogin(req.ip, req.get('user-agent'), true);
+      await user.save();
+
+      // Recharger l'utilisateur
+      const updatedUser = await User.findById(user._id);
+
+      // Generer tokens JWT
+      const { accessToken, refreshToken } = generateTokenPair(updatedUser);
+
+      logger.info(`Connexion directe reussie - ${updatedUser.email} (${updatedUser.role})`);
+
+      return ApiResponse.success(res, {
+        user: {
+          id: updatedUser._id,
+          prenom: updatedUser.prenom,
+          nom: updatedUser.nom,
+          nomComplet: updatedUser.nomComplet,
+          email: updatedUser.email,
+          numeroTelephone: updatedUser.numeroTelephone,
+          role: updatedUser.role,
+          isFirstLogin: updatedUser.isFirstLogin,
+        },
+        accessToken,
+        refreshToken,
+        requiresPasswordChange: updatedUser.isFirstLogin,
+        otpSkipped: true,
+      }, 'Connexion reussie');
+    }
+
+    // Sinon, generer et envoyer OTP
     const otpCode = user.generateLoginOTP();
     await user.save();
 
@@ -71,9 +100,11 @@ const login = async (req, res) => {
   }
 };
 
+module.exports = { login };
+
 /**
- * @desc    Connexion utilisateur ETAPE 2 - Verification OTP
- * @route   POST /api/v1/auth/verify-login-otp
+ * @desc   
+ * @route   
  * @access  Public
  */
 const verifyLoginOTP = async (req, res) => {

@@ -115,3 +115,223 @@
 [2025-10-24 11:17:44] INFO: API DOCS: http://localhost:5000/api-docs
 [2025-10-24 11:17:44] INFO: ========================================
 [2025-10-24 11:18:14] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 11:44:02] INFO: ========================================
+[2025-10-24 11:44:02] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 11:44:02] INFO: Environnement: development
+[2025-10-24 11:44:02] INFO: URL: http://localhost:5000
+[2025-10-24 11:44:02] INFO: API Prefix: /digitontine
+[2025-10-24 11:44:02] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 11:44:02] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 11:44:02] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 11:44:02] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 11:44:02] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 11:44:02] INFO: ========================================
+[2025-10-24 11:44:03] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-24 11:44:03] INFO:  Base de données: digitontine
+[2025-10-24 11:44:09] INFO:  OTP connexion envoyé à ssenghor911@gmail.com
+[2025-10-24 11:44:09] INFO: OTP envoye a ssenghor911@gmail.com
+[2025-10-24 11:44:09] INFO:  AUDIT: LOGIN_STEP_1 on User
+[2025-10-24 12:10:58] WARN:  MongoDB déconnecté
+[2025-10-24 12:16:06] INFO:  OTP connexion envoyé à ssenghor911@gmail.com
+[2025-10-24 12:16:06] INFO: OTP envoye a ssenghor911@gmail.com
+[2025-10-24 12:16:06] INFO:  AUDIT: LOGIN_STEP_1 on User
+[2025-10-24 12:19:03] INFO: Connexion reussie - ssenghor911@gmail.com (Admin)
+[2025-10-24 12:19:03] INFO:  AUDIT: LOGIN_STEP_2 on User
+[2025-10-24 12:20:20] INFO: Trésorier créé sans photo - adamabaye1997@gmail.com par ssenghor911@gmail.com
+[2025-10-24 12:20:25] INFO:  Email identifiants envoyé à adamabaye1997@gmail.com
+[2025-10-24 12:20:25] INFO:  AUDIT: CREATE_USER on User
+[2025-10-24 12:31:22] WARN:  MongoDB déconnecté
+[2025-10-24 12:50:17] INFO: ========================================
+[2025-10-24 12:50:17] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 12:50:17] INFO: Environnement: development
+[2025-10-24 12:50:17] INFO: URL: http://localhost:5000
+[2025-10-24 12:50:17] INFO: API Prefix: /digitontine
+[2025-10-24 12:50:17] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 12:50:17] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 12:50:17] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 12:50:17] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 12:50:17] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 12:50:17] INFO: ========================================
+[2025-10-24 12:50:47] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 12:54:05] INFO: ========================================
+[2025-10-24 12:54:05] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 12:54:05] INFO: Environnement: development
+[2025-10-24 12:54:05] INFO: URL: http://localhost:5000
+[2025-10-24 12:54:05] INFO: API Prefix: /digitontine
+[2025-10-24 12:54:05] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 12:54:05] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 12:54:05] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 12:54:05] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 12:54:05] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 12:54:05] INFO: ========================================
+[2025-10-24 12:54:24] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 12:54:31] INFO: ========================================
+[2025-10-24 12:54:31] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 12:54:31] INFO: Environnement: development
+[2025-10-24 12:54:31] INFO: URL: http://localhost:5000
+[2025-10-24 12:54:31] INFO: API Prefix: /digitontine
+[2025-10-24 12:54:31] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 12:54:31] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 12:54:31] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 12:54:31] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 12:54:31] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 12:54:31] INFO: ========================================
+[2025-10-24 12:55:05] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-24 12:55:13] INFO: ========================================
+[2025-10-24 12:55:13] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 12:55:13] INFO: Environnement: development
+[2025-10-24 12:55:13] INFO: URL: http://localhost:5000
+[2025-10-24 12:55:13] INFO: API Prefix: /digitontine
+[2025-10-24 12:55:13] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 12:55:13] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 12:55:13] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 12:55:13] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 12:55:13] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 12:55:13] INFO: ========================================
+[2025-10-24 12:55:37] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-24 12:55:45] INFO: ========================================
+[2025-10-24 12:55:45] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 12:55:45] INFO: Environnement: development
+[2025-10-24 12:55:45] INFO: URL: http://localhost:5000
+[2025-10-24 12:55:45] INFO: API Prefix: /digitontine
+[2025-10-24 12:55:45] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 12:55:45] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 12:55:45] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 12:55:45] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 12:55:45] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 12:55:45] INFO: ========================================
+[2025-10-24 12:56:15] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 12:56:21] INFO: ========================================
+[2025-10-24 12:56:21] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 12:56:21] INFO: Environnement: development
+[2025-10-24 12:56:21] INFO: URL: http://localhost:5000
+[2025-10-24 12:56:21] INFO: API Prefix: /digitontine
+[2025-10-24 12:56:21] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 12:56:21] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 12:56:21] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 12:56:21] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 12:56:21] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 12:56:21] INFO: ========================================
+[2025-10-24 12:56:43] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-24 12:56:43] INFO:  Base de données: digitontine
+[2025-10-24 12:56:45] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-24 12:56:50] INFO: ========================================
+[2025-10-24 12:56:50] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 12:56:50] INFO: Environnement: development
+[2025-10-24 12:56:50] INFO: URL: http://localhost:5000
+[2025-10-24 12:56:50] INFO: API Prefix: /digitontine
+[2025-10-24 12:56:50] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 12:56:50] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 12:56:50] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 12:56:50] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 12:56:50] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 12:56:50] INFO: ========================================
+[2025-10-24 12:57:26] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 12:57:33] INFO: ========================================
+[2025-10-24 12:57:33] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 12:57:33] INFO: Environnement: development
+[2025-10-24 12:57:33] INFO: URL: http://localhost:5000
+[2025-10-24 12:57:33] INFO: API Prefix: /digitontine
+[2025-10-24 12:57:33] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 12:57:33] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 12:57:33] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 12:57:33] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 12:57:33] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 12:57:33] INFO: ========================================
+[2025-10-24 12:57:46] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 12:57:55] INFO: ========================================
+[2025-10-24 12:57:55] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 12:57:55] INFO: Environnement: development
+[2025-10-24 12:57:55] INFO: URL: http://localhost:5000
+[2025-10-24 12:57:55] INFO: API Prefix: /digitontine
+[2025-10-24 12:57:55] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 12:57:55] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 12:57:55] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 12:57:55] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 12:57:55] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 12:57:55] INFO: ========================================
+[2025-10-24 12:58:38] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 12:59:48] INFO: ========================================
+[2025-10-24 12:59:48] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 12:59:48] INFO: Environnement: development
+[2025-10-24 12:59:48] INFO: URL: http://localhost:5000
+[2025-10-24 12:59:48] INFO: API Prefix: /digitontine
+[2025-10-24 12:59:48] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 12:59:48] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 12:59:48] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 12:59:48] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 12:59:48] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 12:59:48] INFO: ========================================
+[2025-10-24 13:00:18] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 13:02:22] INFO: ========================================
+[2025-10-24 13:02:22] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 13:02:22] INFO: Environnement: development
+[2025-10-24 13:02:22] INFO: URL: http://localhost:5000
+[2025-10-24 13:02:22] INFO: API Prefix: /digitontine
+[2025-10-24 13:02:22] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 13:02:22] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 13:02:22] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 13:02:22] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 13:02:22] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 13:02:22] INFO: ========================================
+[2025-10-24 13:02:43] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 13:03:54] INFO: ========================================
+[2025-10-24 13:03:54] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 13:03:54] INFO: Environnement: development
+[2025-10-24 13:03:54] INFO: URL: http://localhost:5000
+[2025-10-24 13:03:54] INFO: API Prefix: /digitontine
+[2025-10-24 13:03:54] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 13:03:54] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 13:03:54] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 13:03:54] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 13:03:54] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 13:03:54] INFO: ========================================
+[2025-10-24 13:04:15] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 13:05:05] INFO: ========================================
+[2025-10-24 13:05:05] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 13:05:05] INFO: Environnement: development
+[2025-10-24 13:05:05] INFO: URL: http://localhost:5000
+[2025-10-24 13:05:05] INFO: API Prefix: /digitontine
+[2025-10-24 13:05:05] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 13:05:05] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 13:05:05] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 13:05:05] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 13:05:05] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 13:05:05] INFO: ========================================
+[2025-10-24 13:05:35] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 13:05:42] INFO: ========================================
+[2025-10-24 13:05:42] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 13:05:42] INFO: Environnement: development
+[2025-10-24 13:05:42] INFO: URL: http://localhost:5000
+[2025-10-24 13:05:42] INFO: API Prefix: /digitontine
+[2025-10-24 13:05:42] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 13:05:42] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 13:05:42] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 13:05:42] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 13:05:42] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 13:05:42] INFO: ========================================
+[2025-10-24 13:06:12] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 13:06:23] INFO: ========================================
+[2025-10-24 13:06:23] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 13:06:23] INFO: Environnement: development
+[2025-10-24 13:06:23] INFO: URL: http://localhost:5000
+[2025-10-24 13:06:23] INFO: API Prefix: /digitontine
+[2025-10-24 13:06:23] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 13:06:23] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 13:06:23] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 13:06:23] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 13:06:23] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 13:06:23] INFO: ========================================
+[2025-10-24 13:06:53] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 13:07:19] INFO: ========================================
+[2025-10-24 13:07:19] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 13:07:19] INFO: Environnement: development
+[2025-10-24 13:07:19] INFO: URL: http://localhost:5000
+[2025-10-24 13:07:19] INFO: API Prefix: /digitontine
+[2025-10-24 13:07:19] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 13:07:19] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 13:07:19] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 13:07:19] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 13:07:19] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 13:07:19] INFO: ========================================
+[2025-10-24 13:07:41] ERROR:  Erreur de connexion MongoDB:
