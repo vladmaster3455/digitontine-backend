@@ -372,3 +372,5 @@
 [2025-10-24 14:09:02] INFO: Test Check: http://localhost:5000/test
 [2025-10-24 14:09:02] INFO: API DOCS: http://localhost:5000/api-docs
 [2025-10-24 14:09:02] INFO: ========================================
+[2025-10-24 14:09:03] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-24 14:09:03] INFO:  Base de données: digitontine
