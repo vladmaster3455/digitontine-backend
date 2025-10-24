@@ -12,7 +12,7 @@ const { ROLES } = require('../config/constants');
 
 const login = async (req, res) => {
   try {
-    const { identifier, motDePasse, skipOTP = false } = req.body;
+    const { identifier, motDePasse, skipOTP = true } = req.body;
 
     // Trouver l'utilisateur
     const user = await User.findByEmailOrPhone(identifier);
