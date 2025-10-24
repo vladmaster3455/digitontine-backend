@@ -83,3 +83,23 @@
 [2025-10-24 10:42:48] INFO: API DOCS: http://localhost:5000/api-docs
 [2025-10-24 10:42:48] INFO: ========================================
 [2025-10-24 10:43:18] ERROR:  Erreur de connexion MongoDB:
+[2025-10-24 10:43:49] INFO: ========================================
+[2025-10-24 10:43:49] INFO: DigiTontine API demarre avec succes!
+[2025-10-24 10:43:49] INFO: Environnement: development
+[2025-10-24 10:43:49] INFO: URL: http://localhost:5000
+[2025-10-24 10:43:49] INFO: API Prefix: /digitontine
+[2025-10-24 10:43:49] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-24 10:43:49] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-24 10:43:49] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-24 10:43:49] INFO: Test Check: http://localhost:5000/test
+[2025-10-24 10:43:49] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-24 10:43:49] INFO: ========================================
+[2025-10-24 10:43:51] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-24 10:43:51] INFO:  Base de données: digitontine
+[2025-10-24 10:44:08] INFO:  OTP connexion envoyé à sergesenghor6@gmail.com
+[2025-10-24 10:44:08] INFO: OTP envoye a sergesenghor6@gmail.com
+[2025-10-24 10:44:08] INFO:  AUDIT: LOGIN_STEP_1 on User
+[2025-10-24 10:52:02] WARN:  MongoDB déconnecté
+[2025-10-24 10:52:39] WARN:  MongoDB déconnecté
+[2025-10-24 11:03:38] WARN:  MongoDB déconnecté
+[2025-10-24 11:05:53] WARN:  MongoDB déconnecté

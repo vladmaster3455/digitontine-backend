@@ -11,12 +11,22 @@ const validateLogin = [
     .notEmpty()
     .withMessage('Email ou numero de telephone requis')
     .custom((value) => {
-      const isEmail = value.includes('@');
+      // Vérifier si c'est un email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const isEmail = emailRegex.test(value);
+      
+      // Si c'est un email, accepter directement
+      if (isEmail) {
+        return true;
+      }
+      
+      // Sinon, vérifier si c'est un téléphone valide
       const isPhone = isValidSenegalPhone(value);
       
-      if (!isEmail && !isPhone) {
+      if (!isPhone) {
         throw new Error('Format email ou telephone invalide');
       }
+      
       return true;
     }),
 
