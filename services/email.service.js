@@ -662,7 +662,187 @@ const sendTontineUnblockedNotification = async (user, tontine) => {
     throw error;
   }
 };
+/**
+ * Envoyer OTP de connexion
+ */
+const sendLoginOTP = async (user, code) => {
+  try {
+    const transporter = createTransporter();
 
+    const content = `
+      <p>Bonjour <strong>${user.prenom} ${user.nom}</strong>,</p>
+      
+      <p>Vous tentez de vous connecter à DigiTontine.</p>
+      
+      <div class="info-box">
+        <strong>Votre code de vérification :</strong>
+        <div style="font-size: 32px; font-weight: bold; color: #667eea; text-align: center; margin: 20px 0; letter-spacing: 5px;">
+          ${code}
+        </div>
+      </div>
+      
+      <div class="warning-box">
+         Ce code est valide pendant <strong>15 minutes</strong><br>
+         Vous avez <strong>3 tentatives</strong> maximum
+      </div>
+      
+      <p>Si vous n'êtes pas à l'origine de cette tentative de connexion, ignorez cet email et changez votre mot de passe immédiatement.</p>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: user.email,
+      subject: ' Code de connexion DigiTontine',
+      html: getEmailTemplate('Code de connexion', content),
+    });
+
+    logger.info(` OTP connexion envoyé à ${user.email}`);
+    return true;
+  } catch (error) {
+    logger.error(' Erreur envoi OTP connexion:', error);
+    throw error;
+  }
+};
+
+/**
+ * Envoyer demande de confirmation de changement de mot de passe
+ */
+const sendPasswordChangeConfirmationRequest = async (user, confirmationToken) => {
+  try {
+    const transporter = createTransporter();
+
+    const approveUrl = `${process.env.FRONTEND_URL}/auth/confirm-password-change/${confirmationToken}?action=approve`;
+    const rejectUrl = `${process.env.FRONTEND_URL}/auth/confirm-password-change/${confirmationToken}?action=reject`;
+
+    const content = `
+      <p>Bonjour <strong>${user.prenom} ${user.nom}</strong>,</p>
+      
+      <div class="warning-box">
+        <strong> Demande de changement de mot de passe</strong><br>
+        Une demande de changement de mot de passe a été effectuée sur votre compte.
+      </div>
+      
+      <div class="info-box">
+        <strong> Date de la demande :</strong> ${formatDate(new Date(), 'full')}<br>
+        <strong> Validité :</strong> 30 minutes
+      </div>
+      
+      <p><strong>Êtes-vous à l'origine de cette demande ?</strong></p>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${approveUrl}" class="button" style="background: #28a745; margin-right: 10px;">
+           OUI, confirmer le changement
+        </a>
+        <a href="${rejectUrl}" class="button" style="background: #dc3545;">
+           NON, annuler la demande
+        </a>
+      </div>
+      
+      <div class="warning-box">
+        <strong>Important :</strong>
+        <ul>
+          <li>Si vous confirmez (OUI), votre nouveau mot de passe sera activé</li>
+          <li>Si vous refusez (NON), votre ancien mot de passe restera actif</li>
+          <li>Vous DEVEZ cliquer sur l'un des boutons pour vous reconnecter</li>
+          <li>Ce lien expire dans 30 minutes</li>
+        </ul>
+      </div>
+      
+      <p style="color: #dc3545; font-weight: bold;">
+         Si vous n'êtes pas à l'origine de cette demande, cliquez sur NON et contactez immédiatement l'administrateur.
+      </p>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: user.email,
+      subject: ' Confirmation requise - Changement de mot de passe',
+      html: getEmailTemplate('Confirmation requise', content),
+    });
+
+    logger.info(` Email confirmation changement MDP envoyé à ${user.email}`);
+    return true;
+  } catch (error) {
+    logger.error(' Erreur envoi confirmation changement MDP:', error);
+    throw error;
+  }
+};
+
+/**
+ * Envoyer notification de changement de mot de passe approuvé
+ */
+const sendPasswordChangeApproved = async (user) => {
+  try {
+    const transporter = createTransporter();
+
+    const content = `
+      <p>Bonjour <strong>${user.prenom} ${user.nom}</strong>,</p>
+      
+      <div class="success-box">
+         <strong>Changement de mot de passe confirmé</strong><br>
+        Date : ${formatDate(new Date(), 'full')}
+      </div>
+      
+      <p>Votre nouveau mot de passe est maintenant actif. Vous pouvez vous connecter avec celui-ci.</p>
+      
+      <div style="text-align: center;">
+        <a href="${process.env.FRONTEND_URL}/login" class="button">🔐 Se connecter</a>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: user.email,
+      subject: ' Mot de passe changé avec succès',
+      html: getEmailTemplate('Changement confirmé', content),
+    });
+
+    logger.info(` Email confirmation approuvée envoyé à ${user.email}`);
+    return true;
+  } catch (error) {
+    logger.error(' Erreur envoi confirmation approuvée:', error);
+    throw error;
+  }
+};
+
+/**
+ * Envoyer notification de changement de mot de passe rejeté
+ */
+const sendPasswordChangeRejected = async (user) => {
+  try {
+    const transporter = createTransporter();
+
+    const content = `
+      <p>Bonjour <strong>${user.prenom} ${user.nom}</strong>,</p>
+      
+      <div class="info-box">
+         <strong>Changement de mot de passe annulé</strong><br>
+        Date : ${formatDate(new Date(), 'full')}
+      </div>
+      
+      <p>Le changement de mot de passe a été annulé. Votre ancien mot de passe reste actif.</p>
+      
+    
+      
+      <div style="text-align: center;">
+        <a href="${process.env.FRONTEND_URL}/login" class="button">🔐 Se connecter</a>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: user.email,
+      subject: 'ℹ Changement de mot de passe annulé',
+      html: getEmailTemplate('Changement annulé', content),
+    });
+
+    logger.info(` Email confirmation rejetée envoyé à ${user.email}`);
+    return true;
+  } catch (error) {
+    logger.error(' Erreur envoi confirmation rejetée:', error);
+    throw error;
+  }
+};
 /**
  * Notifier clôture de tontine (US 2.8)
  */
@@ -839,5 +1019,9 @@ module.exports = {
   // MÉTHODES TRANSACTIONS 
   sendPaymentRejectedNotification,
   sendTirageNotification, 
+  sendLoginOTP,
+  sendPasswordChangeConfirmationRequest,
+  sendPasswordChangeApproved,
+  sendPasswordChangeRejected,
   
 };

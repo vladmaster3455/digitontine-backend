@@ -123,6 +123,20 @@ const UserSchema = new mongoose.Schema(
     // Tokens et sécurité
     resetPasswordToken: String,
     resetPasswordExpire: Date,
+    //lo
+    loginOTP: {
+  code: String,
+  codeExpiry: Date,
+  attempts: { type: Number, default: 0 },
+},
+
+// pour confirmation changement de mot de passe
+pendingPasswordChange: {
+  newPasswordHash: String,
+  confirmationToken: String,
+  confirmationExpiry: Date,
+  requestedAt: Date,
+},
     fcmTokens: [
       {
         token: String,
@@ -270,7 +284,130 @@ UserSchema.methods.updateProfilePhoto = function (url, publicId) {
     uploadedAt: Date.now(),
   };
 };
+/**
+ * Générer OTP de connexion
+ */
+UserSchema.methods.generateLoginOTP = function () {
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const crypto = require('crypto');
+  this.loginOTP = {
+    code: crypto.createHash('sha256').update(code).digest('hex'),
+    codeExpiry: Date.now() + 15 * 60 * 1000, // 15 minutes
+    attempts: 0,
+  };
+  return code;
+};
 
+/**
+ * Vérifier OTP de connexion
+ */
+UserSchema.methods.verifyLoginOTP = function (code) {
+  const crypto = require('crypto');
+  
+  // Vérifier expiration
+  if (Date.now() > this.loginOTP.codeExpiry) {
+    return { success: false, message: 'Code expiré' };
+  }
+
+  // Vérifier tentatives
+  if (this.loginOTP.attempts >= 3) {
+    return { success: false, message: 'Nombre maximum de tentatives atteint' };
+  }
+
+  // Vérifier code
+  const hashedInput = crypto.createHash('sha256').update(code).digest('hex');
+  this.loginOTP.attempts += 1;
+
+  if (hashedInput === this.loginOTP.code) {
+    // Nettoyer l'OTP après validation
+    this.loginOTP = {
+      code: undefined,
+      codeExpiry: undefined,
+      attempts: 0,
+    };
+    return { success: true, message: 'Code validé' };
+  }
+
+  return { success: false, message: 'Code incorrect' };
+};
+
+/**
+ * Créer une demande de changement de mot de passe (en attente de confirmation)
+ */
+UserSchema.methods.createPendingPasswordChange = async function (newPassword) {
+  const crypto = require('crypto');
+  const bcrypt = require('bcryptjs');
+  
+  // Hasher le nouveau mot de passe
+  const salt = await bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS) || 10);
+  const newPasswordHash = await bcrypt.hash(newPassword, salt);
+  
+  // Générer token de confirmation
+  const confirmationToken = crypto.randomBytes(32).toString('hex');
+  
+  this.pendingPasswordChange = {
+    newPasswordHash,
+    confirmationToken: crypto.createHash('sha256').update(confirmationToken).digest('hex'),
+    confirmationExpiry: Date.now() + 30 * 60 * 1000, // 30 minutes
+    requestedAt: Date.now(),
+  };
+  
+  return confirmationToken;
+};
+
+/**
+ * Confirmer le changement de mot de passe
+ */
+UserSchema.methods.confirmPasswordChange = function (token) {
+  const crypto = require('crypto');
+  
+  if (!this.pendingPasswordChange || !this.pendingPasswordChange.confirmationToken) {
+    return { success: false, message: 'Aucun changement de mot de passe en attente' };
+  }
+  
+  // Vérifier expiration
+  if (Date.now() > this.pendingPasswordChange.confirmationExpiry) {
+    this.pendingPasswordChange = undefined;
+    return { success: false, message: 'Lien de confirmation expiré' };
+  }
+  
+  // Vérifier token
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  
+  if (hashedToken === this.pendingPasswordChange.confirmationToken) {
+    // Appliquer le changement
+    this.motDePasse = this.pendingPasswordChange.newPasswordHash;
+    this.lastPasswordChange = Date.now();
+    this.isFirstLogin = false;
+    this.pendingPasswordChange = undefined;
+    
+    return { success: true, message: 'Mot de passe changé avec succès' };
+  }
+  
+  return { success: false, message: 'Lien de confirmation invalide' };
+};
+
+/**
+ * Rejeter le changement de mot de passe
+ */
+UserSchema.methods.rejectPasswordChange = function (token) {
+  const crypto = require('crypto');
+  
+  if (!this.pendingPasswordChange || !this.pendingPasswordChange.confirmationToken) {
+    return { success: false, message: 'Aucun changement de mot de passe en attente' };
+  }
+  
+  // Vérifier token
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  
+  if (hashedToken === this.pendingPasswordChange.confirmationToken) {
+    // Annuler le changement
+    this.pendingPasswordChange = undefined;
+    return { success: true, message: 'Changement de mot de passe annulé' };
+  }
+  
+  return { success: false, message: 'Lien invalide' };
+};
 // ========================================
 // MÉTHODES STATIQUES
 // ========================================

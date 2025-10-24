@@ -9,63 +9,112 @@ const crypto = require('crypto');
 const { ROLES } = require('../config/constants');
 
 /**
- * @desc    Connexion utilisateur (Admin/Trésorier/Membre)
+ * @desc    Connexion utilisateur ETAPE 1 - Envoie OTP
  * @route   POST /api/v1/auth/login
  * @access  Public
- * 
- * US 1.1, 1.5 : Connexion
  */
-
 const login = async (req, res) => {
   try {
     const { identifier, motDePasse } = req.body;
 
-    // Trouver l'utilisateur par email ou téléphone
+    // Trouver l'utilisateur
     const user = await User.findByEmailOrPhone(identifier);
 
     if (!user) {
-      logger.warn(`Tentative connexion échouée - Utilisateur introuvable: ${identifier}`);
-      
-      await User.findOneAndUpdate(
-        { $or: [{ email: identifier }, { numeroTelephone: identifier }] },
-        { $push: { loginHistory: { date: Date.now(), ip: req.ip, userAgent: req.get('user-agent'), success: false } } }
-      );
-
+      logger.warn(`Tentative connexion echouee - Utilisateur introuvable: ${identifier}`);
       return ApiResponse.unauthorized(res, 'Identifiants incorrects');
     }
 
-    // Vérifier si compte actif
+    // Verifier si compte actif
     if (!user.isActive) {
-      logger.warn(`Tentative connexion compte désactivé: ${user.email}`);
-      return ApiResponse.forbidden(res, 'Votre compte a été désactivé. Contactez l\'administrateur.');
+      logger.warn(`Tentative connexion compte desactive: ${user.email}`);
+      return ApiResponse.forbidden(res, 'Votre compte a ete desactive. Contactez l\'administrateur.');
     }
 
-    // Vérifier mot de passe
+    // Verifier mot de passe
     const isPasswordValid = await user.comparePassword(motDePasse);
 
     if (!isPasswordValid) {
       logger.warn(`Mot de passe incorrect pour: ${user.email}`);
-      
       user.logLogin(req.ip, req.get('user-agent'), false);
       await user.save();
-
       return ApiResponse.unauthorized(res, 'Identifiants incorrects');
     }
 
-    // Connexion réussie
+    // Generer et envoyer OTP
+    const otpCode = user.generateLoginOTP();
+    await user.save();
+
+    // Envoyer email avec code
+    try {
+      await emailService.sendLoginOTP(user, otpCode);
+    } catch (emailError) {
+      logger.error('Erreur envoi OTP:', emailError);
+      // Nettoyer l'OTP si echec
+      user.loginOTP = undefined;
+      await user.save();
+      return ApiResponse.error(res, 'Erreur lors de l\'envoi du code. Reessayez.', 500);
+    }
+
+    logger.info(`OTP envoye a ${user.email}`);
+
+    return ApiResponse.success(res, {
+      requiresOTP: true,
+      email: user.email,
+      message: 'Un code de verification a ete envoye a votre email',
+      expiresIn: '15 minutes',
+    }, 'Code envoye');
+
+  } catch (error) {
+    logger.error('Erreur login:', error);
+    return ApiResponse.serverError(res);
+  }
+};
+
+/**
+ * @desc    Connexion utilisateur ETAPE 2 - Verification OTP
+ * @route   POST /api/v1/auth/verify-login-otp
+ * @access  Public
+ */
+const verifyLoginOTP = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    // Trouver l'utilisateur
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      logger.warn(`Verification OTP - Utilisateur introuvable: ${email}`);
+      return ApiResponse.unauthorized(res, 'Email ou code incorrect');
+    }
+
+    // Verifier si compte actif
+    if (!user.isActive) {
+      return ApiResponse.forbidden(res, 'Compte desactive');
+    }
+
+    // Verifier l'OTP
+    const verification = user.verifyLoginOTP(code);
+
+    if (!verification.success) {
+      await user.save(); // Sauvegarder les tentatives
+      logger.warn(`OTP invalide pour ${user.email}: ${verification.message}`);
+      return ApiResponse.error(res, verification.message, 400);
+    }
+
+    // OTP VALIDE - Logger la connexion
     user.logLogin(req.ip, req.get('user-agent'), true);
     await user.save();
 
-    //  RECHARGER l'utilisateur pour avoir isFirstLogin à jour
+    // Recharger l'utilisateur
     const updatedUser = await User.findById(user._id);
 
-    // Générer tokens JWT avec les données à jour
+    // Generer tokens JWT
     const { accessToken, refreshToken } = generateTokenPair(updatedUser);
 
-    logger.info(`Connexion réussie - ${updatedUser.email} (${updatedUser.role})`);
+    logger.info(`Connexion reussie - ${updatedUser.email} (${updatedUser.role})`);
 
-    // CONSTRUCTION DE LA RÉPONSE AVEC INDICATION CLAIRE
-    const responseData = {
+    return ApiResponse.success(res, {
       user: {
         id: updatedUser._id,
         prenom: updatedUser.prenom,
@@ -79,148 +128,32 @@ const login = async (req, res) => {
       accessToken,
       refreshToken,
       requiresPasswordChange: updatedUser.isFirstLogin,
-    };
-
-    // MESSAGE SPÉCIAL SI CHANGEMENT DE MOT DE PASSE REQUIS
-    let message = 'Connexion réussie';
-    
-   
-
-    return ApiResponse.success(res, responseData, message);
+    }, 'Connexion reussie');
 
   } catch (error) {
-    logger.error('Erreur login:', error);
+    logger.error('Erreur verification OTP:', error);
     return ApiResponse.serverError(res);
   }
 };
 
 /**
- * @desc    Changement de mot de passe (première connexion OBLIGATOIRE)
+ * @desc    Changement de mot de passe (premiere connexion OBLIGATOIRE)
  * @route   POST /api/v1/auth/first-password-change
- * @access  Private (tous)
- * 
- * US 1.2 : Changement obligatoire première connexion
+ * @access  Private
  */
 const firstPasswordChange = async (req, res) => {
   try {
     const { ancienMotDePasse, nouveauMotDePasse } = req.body;
     const user = req.user;
 
-    // 1. LOG POUR DEBUG
-    logger.info(`Tentative changement MDP première connexion - User: ${user.email}, isFirstLogin: ${user.isFirstLogin}`);
+    logger.info(`Tentative changement MDP premiere connexion - User: ${user.email}`);
 
-    // 2. Vérifier que c'est bien la première connexion
     if (!user.isFirstLogin) {
-      logger.warn(`Utilisateur ${user.email} a tenté de changer son MDP via first-password-change alors qu'il n'est pas en première connexion`);
-      return ApiResponse.error(res, 'Cette action est réservée à la première connexion. Utilisez /change-password à la place.', 400);
+      logger.warn(`Utilisateur ${user.email} pas en premiere connexion`);
+      return ApiResponse.error(res, 'Cette action est reservee a la premiere connexion', 400);
     }
 
-    // 3. Vérifier que les champs sont présents
-    if (!ancienMotDePasse || !nouveauMotDePasse) {
-      return ApiResponse.error(res, 'L\'ancien et le nouveau mot de passe sont requis', 400);
-    }
-
-    // 4. Vérifier ancien mot de passe
-    let isOldPasswordValid;
-    try {
-      isOldPasswordValid = await user.comparePassword(ancienMotDePasse);
-    } catch (error) {
-      logger.error(`Erreur lors de la comparaison du mot de passe pour ${user.email}:`, error);
-      return ApiResponse.error(res, 'Erreur lors de la vérification du mot de passe', 500);
-    }
-
-    if (!isOldPasswordValid) {
-      logger.warn(`Ancien mot de passe incorrect pour ${user.email}`);
-      return ApiResponse.error(res, 'Ancien mot de passe incorrect', 400);
-    }
-
-    // 5. Vérifier que nouveau ≠ ancien
-    if (ancienMotDePasse === nouveauMotDePasse) {
-      return ApiResponse.error(res, 'Le nouveau mot de passe doit être différent de l\'ancien', 400);
-    }
-
-    // 6. Valider force du nouveau mot de passe
-    let validation;
-    try {
-      validation = validatePasswordStrength(nouveauMotDePasse);
-      
-      if (!validation.isValid) {
-        return ApiResponse.validationError(res, validation.errors.map(err => ({ message: err })));
-      }
-    } catch (error) {
-      logger.error(`Erreur validation mot de passe pour ${user.email}:`, error);
-      // Si la fonction validatePasswordStrength n'existe pas, on fait une validation basique
-      if (nouveauMotDePasse.length < 8) {
-        return ApiResponse.error(res, 'Le mot de passe doit contenir au moins 8 caractères', 400);
-      }
-      // On continue si la validation échoue mais que le MDP a au moins 8 caractères
-    }
-
-    // 7. Mettre à jour le mot de passe
-    try {
-      user.motDePasse = nouveauMotDePasse;
-      user.isFirstLogin = false;
-      user.lastPasswordChange = Date.now();
-      await user.save();
-      
-      logger.info(` MDP sauvegardé avec isFirstLogin: ${user.isFirstLogin}`);
-    } catch (error) {
-      logger.error(`Erreur lors de la sauvegarde du nouveau mot de passe pour ${user.email}:`, error);
-      return ApiResponse.error(res, 'Erreur lors de la sauvegarde du nouveau mot de passe', 500);
-    }
-
-    //  CRITIQUE : RECHARGER L'UTILISATEUR DEPUIS LA DB
-    // Pour s'assurer que isFirstLogin: false est bien persisté
-    const updatedUser = await User.findById(user._id);
-    
-    if (!updatedUser) {
-      logger.error(`Impossible de recharger l'utilisateur ${user.email} après changement de MDP`);
-      return ApiResponse.error(res, 'Erreur lors de la mise à jour', 500);
-    }
-
-    logger.info(` User rechargé - isFirstLogin: ${updatedUser.isFirstLogin}`);
-
-    //  GÉNÉRER DE NOUVEAUX TOKENS AVEC L'UTILISATEUR RECHARGÉ
-    const { accessToken, refreshToken } = generateTokenPair(updatedUser);
-
-    // 8. Envoyer email confirmation (ne pas bloquer si ça échoue)
-    try {
-      await emailService.sendPasswordChangeConfirmation(updatedUser);
-    } catch (emailError) {
-      logger.error(`Erreur envoi email confirmation pour ${updatedUser.email}:`, emailError);
-      // On ne bloque pas la réponse si l'email échoue
-    }
-
-    return ApiResponse.success(res, {
-      message: 'Mot de passe changé avec succès. Vous avez accès à l\'application.',
-      user: {
-        id: updatedUser._id,
-        email: updatedUser.email,
-        isFirstLogin: updatedUser.isFirstLogin, // Doit être FALSE
-      },
-      accessToken,
-      refreshToken,
-    }, 'Mot de passe changé');
-
-  } catch (error) {
-    logger.error(`Erreur globale firstPasswordChange:`, error);
-    logger.error(`Stack trace:`, error.stack);
-    return ApiResponse.serverError(res, 'Une erreur est survenue lors du changement de mot de passe');
-  }
-};
-/**
- * @desc    Changement de mot de passe volontaire
- * @route   POST /api/v1/auth/change-password
- * @access  Private (tous)
- * 
- * US 1.6 : Changement volontaire
- */
-const changePassword = async (req, res) => {
-  try {
-    const { ancienMotDePasse, nouveauMotDePasse } = req.body;
-    const user = req.user;
-
-    // Vérifier ancien mot de passe
+    // Verifier ancien mot de passe
     const isOldPasswordValid = await user.comparePassword(ancienMotDePasse);
     if (!isOldPasswordValid) {
       return ApiResponse.error(res, 'Ancien mot de passe incorrect', 400);
@@ -232,84 +165,217 @@ const changePassword = async (req, res) => {
       return ApiResponse.validationError(res, validation.errors.map(err => ({ message: err })));
     }
 
-    // Vérifier différence
+    // Verifier difference
     if (ancienMotDePasse === nouveauMotDePasse) {
-      return ApiResponse.error(res, 'Le nouveau mot de passe doit être différent', 400);
+      return ApiResponse.error(res, 'Le nouveau mot de passe doit etre different', 400);
     }
 
-    // Mettre à jour
-    user.motDePasse = nouveauMotDePasse;
-    user.lastPasswordChange = Date.now();
+    // Creer demande de confirmation
+    const confirmationToken = await user.createPendingPasswordChange(nouveauMotDePasse);
     await user.save();
 
-    logger.info(`✓ Changement MDP volontaire - ${user.email}`);
-
-    // Email confirmation
+    // Envoyer email de confirmation
     try {
-      await emailService.sendPasswordChangeConfirmation(user);
+      await emailService.sendPasswordChangeConfirmationRequest(user, confirmationToken);
     } catch (emailError) {
-      logger.error('Erreur email:', emailError);
+      logger.error('Erreur envoi email:', emailError);
+      user.pendingPasswordChange = undefined;
+      await user.save();
+      return ApiResponse.error(res, 'Erreur lors de l\'envoi de l\'email', 500);
     }
 
+    logger.info(`Demande changement MDP premiere connexion envoyee a ${user.email}`);
+
     return ApiResponse.success(res, {
-      message: 'Mot de passe changé. Reconnectez-vous avec le nouveau mot de passe.',
-    }, 'Mot de passe changé');
+      requiresConfirmation: true,
+      message: 'Un email de confirmation a ete envoye. Veuillez confirmer le changement pour acceder a l\'application.',
+      email: user.email,
+    }, 'Confirmation requise');
 
   } catch (error) {
-    logger.error('✗ Erreur changePassword:', error);
+    logger.error('Erreur firstPasswordChange:', error);
     return ApiResponse.serverError(res);
   }
 };
+
 /**
- * @desc    Demander réinitialisation mot de passe (étape 1)
+ * @desc    Changement de mot de passe volontaire
+ * @route   POST /api/v1/auth/change-password
+ * @access  Private
+ */
+const changePassword = async (req, res) => {
+  try {
+    const { ancienMotDePasse, nouveauMotDePasse } = req.body;
+    const user = req.user;
+
+    // Verifier ancien mot de passe
+    const isOldPasswordValid = await user.comparePassword(ancienMotDePasse);
+    if (!isOldPasswordValid) {
+      return ApiResponse.error(res, 'Ancien mot de passe incorrect', 400);
+    }
+
+    // Valider nouveau mot de passe
+    const validation = validatePasswordStrength(nouveauMotDePasse);
+    if (!validation.isValid) {
+      return ApiResponse.validationError(res, validation.errors.map(err => ({ message: err })));
+    }
+
+    // Verifier difference
+    if (ancienMotDePasse === nouveauMotDePasse) {
+      return ApiResponse.error(res, 'Le nouveau mot de passe doit etre different', 400);
+    }
+
+    // Creer demande de confirmation
+    const confirmationToken = await user.createPendingPasswordChange(nouveauMotDePasse);
+    await user.save();
+
+    // Envoyer email de confirmation
+    try {
+      await emailService.sendPasswordChangeConfirmationRequest(user, confirmationToken);
+    } catch (emailError) {
+      logger.error('Erreur envoi email:', emailError);
+      user.pendingPasswordChange = undefined;
+      await user.save();
+      return ApiResponse.error(res, 'Erreur lors de l\'envoi de l\'email', 500);
+    }
+
+    logger.info(`Demande changement MDP envoyee a ${user.email}`);
+
+    return ApiResponse.success(res, {
+      requiresConfirmation: true,
+      message: 'Un email de confirmation a ete envoye. Veuillez verifier votre boite mail et confirmer le changement.',
+      email: user.email,
+    }, 'Confirmation requise');
+
+  } catch (error) {
+    logger.error('Erreur changePassword:', error);
+    return ApiResponse.serverError(res);
+  }
+};
+
+/**
+ * @desc    Confirmer changement de mot de passe
+ * @route   GET /api/v1/auth/confirm-password-change/:token
+ * @access  Public
+ */
+const confirmPasswordChange = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { action } = req.query; // 'approve' ou 'reject'
+
+    if (!['approve', 'reject'].includes(action)) {
+      return ApiResponse.error(res, 'Action invalide (approve ou reject)', 400);
+    }
+
+    // Trouver l'utilisateur avec ce token
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      'pendingPasswordChange.confirmationToken': hashedToken,
+      'pendingPasswordChange.confirmationExpiry': { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return ApiResponse.error(res, 'Lien invalide ou expire', 400);
+    }
+
+    if (action === 'approve') {
+      // Approuver le changement
+      const result = user.confirmPasswordChange(token);
+      
+      if (!result.success) {
+        return ApiResponse.error(res, result.message, 400);
+      }
+
+      await user.save();
+
+      // Envoyer email de confirmation
+      try {
+        await emailService.sendPasswordChangeApproved(user);
+      } catch (emailError) {
+        logger.error('Erreur email confirmation:', emailError);
+      }
+
+      logger.info(`Changement MDP confirme - ${user.email}`);
+
+      return ApiResponse.success(res, {
+        message: 'Mot de passe change avec succes. Vous pouvez maintenant vous connecter.',
+        canLogin: true,
+      }, 'Changement confirme');
+
+    } else {
+      // Rejeter le changement
+      const result = user.rejectPasswordChange(token);
+      
+      if (!result.success) {
+        return ApiResponse.error(res, result.message, 400);
+      }
+
+      await user.save();
+
+      // Envoyer email d'annulation
+      try {
+        await emailService.sendPasswordChangeRejected(user);
+      } catch (emailError) {
+        logger.error('Erreur email rejet:', emailError);
+      }
+
+      logger.info(`Changement MDP rejete - ${user.email}`);
+
+      return ApiResponse.success(res, {
+        message: 'Changement annule. Votre ancien mot de passe reste actif.',
+        canLogin: true,
+      }, 'Changement annule');
+    }
+
+  } catch (error) {
+    logger.error('Erreur confirmPasswordChange:', error);
+    return ApiResponse.serverError(res);
+  }
+};
+
+/**
+ * @desc    Demander reinitialisation mot de passe (etape 1)
  * @route   POST /api/v1/auth/forgot-password
  * @access  Public
- * 
- * US 1.7 : Mot de passe oublié
  */
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Rechercher l'utilisateur par email
     const user = await User.findOne({ email: email.toLowerCase() });
 
-    // ERREUR SI EMAIL N'EXISTE PAS
     if (!user) {
       logger.warn(`Tentative reset MDP - Email inexistant: ${email}`);
-      return ApiResponse.notFound(res, 'Aucun compte associé à cet email');
+      return ApiResponse.notFound(res, 'Aucun compte associe a cet email');
     }
 
-    // Vérifier si le compte est actif
     if (!user.isActive) {
-      logger.warn(`Tentative reset MDP - Compte désactivé: ${email}`);
-      return ApiResponse.forbidden(res, 'Ce compte est désactivé. Contactez l\'administrateur.');
+      logger.warn(`Tentative reset MDP - Compte desactive: ${email}`);
+      return ApiResponse.forbidden(res, 'Ce compte est desactive. Contactez l\'administrateur.');
     }
 
-    // Générer code 6 chiffres
+    // Generer code 6 chiffres
     const resetCode = user.generatePasswordResetToken();
     await user.save();
 
     // Envoyer email avec code
     try {
       await emailService.sendPasswordResetCode(user, resetCode);
-      logger.info(`Code reset envoyé à ${user.email}`);
+      logger.info(`Code reset envoye a ${user.email}`);
     } catch (emailError) {
       logger.error('Erreur envoi email reset:', emailError);
-      
-      // Nettoyer le token si l'envoi échoue
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
-      
-      return ApiResponse.error(res, 'Erreur lors de l\'envoi de l\'email. Veuillez réessayer plus tard.', 500);
+      return ApiResponse.error(res, 'Erreur lors de l\'envoi de l\'email. Veuillez reessayer plus tard.', 500);
     }
 
     return ApiResponse.success(res, {
-      message: 'Un code de vérification a été envoyé à votre email.',
+      message: 'Un code de verification a ete envoye a votre email.',
       email: user.email,
       expiresIn: '15 minutes',
-    }, 'Code envoyé');
+    }, 'Code envoye');
 
   } catch (error) {
     logger.error('Erreur forgotPassword:', error);
@@ -318,17 +384,15 @@ const forgotPassword = async (req, res) => {
 };
 
 /**
- * @desc    Réinitialiser mot de passe avec code (étape 2)
+ * @desc    Reinitialiser mot de passe avec code ET confirmation
  * @route   POST /api/v1/auth/reset-password
  * @access  Public
- * 
- * US 1.7 : Reset avec code
  */
 const resetPassword = async (req, res) => {
   try {
     const { email, code, nouveauMotDePasse } = req.body;
 
-    // Hasher le code reçu pour comparaison
+    // Hasher le code recu pour comparaison
     const hashedCode = crypto.createHash('sha256').update(code).digest('hex');
 
     // Rechercher utilisateur avec token valide
@@ -338,16 +402,14 @@ const resetPassword = async (req, res) => {
       resetPasswordExpire: { $gt: Date.now() },
     });
 
-    // ERREUR SI CODE INVALIDE OU EXPIRÉ
     if (!user) {
-      logger.warn(`Code reset invalide ou expiré pour: ${email}`);
-      return ApiResponse.error(res, 'Code invalide ou expiré. Veuillez demander un nouveau code.', 400);
+      logger.warn(`Code reset invalide ou expire pour: ${email}`);
+      return ApiResponse.error(res, 'Code invalide ou expire. Veuillez demander un nouveau code.', 400);
     }
 
-    // Vérifier si le compte est actif
     if (!user.isActive) {
-      logger.warn(`Tentative reset - Compte désactivé: ${email}`);
-      return ApiResponse.forbidden(res, 'Ce compte est désactivé. Contactez l\'administrateur.');
+      logger.warn(`Tentative reset - Compte desactive: ${email}`);
+      return ApiResponse.forbidden(res, 'Ce compte est desactive. Contactez l\'administrateur.');
     }
 
     // Valider force du nouveau mot de passe
@@ -356,39 +418,40 @@ const resetPassword = async (req, res) => {
       return ApiResponse.validationError(res, validation.errors.map(err => ({ message: err })));
     }
 
-    // Réinitialiser le mot de passe
-    user.motDePasse = nouveauMotDePasse;
+    // Creer demande de confirmation (au lieu d'appliquer directement)
+    const confirmationToken = await user.createPendingPasswordChange(nouveauMotDePasse);
+    
+    // Nettoyer le reset token (deja utilise)
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
-    user.lastPasswordChange = Date.now();
-    
-    // Si c'était la première connexion, on la marque comme effectuée
-    if (user.isFirstLogin) {
-      user.isFirstLogin = false;
-    }
     
     await user.save();
 
-    logger.info(`Reset MDP réussi - ${user.email}`);
-
     // Envoyer email de confirmation
     try {
-      await emailService.sendPasswordChangeConfirmation(user);
+      await emailService.sendPasswordChangeConfirmationRequest(user, confirmationToken);
     } catch (emailError) {
       logger.error('Erreur envoi email confirmation:', emailError);
-      // On continue même si l'email échoue
+      user.pendingPasswordChange = undefined;
+      await user.save();
+      return ApiResponse.error(res, 'Erreur lors de l\'envoi de l\'email de confirmation', 500);
     }
 
+    logger.info(`Demande reinitialisation MDP envoyee a ${user.email}`);
+
     return ApiResponse.success(res, {
-      message: 'Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.',
-      canLogin: true,
-    }, 'Mot de passe réinitialisé');
+      requiresConfirmation: true,
+      message: 'Un email de confirmation a ete envoye. Veuillez confirmer le changement de mot de passe.',
+      email: user.email,
+      canLogin: false, // Ne peut pas se connecter avant confirmation
+    }, 'Confirmation requise');
 
   } catch (error) {
     logger.error('Erreur resetPassword:', error);
     return ApiResponse.serverError(res);
   }
 };
+
 /**
  * @desc    Obtenir mon profil
  * @route   GET /api/v1/auth/me
@@ -419,28 +482,27 @@ const getMe = async (req, res) => {
     });
 
   } catch (error) {
-    logger.error('✗ Erreur getMe:', error);
+    logger.error('Erreur getMe:', error);
     return ApiResponse.serverError(res);
   }
 };
 
 /**
- * @desc    Déconnexion
+ * @desc    Deconnexion
  * @route   POST /api/v1/auth/logout
  * @access  Private
  */
 const logout = async (req, res) => {
   try {
     const user = req.user;
-
-    logger.info(`✓ Déconnexion - ${user.email}`);
+    logger.info(`Deconnexion - ${user.email}`);
 
     return ApiResponse.success(res, {
-      message: 'Déconnexion réussie',
-    }, 'Déconnexion réussie');
+      message: 'Deconnexion reussie',
+    }, 'Deconnexion reussie');
 
   } catch (error) {
-    logger.error('✗ Erreur logout:', error);
+    logger.error('Erreur logout:', error);
     return ApiResponse.serverError(res);
   }
 };
@@ -458,14 +520,14 @@ const registerFCMToken = async (req, res) => {
     user.addFCMToken(fcmToken, device || 'Unknown');
     await user.save();
 
-    logger.info(`✓ Token FCM enregistré - ${user.email}`);
+    logger.info(`Token FCM enregistre - ${user.email}`);
 
     return ApiResponse.success(res, {
-      message: 'Token FCM enregistré',
+      message: 'Token FCM enregistre',
     });
 
   } catch (error) {
-    logger.error('✗ Erreur registerFCMToken:', error);
+    logger.error('Erreur registerFCMToken:', error);
     return ApiResponse.serverError(res);
   }
 };
@@ -483,20 +545,20 @@ const removeFCMToken = async (req, res) => {
     user.removeFCMToken(fcmToken);
     await user.save();
 
-    logger.info(`✓ Token FCM supprimé - ${user.email}`);
+    logger.info(`Token FCM supprime - ${user.email}`);
 
     return ApiResponse.success(res, {
-      message: 'Token FCM supprimé',
+      message: 'Token FCM supprime',
     });
 
   } catch (error) {
-    logger.error('✗ Erreur removeFCMToken:', error);
+    logger.error('Erreur removeFCMToken:', error);
     return ApiResponse.serverError(res);
   }
 };
 
 /**
- * @desc    Vérifier token (healthcheck)
+ * @desc    Verifier token (healthcheck)
  * @route   GET /api/v1/auth/verify
  * @access  Private
  */
@@ -514,18 +576,16 @@ const verifyToken = async (req, res) => {
     });
 
   } catch (error) {
-    logger.error('✗ Erreur verifyToken:', error);
+    logger.error('Erreur verifyToken:', error);
     return ApiResponse.serverError(res);
   }
 };
 
 /**
- * @desc    Créer un admin (route publique - DÉVELOPPEMENT UNIQUEMENT)
+ * @desc    Creer un admin (route publique - DEVELOPPEMENT UNIQUEMENT)
  * @route   POST /api/v1/auth/create-admin
  * @access  Public
- * @warning À DÉSACTIVER EN PRODUCTION
  */
-
 const createAdmin = async (req, res) => {
   try {
     const { 
@@ -541,27 +601,23 @@ const createAdmin = async (req, res) => {
       adresse
     } = req.body;
 
-    // Vérifier si l'email existe déjà  
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
-      return ApiResponse.error(res, 'Cet email est déjà utilisé', 400);
+      return ApiResponse.error(res, 'Cet email est deja utilise', 400);
     }
 
-    // Vérifier si le numéro existe déjà  
     const existingPhone = await User.findOne({ numeroTelephone });
     if (existingPhone) {
-      return ApiResponse.error(res, 'Ce numéro de téléphone est déjà utilisé', 400);
+      return ApiResponse.error(res, 'Ce numero de telephone est deja utilise', 400);
     }
 
-    // Vérifier si la carte d'identité existe déjà 
     if (carteIdentite) {
       const existingCard = await User.findOne({ carteIdentite: carteIdentite.toUpperCase() });
       if (existingCard) {
-        return ApiResponse.error(res, 'Cette carte d\'identité est déjà utilisée', 400);
+        return ApiResponse.error(res, 'Cette carte d\'identite est deja utilisee', 400);
       }
     }
 
-    // Valider la date de naissance si fournie
     let dateNaissanceValue = dateNaissance;
     if (dateNaissanceValue) {
       const age = Math.floor((Date.now() - new Date(dateNaissanceValue)) / (365.25 * 24 * 60 * 60 * 1000));
@@ -569,18 +625,16 @@ const createAdmin = async (req, res) => {
         return ApiResponse.error(res, 'L\'admin doit avoir au moins 18 ans', 400);
       }
     } else {
-      // Fournir une date par défaut (18 ans d'ici)
       dateNaissanceValue = new Date(Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000);
     }
 
-    // Créer l'admin avec les champs obligatoires
     const admin = await User.create({
       prenom,
       nom,
       email: email.toLowerCase(),
       numeroTelephone,
       motDePasse,
-      carteIdentite: carteIdentite || `TEMP_${Date.now()}`, // ID temporaire si non fourni
+      carteIdentite: carteIdentite || `TEMP_${Date.now()}`,
       dateNaissance: dateNaissanceValue,
       adresse: adresse || '',
       photoIdentite: {
@@ -590,10 +644,10 @@ const createAdmin = async (req, res) => {
       },
       role: ROLES.ADMIN,
       isActive: true,
-      isFirstLogin: false, // Pas de changement de mot de passe obligatoire
+      isFirstLogin: false,
     });
 
-    logger.info(`✓ Admin créé via route publique - ${admin.email}`);
+    logger.info(`Admin cree via route publique - ${admin.email}`);
 
     return ApiResponse.success(res, {
       user: {
@@ -605,17 +659,20 @@ const createAdmin = async (req, res) => {
         numeroTelephone: admin.numeroTelephone,
         role: admin.role,
       },
-    }, 'Admin créé avec succès');
+    }, 'Admin cree avec succes');
 
   } catch (error) {
-    logger.error('✗ Erreur createAdmin:', error);
+    logger.error('Erreur createAdmin:', error);
     return ApiResponse.serverError(res);
   }
 };
+
 module.exports = {
   login,
+  verifyLoginOTP,
   firstPasswordChange,
   changePassword,
+  confirmPasswordChange,
   forgotPassword,
   resetPassword,
   getMe,

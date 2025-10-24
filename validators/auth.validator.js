@@ -1,21 +1,21 @@
 // validators/auth.validator.js
-const { body } = require('express-validator');
+const { body, param, query } = require('express-validator');
 const { isValidSenegalPhone } = require('../utils/helpers');
 
 /**
- * Validation login (email OU téléphone + mot de passe)
+ * Validation login (email OU telephone + mot de passe)
  */
 const validateLogin = [
   body('identifier')
     .trim()
     .notEmpty()
-    .withMessage('Email ou numéro de téléphone requis')
+    .withMessage('Email ou numero de telephone requis')
     .custom((value) => {
       const isEmail = value.includes('@');
       const isPhone = isValidSenegalPhone(value);
       
       if (!isEmail && !isPhone) {
-        throw new Error('Format email ou téléphone invalide');
+        throw new Error('Format email ou telephone invalide');
       }
       return true;
     }),
@@ -25,12 +25,33 @@ const validateLogin = [
     .notEmpty()
     .withMessage('Le mot de passe est requis')
     .isLength({ min: 8 })
-    .withMessage('Le mot de passe doit contenir au moins 8 caractères'),
+    .withMessage('Le mot de passe doit contenir au moins 8 caracteres'),
 ];
 
 /**
- * Validation changement de mot de passe (première connexion)
- * SIMPLIFIÉ : Pas de confirmation requise
+ * Validation verification OTP de connexion
+ */
+const validateVerifyLoginOTP = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('L\'email est requis')
+    .isEmail()
+    .withMessage('Format d\'email invalide')
+    .normalizeEmail(),
+
+  body('code')
+    .trim()
+    .notEmpty()
+    .withMessage('Le code OTP est requis')
+    .isLength({ min: 6, max: 6 })
+    .withMessage('Le code doit contenir 6 chiffres')
+    .isNumeric()
+    .withMessage('Le code doit etre numerique'),
+];
+
+/**
+ * Validation changement de mot de passe (premiere connexion)
  */
 const validateFirstPasswordChange = [
   body('ancienMotDePasse')
@@ -43,7 +64,7 @@ const validateFirstPasswordChange = [
     .notEmpty()
     .withMessage('Le nouveau mot de passe est requis')
     .isLength({ min: 8 })
-    .withMessage('Le mot de passe doit contenir au moins 8 caractères')
+    .withMessage('Le mot de passe doit contenir au moins 8 caracteres')
     .matches(/[A-Z]/)
     .withMessage('Le mot de passe doit contenir au moins une majuscule')
     .matches(/[a-z]/)
@@ -51,10 +72,10 @@ const validateFirstPasswordChange = [
     .matches(/[0-9]/)
     .withMessage('Le mot de passe doit contenir au moins un chiffre')
     .matches(/[@#$%&*!]/)
-    .withMessage('Le mot de passe doit contenir au moins un caractère spécial (@#$%&*!)')
+    .withMessage('Le mot de passe doit contenir au moins un caractere special (@#$%&*!)')
     .custom((value, { req }) => {
       if (value === req.body.ancienMotDePasse) {
-        throw new Error('Le nouveau mot de passe doit être différent de l\'ancien');
+        throw new Error('Le nouveau mot de passe doit etre different de l\'ancien');
       }
       return true;
     }),
@@ -62,7 +83,6 @@ const validateFirstPasswordChange = [
 
 /**
  * Validation changement de mot de passe volontaire
- * SIMPLIFIÉ : Pas de confirmation requise
  */
 const validatePasswordChange = [
   body('ancienMotDePasse')
@@ -75,7 +95,7 @@ const validatePasswordChange = [
     .notEmpty()
     .withMessage('Le nouveau mot de passe est requis')
     .isLength({ min: 8 })
-    .withMessage('Le mot de passe doit contenir au moins 8 caractères')
+    .withMessage('Le mot de passe doit contenir au moins 8 caracteres')
     .matches(/[A-Z]/)
     .withMessage('Le mot de passe doit contenir au moins une majuscule')
     .matches(/[a-z]/)
@@ -83,17 +103,17 @@ const validatePasswordChange = [
     .matches(/[0-9]/)
     .withMessage('Le mot de passe doit contenir au moins un chiffre')
     .matches(/[@#$%&*!]/)
-    .withMessage('Le mot de passe doit contenir au moins un caractère spécial (@#$%&*!)')
+    .withMessage('Le mot de passe doit contenir au moins un caractere special (@#$%&*!)')
     .custom((value, { req }) => {
       if (value === req.body.ancienMotDePasse) {
-        throw new Error('Le nouveau mot de passe doit être différent de l\'ancien');
+        throw new Error('Le nouveau mot de passe doit etre different de l\'ancien');
       }
       return true;
     }),
 ];
 
 /**
- * Validation demande de réinitialisation de mot de passe
+ * Validation demande de reinitialisation de mot de passe
  */
 const validateForgotPassword = [
   body('email')
@@ -106,8 +126,7 @@ const validateForgotPassword = [
 ];
 
 /**
- * Validation réinitialisation de mot de passe avec code
- * SIMPLIFIÉ : Pas de confirmation requise
+ * Validation reinitialisation de mot de passe avec code
  */
 const validateResetPassword = [
   body('email')
@@ -121,18 +140,18 @@ const validateResetPassword = [
   body('code')
     .trim()
     .notEmpty()
-    .withMessage('Le code de vérification est requis')
+    .withMessage('Le code de verification est requis')
     .isLength({ min: 6, max: 6 })
     .withMessage('Le code doit contenir 6 chiffres')
     .isNumeric()
-    .withMessage('Le code doit être numérique'),
+    .withMessage('Le code doit etre numerique'),
 
   body('nouveauMotDePasse')
     .trim()
     .notEmpty()
     .withMessage('Le nouveau mot de passe est requis')
     .isLength({ min: 8 })
-    .withMessage('Le mot de passe doit contenir au moins 8 caractères')
+    .withMessage('Le mot de passe doit contenir au moins 8 caracteres')
     .matches(/[A-Z]/)
     .withMessage('Le mot de passe doit contenir au moins une majuscule')
     .matches(/[a-z]/)
@@ -140,7 +159,25 @@ const validateResetPassword = [
     .matches(/[0-9]/)
     .withMessage('Le mot de passe doit contenir au moins un chiffre')
     .matches(/[@#$%&*!]/)
-    .withMessage('Le mot de passe doit contenir au moins un caractère spécial (@#$%&*!)'),
+    .withMessage('Le mot de passe doit contenir au moins un caractere special (@#$%&*!)'),
+];
+
+/**
+ * Validation token de confirmation changement MDP
+ */
+const validateConfirmPasswordChange = [
+  param('token')
+    .trim()
+    .notEmpty()
+    .withMessage('Le token de confirmation est requis')
+    .isLength({ min: 64, max: 64 })
+    .withMessage('Token invalide'),
+
+  query('action')
+    .notEmpty()
+    .withMessage('L\'action est requise')
+    .isIn(['approve', 'reject'])
+    .withMessage('Action invalide (approve ou reject)'),
 ];
 
 /**
@@ -158,7 +195,7 @@ const validateFCMToken = [
     .optional()
     .trim()
     .isLength({ max: 100 })
-    .withMessage('Le nom du device ne peut pas dépasser 100 caractères'),
+    .withMessage('Le nom du device ne peut pas depasser 100 caracteres'),
 ];
 
 /**
@@ -173,10 +210,12 @@ const validateRefreshToken = [
 
 module.exports = {
   validateLogin,
+  validateVerifyLoginOTP,
   validateFirstPasswordChange,
   validatePasswordChange,
   validateForgotPassword,
   validateResetPassword,
   validateFCMToken,
   validateRefreshToken,
+  validateConfirmPasswordChange,
 };
