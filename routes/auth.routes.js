@@ -57,7 +57,7 @@ router.post(
 );
 
 /**
- * @route   POST /api/v1/auth/verify-login-otp
+ * @route   auth/verify-login-otp
  * @desc    Connexion ETAPE 2 - Verification OTP
  * @access  Public
  */
@@ -267,7 +267,6 @@ router.delete(
  *       403:
  *         description: Compte desactive
  */
-
 /**
  * @swagger
  * /api/v1/auth/verify-login-otp:
@@ -291,40 +290,17 @@ router.delete(
  *                 example: user@example.com
  *               code:
  *                 type: string
- *                 pattern: '^[0-9]{6}
+ *                 pattern: '^[0-9]{6}$'
  *                 description: Code OTP a 6 chiffres
  *                 example: 123456
  *     responses:
  *       200:
  *         description: Connexion reussie
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: Connexion reussie
- *                 data:
- *                   type: object
- *                   properties:
- *                     user:
- *                       type: object
- *                     accessToken:
- *                       type: string
- *                     refreshToken:
- *                       type: string
- *                     requiresPasswordChange:
- *                       type: boolean
  *       400:
  *         description: Code invalide ou expire
  *       401:
  *         description: Email ou code incorrect
  */
-
 /**
  * @swagger
  * /api/v1/auth/forgot-password:
@@ -353,7 +329,6 @@ router.delete(
  *       403:
  *         description: Compte desactive
  */
-
 /**
  * @swagger
  * /api/v1/auth/reset-password:
@@ -378,7 +353,7 @@ router.delete(
  *                 example: user@example.com
  *               code:
  *                 type: string
- *                 pattern: '^[0-9]{6}
+ *                 pattern: '^[0-9]{6}$'
  *                 example: 123456
  *               nouveauMotDePasse:
  *                 type: string
@@ -391,7 +366,6 @@ router.delete(
  *       400:
  *         description: Code invalide ou expire
  */
-
 /**
  * @swagger
  * /api/v1/auth/confirm-password-change/{token}:

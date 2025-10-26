@@ -8,17 +8,17 @@ const UserSchema = new mongoose.Schema(
     // Informations personnelles
     prenom: {
       type: String,
-      required: [true, 'Le prénom est requis'],
+      required: [true, 'Le prenom est requis'],
       trim: true,
-      minlength: [2, 'Le prénom doit contenir au moins 2 caractères'],
-      maxlength: [50, 'Le prénom ne peut pas dépasser 50 caractères'],
+      minlength: [2, 'Le prenom doit contenir au moins 2 caracteres'],
+      maxlength: [50, 'Le prenom ne peut pas depasser 50 caracteres'],
     },
     nom: {
       type: String,
       required: [true, 'Le nom est requis'],
       trim: true,
-      minlength: [2, 'Le nom doit contenir au moins 2 caractères'],
-      maxlength: [50, 'Le nom ne peut pas dépasser 50 caractères'],
+      minlength: [2, 'Le nom doit contenir au moins 2 caracteres'],
+      maxlength: [50, 'Le nom ne peut pas depasser 50 caracteres'],
     },
     email: {
       type: String,
@@ -33,22 +33,22 @@ const UserSchema = new mongoose.Schema(
     },
     numeroTelephone: {
       type: String,
-      required: [true, 'Le numéro de téléphone est requis'],
+      required: [true, 'Le numero de telephone est requis'],
       unique: true,
       trim: true,
       match: [
         /^\+221[7][0-9]{8}$/,
-        'Format de téléphone invalide (ex: +221771234567)',
+        'Format de telephone invalide (ex: +221771234567)',
       ],
     },
     adresse: {
       type: String,
       trim: true,
-      maxlength: [200, 'L\'adresse ne peut pas dépasser 200 caractères'],
+      maxlength: [200, 'L\'adresse ne peut pas depasser 200 caracteres'],
     },
     carteIdentite: {
       type: String,
-      required: [true, 'La carte d\'identité est requise'],
+      required: [true, 'La carte d\'identite est requise'],
       unique: true,
       trim: true,
       uppercase: true,
@@ -58,7 +58,6 @@ const UserSchema = new mongoose.Schema(
       required: [true, 'La date de naissance est requise'],
       validate: {
         validator: function (value) {
-          // Minimum 18 ans
           const age = Math.floor((Date.now() - value) / (365.25 * 24 * 60 * 60 * 1000));
           return age >= 18;
         },
@@ -93,7 +92,7 @@ const UserSchema = new mongoose.Schema(
     motDePasse: {
       type: String,
       required: [true, 'Le mot de passe est requis'],
-      minlength: [8, 'Le mot de passe doit contenir au moins 8 caractères'],
+      minlength: [8, 'Le mot de passe doit contenir au moins 8 caracteres'],
       select: false,
     },
     isFirstLogin: {
@@ -105,14 +104,14 @@ const UserSchema = new mongoose.Schema(
       default: Date.now,
     },
 
-    // Rôle et statut
+    // Role et statut
     role: {
       type: String,
       enum: {
         values: [ROLES.ADMIN, ROLES.TRESORIER, ROLES.MEMBRE],
-        message: 'Rôle invalide',
+        message: 'Role invalide',
       },
-      required: [true, 'Le rôle est requis'],
+      required: [true, 'Le role est requis'],
       default: ROLES.MEMBRE,
     },
     isActive: {
@@ -120,23 +119,24 @@ const UserSchema = new mongoose.Schema(
       default: true,
     },
 
-    // Tokens et sécurité
+    // Tokens et securite
     resetPasswordToken: String,
     resetPasswordExpire: Date,
-    //lo
+    
     loginOTP: {
-  code: String,
-  codeExpiry: Date,
-  attempts: { type: Number, default: 0 },
-},
+      code: String,
+      codeExpiry: Date,
+      attempts: { type: Number, default: 0 },
+    },
 
-// pour confirmation changement de mot de passe
-pendingPasswordChange: {
-  newPasswordHash: String,
-  confirmationToken: String,
-  confirmationExpiry: Date,
-  requestedAt: Date,
-},
+    // pour confirmation changement de mot de passe
+    pendingPasswordChange: {
+      newPasswordHash: String,
+      confirmationToken: String,
+      confirmationExpiry: Date,
+      requestedAt: Date,
+    },
+    
     fcmTokens: [
       {
         token: String,
@@ -155,7 +155,7 @@ pendingPasswordChange: {
       },
     ],
 
-    // Préférences
+    // Preferences
     preferences: {
       receiveEmailNotifications: { type: Boolean, default: true },
       receivePushNotifications: { type: Boolean, default: true },
@@ -163,7 +163,7 @@ pendingPasswordChange: {
       language: { type: String, default: 'fr' },
     },
 
-    // Métadonnées
+    // Metadonnees
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -206,6 +206,12 @@ UserSchema.virtual('age').get(function () {
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('motDePasse')) return next();
 
+  // Si flag _skipPasswordHash est present, ne pas hasher (deja fait dans pendingPasswordChange)
+  if (this._skipPasswordHash) {
+    delete this._skipPasswordHash;
+    return next();
+  }
+
   try {
     const salt = await bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS) || 10);
     this.motDePasse = await bcrypt.hash(this.motDePasse, salt);
@@ -215,16 +221,15 @@ UserSchema.pre('save', async function (next) {
   }
 });
 
-// Mettre à jour lastModifiedBy
+// Mettre a jour lastModifiedBy
 UserSchema.pre('save', function (next) {
-  
   if (this.isModified() && !this.isNew && this._updateUserId) {
     this.lastModifiedBy = this._updateUserId;
   }
   next();
 });
 
-//  Verrouiller la photo d'identité après création
+// Verrouiller la photo d'identite apres creation
 UserSchema.pre('save', function (next) {
   if (this.isNew && this.photoIdentite) {
     this.photoIdentite.isLocked = true;
@@ -233,7 +238,7 @@ UserSchema.pre('save', function (next) {
 });
 
 // ========================================
-// MÉTHODES D'INSTANCE
+// METHODES D'INSTANCE
 // ========================================
 
 UserSchema.methods.comparePassword = async function (candidatePassword) {
@@ -272,11 +277,10 @@ UserSchema.methods.logLogin = function (ip, userAgent, success) {
     success,
   });
   if (this.loginHistory.length > 50) {
-    this.loginHistory = this.slice(-50);
+    this.loginHistory = this.loginHistory.slice(-50);
   }
 };
 
-//  Mettre à jour la photo de profil (modifiable)
 UserSchema.methods.updateProfilePhoto = function (url, publicId) {
   this.photoProfil = {
     url,
@@ -284,71 +288,66 @@ UserSchema.methods.updateProfilePhoto = function (url, publicId) {
     uploadedAt: Date.now(),
   };
 };
+
 /**
- * Générer OTP de connexion
+ * Generer OTP de connexion
  */
 UserSchema.methods.generateLoginOTP = function () {
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const crypto = require('crypto');
   this.loginOTP = {
     code: crypto.createHash('sha256').update(code).digest('hex'),
-    codeExpiry: Date.now() + 15 * 60 * 1000, // 15 minutes
+    codeExpiry: Date.now() + 15 * 60 * 1000,
     attempts: 0,
   };
   return code;
 };
 
 /**
- * Vérifier OTP de connexion
+ * Verifier OTP de connexion
  */
 UserSchema.methods.verifyLoginOTP = function (code) {
   const crypto = require('crypto');
   
-  // Vérifier expiration
   if (Date.now() > this.loginOTP.codeExpiry) {
-    return { success: false, message: 'Code expiré' };
+    return { success: false, message: 'Code expire' };
   }
 
-  // Vérifier tentatives
   if (this.loginOTP.attempts >= 3) {
     return { success: false, message: 'Nombre maximum de tentatives atteint' };
   }
 
-  // Vérifier code
   const hashedInput = crypto.createHash('sha256').update(code).digest('hex');
   this.loginOTP.attempts += 1;
 
   if (hashedInput === this.loginOTP.code) {
-    // Nettoyer l'OTP après validation
     this.loginOTP = {
       code: undefined,
       codeExpiry: undefined,
       attempts: 0,
     };
-    return { success: true, message: 'Code validé' };
+    return { success: true, message: 'Code valide' };
   }
 
   return { success: false, message: 'Code incorrect' };
 };
 
 /**
- * Créer une demande de changement de mot de passe (en attente de confirmation)
+ * Creer une demande de changement de mot de passe (en attente de confirmation)
  */
 UserSchema.methods.createPendingPasswordChange = async function (newPassword) {
   const crypto = require('crypto');
   const bcrypt = require('bcryptjs');
   
-  // Hasher le nouveau mot de passe
   const salt = await bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS) || 10);
   const newPasswordHash = await bcrypt.hash(newPassword, salt);
   
-  // Générer token de confirmation
   const confirmationToken = crypto.randomBytes(32).toString('hex');
   
   this.pendingPasswordChange = {
     newPasswordHash,
     confirmationToken: crypto.createHash('sha256').update(confirmationToken).digest('hex'),
-    confirmationExpiry: Date.now() + 30 * 60 * 1000, // 30 minutes
+    confirmationExpiry: Date.now() + 30 * 60 * 1000,
     requestedAt: Date.now(),
   };
   
@@ -365,23 +364,22 @@ UserSchema.methods.confirmPasswordChange = function (token) {
     return { success: false, message: 'Aucun changement de mot de passe en attente' };
   }
   
-  // Vérifier expiration
   if (Date.now() > this.pendingPasswordChange.confirmationExpiry) {
     this.pendingPasswordChange = undefined;
-    return { success: false, message: 'Lien de confirmation expiré' };
+    return { success: false, message: 'Lien de confirmation expire' };
   }
   
-  // Vérifier token
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
   
   if (hashedToken === this.pendingPasswordChange.confirmationToken) {
-    // Appliquer le changement
+    // Appliquer le changement - Le mot de passe est DEJA hashe dans pendingPasswordChange
     this.motDePasse = this.pendingPasswordChange.newPasswordHash;
+    this._skipPasswordHash = true; // FLAG pour eviter le double hashage dans le hook pre-save
     this.lastPasswordChange = Date.now();
     this.isFirstLogin = false;
     this.pendingPasswordChange = undefined;
     
-    return { success: true, message: 'Mot de passe changé avec succès' };
+    return { success: true, message: 'Mot de passe change avec succes' };
   }
   
   return { success: false, message: 'Lien de confirmation invalide' };
@@ -397,19 +395,18 @@ UserSchema.methods.rejectPasswordChange = function (token) {
     return { success: false, message: 'Aucun changement de mot de passe en attente' };
   }
   
-  // Vérifier token
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
   
   if (hashedToken === this.pendingPasswordChange.confirmationToken) {
-    // Annuler le changement
     this.pendingPasswordChange = undefined;
-    return { success: true, message: 'Changement de mot de passe annulé' };
+    return { success: true, message: 'Changement de mot de passe annule' };
   }
   
   return { success: false, message: 'Lien invalide' };
 };
+
 // ========================================
-// MÉTHODES STATIQUES
+// METHODES STATIQUES
 // ========================================
 
 UserSchema.statics.findByEmailOrPhone = function (identifier) {
