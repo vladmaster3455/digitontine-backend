@@ -231,14 +231,15 @@ const sendLoginOTP = async (user, code) => {
     throw error;
   }
 };
-
 /**
  * Envoyer demande de confirmation de changement de mot de passe
  */
 const sendPasswordChangeConfirmationRequest = async (user, confirmationToken) => {
   try {
-    const approveUrl = `${process.env.FRONTEND_URL || process.env.BASE_URL}/auth/confirm-password-change/${confirmationToken}?action=approve`;
-    const rejectUrl = `${process.env.FRONTEND_URL || process.env.BASE_URL}/auth/confirm-password-change/${confirmationToken}?action=reject`;
+  //Utiliser la bonne route /confirm avec token en query params
+    const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+    const approveUrl = `${baseUrl}/confirm?token=${confirmationToken}&action=approve`;
+    const rejectUrl = `${baseUrl}/confirm?token=${confirmationToken}&action=reject`;
 
     const content = `
       <p>Bonjour <strong>${user.prenom} ${user.nom}</strong>,</p>
@@ -292,7 +293,6 @@ const sendPasswordChangeConfirmationRequest = async (user, confirmationToken) =>
     throw error;
   }
 };
-
 /**
  * Envoyer notification de changement de mot de passe approuve
  */
