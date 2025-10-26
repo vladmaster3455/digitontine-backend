@@ -5,6 +5,7 @@ const Tirage = require('../models/Tirage');
 const Penalite = require('../models/Penalite');
 const { ApiResponse } = require('../utils/apiResponse');
 const { AppError } = require('../utils/errors');
+const mongoose = require('mongoose');
 
 // US 4.10 : Tableau de bord Tresorier
 exports.dashboardTresorier = async (req, res, next) => {
@@ -239,7 +240,7 @@ exports.dashboardAdmin = async (req, res, next) => {
 // US : Tableau de bord Membre
 exports.dashboardMembre = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = new mongoose.Types.ObjectId(req.user.id); // EN ObjectId
 
     // Mes tontines actives
     const mesTontinesActives = await Tontine.find({
@@ -249,7 +250,7 @@ exports.dashboardMembre = async (req, res, next) => {
 
     // Mes cotisations
     const mesCotisations = await Transaction.aggregate([
-      { $match: { user: userId, type: 'Cotisation' } },
+      { $match: { user: userId, type: 'Cotisation' } }, //  c'est un ObjectId
       {
         $group: {
           _id: '$statut',
@@ -273,7 +274,7 @@ exports.dashboardMembre = async (req, res, next) => {
 
     // Mes penalites
     const mesPenalites = await Penalite.aggregate([
-      { $match: { user: userId, statut: 'Appliquee' } },
+      { $match: { user: userId, statut: 'Appliquee' } }, //   c'est un ObjectId
       { $group: { _id: null, total: { $sum: '$montant' } } }
     ]);
 
