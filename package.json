@@ -16,7 +16,8 @@
     "digitale",
     "senegal",
     "wave",
-    "orange-money"
+    "orange-money",
+    "mailjet"
   ],
   "author": "DigiTontine Team",
   "license": "MIT",
@@ -40,7 +41,7 @@
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
     "node-cron": "^3.0.3",
-    "nodemailer": "^6.9.7",
+    "node-mailjet": "^6.0.9",
     "pdfkit": "^0.14.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
