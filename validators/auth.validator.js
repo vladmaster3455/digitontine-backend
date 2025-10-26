@@ -95,6 +95,11 @@ const validateFirstPasswordChange = [
  * Validation changement de mot de passe volontaire
  */
 const validatePasswordChange = [
+  body('ancienMotDePasse')
+    .trim()
+    .notEmpty()
+    .withMessage('L\'ancien mot de passe est requis'),
+
   body('nouveauMotDePasse')
     .trim()
     .notEmpty()
