@@ -496,31 +496,44 @@ const getMe = async (req, res) => {
   try {
     const user = req.user;
 
+    // ✅ Retourner directement dans data (pas dans data.user)
     return ApiResponse.success(res, {
-      user: {
-        id: user._id,
-        prenom: user.prenom,
-        nom: user.nom,
-        nomComplet: user.nomComplet,
-        email: user.email,
-        numeroTelephone: user.numeroTelephone,
-        adresse: user.adresse,
-        dateNaissance: user.dateNaissance,
-        age: user.age,
-        role: user.role,
-        isActive: user.isActive,
-        isFirstLogin: user.isFirstLogin,
-        lastPasswordChange: user.lastPasswordChange,
-        preferences: user.preferences,
-        createdAt: user.createdAt,
+      id: user._id,
+      prenom: user.prenom,
+      nom: user.nom,
+      nomComplet: user.nomComplet,
+      email: user.email,
+      telephone: user.numeroTelephone,
+      numeroTelephone: user.numeroTelephone,
+      adresse: user.adresse || '',
+      dateNaissance: user.dateNaissance,
+      age: user.age,
+      cni: user.carteIdentite,
+      carteIdentite: user.carteIdentite,
+      role: user.role,
+      isActive: user.isActive,
+      isFirstLogin: user.isFirstLogin,
+      lastPasswordChange: user.lastPasswordChange,
+      photoIdentite: user.photoIdentite?.url || null,
+      photoProfil: user.photoProfil?.url || null,
+      preferences: user.preferences || {
+        receiveEmailNotifications: true,
+        receivePushNotifications: true,
+        receiveSMS: false,
+        language: 'fr',
       },
-    });
+      dateInscription: user.createdAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }, 'Profil récupéré avec succès');
 
   } catch (error) {
     logger.error('Erreur getMe:', error);
     return ApiResponse.serverError(res);
   }
 };
+
+module.exports = { getMe };
 
 /**
  * @desc    Deconnexion

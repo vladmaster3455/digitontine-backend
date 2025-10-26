@@ -186,8 +186,9 @@ const UserSchema = new mongoose.Schema(
 UserSchema.index({ role: 1, isActive: 1 });
 
 // ========================================
-// VIRTUALS
+// VIRTUALS (À AJOUTER APRÈS LES VIRTUALS EXISTANTS)
 // ========================================
+
 UserSchema.virtual('nomComplet').get(function () {
   return `${this.prenom} ${this.nom}`;
 });
@@ -196,6 +197,24 @@ UserSchema.virtual('age').get(function () {
   if (!this.dateNaissance) return null;
   const age = Math.floor((Date.now() - this.dateNaissance) / (365.25 * 24 * 60 * 60 * 1000));
   return age;
+});
+
+//  AJOUT : Alias pour compatibilité frontend
+UserSchema.virtual('cni').get(function () {
+  return this.carteIdentite;
+});
+
+UserSchema.virtual('telephone').get(function () {
+  return this.numeroTelephone;
+});
+
+//  AJOUT : Getter pour photo d'identité sécurisé
+UserSchema.virtual('photoIdentiteUrl').get(function () {
+  return this.photoIdentite?.url || null;
+});
+
+UserSchema.virtual('photoProfilUrl').get(function () {
+  return this.photoProfil?.url || null;
 });
 
 // ========================================
