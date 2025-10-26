@@ -362,13 +362,14 @@ app.get('/confirm', (req, res) => {
         body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
         .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
         h1 { color: #333; margin-bottom: 20px; }
-        .loading { display: none; }
+        .loading { display: block; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .message { margin: 20px 0; font-size: 16px; }
         .success { color: #28a745; }
         .error { color: #dc3545; }
         .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
+        #result { display: none; }
       </style>
     </head>
     <body>
@@ -382,31 +383,54 @@ app.get('/confirm', (req, res) => {
       </div>
       <script>
         async function confirmChange() {
-          document.querySelector('.loading').style.display = 'block';
-          
           try {
-            const response = await fetch('https://digitontine-backend.onrender.com/auth/confirm-password-change/${token}?action=${action}', {
+            // CORRECTION ICI : Ajout du préfixe /digitontine
+            const response = await fetch('${process.env.BASE_URL}/digitontine/auth/confirm-password-change/${token}?action=${action}', {
               method: 'GET',
               headers: {
-                'X-API-Key': 'digitontine_2025_secret_key_change_this_in_production'
+                'X-API-Key': '${process.env.API_KEY || 'digitontine_2025_secret_key_change_this_in_production'}'
               }
             });
             
             const data = await response.json();
             const resultDiv = document.getElementById('result');
+            const loadingDiv = document.querySelector('.loading');
+            
+            loadingDiv.style.display = 'none';
+            resultDiv.style.display = 'block';
             
             if (response.ok) {
-              resultDiv.innerHTML = '<p class="message success"><strong>Succes !</strong><br>' + (data.message || 'Changement confirme') + '</p><a href="https://digitontine-backend.onrender.com" class="button">Retour a l\'accueil</a>';
+              resultDiv.innerHTML = \`
+                <p class="message success">
+                  <strong>✓ Succès !</strong><br>
+                  \${data.message || 'Changement confirmé'}
+                </p>
+                <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour à l'accueil</a>
+              \`;
             } else {
-              resultDiv.innerHTML = '<p class="message error"><strong>Erreur</strong><br>' + (data.message || 'Une erreur est survenue') + '</p>';
+              resultDiv.innerHTML = \`
+                <p class="message error">
+                  <strong>✗ Erreur</strong><br>
+                  \${data.message || 'Une erreur est survenue'}
+                </p>
+                <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour à l'accueil</a>
+              \`;
             }
           } catch (error) {
-            document.getElementById('result').innerHTML = '<p class="message error"><strong>Erreur</strong><br>Impossible de traiter la demande</p>';
+            console.error('Erreur:', error);
+            document.querySelector('.loading').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').innerHTML = \`
+              <p class="message error">
+                <strong>✗ Erreur</strong><br>
+                Impossible de traiter la demande. Veuillez réessayer.
+              </p>
+              <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour à l'accueil</a>
+            \`;
           }
-          
-          document.querySelector('.loading').style.display = 'none';
         }
         
+        // Démarrer la confirmation automatiquement
         confirmChange();
       </script>
     </body>
