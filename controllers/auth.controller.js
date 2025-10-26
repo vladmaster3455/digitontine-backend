@@ -230,6 +230,8 @@ const firstPasswordChange = async (req, res) => {
   }
 };
 
+
+
 /**
  * @desc    Changement de mot de passe volontaire
  * @route   POST /api/v1/auth/change-password
@@ -237,14 +239,8 @@ const firstPasswordChange = async (req, res) => {
  */
 const changePassword = async (req, res) => {
   try {
-    const { ancienMotDePasse, nouveauMotDePasse } = req.body;
+    const { nouveauMotDePasse } = req.body;
     const user = req.user;
-
-    // Verifier ancien mot de passe
-    const isOldPasswordValid = await user.comparePassword(ancienMotDePasse);
-    if (!isOldPasswordValid) {
-      return ApiResponse.error(res, 'Ancien mot de passe incorrect', 400);
-    }
 
     // Valider nouveau mot de passe
     const validation = validatePasswordStrength(nouveauMotDePasse);
@@ -252,39 +248,36 @@ const changePassword = async (req, res) => {
       return ApiResponse.validationError(res, validation.errors.map(err => ({ message: err })));
     }
 
-    // Verifier difference
-    if (ancienMotDePasse === nouveauMotDePasse) {
-      return ApiResponse.error(res, 'Le nouveau mot de passe doit etre different', 400);
+    // Verifier que le nouveau mot de passe est different de l'ancien
+    const isSamePassword = await user.comparePassword(nouveauMotDePasse);
+    if (isSamePassword) {
+      return ApiResponse.error(res, 'Le nouveau mot de passe doit etre different de l\'ancien', 400);
     }
 
-    // Creer demande de confirmation
-    const confirmationToken = await user.createPendingPasswordChange(nouveauMotDePasse);
+    // Changer le mot de passe immediatement (pas de confirmation par email)
+    user.motDePasse = nouveauMotDePasse;
+    user.lastPasswordChange = Date.now();
     await user.save();
 
-    // Envoyer email de confirmation
+    // Envoyer email de notification
     try {
-      await emailService.sendPasswordChangeConfirmationRequest(user, confirmationToken);
+      await emailService.sendPasswordChangeConfirmation(user);
     } catch (emailError) {
       logger.error('Erreur envoi email:', emailError);
-      user.pendingPasswordChange = undefined;
-      await user.save();
-      return ApiResponse.error(res, 'Erreur lors de l\'envoi de l\'email', 500);
     }
 
-    logger.info(`Demande changement MDP envoyee a ${user.email}`);
+    logger.info(`Mot de passe change avec succes - ${user.email}`);
 
     return ApiResponse.success(res, {
-      requiresConfirmation: true,
-      message: 'Un email de confirmation a ete envoye. Veuillez verifier votre boite mail et confirmer le changement.',
-      email: user.email,
-    }, 'Confirmation requise');
+      message: 'Mot de passe change avec succes. Vous allez etre deconnecte.',
+      requiresLogout: true,
+    }, 'Changement effectue');
 
   } catch (error) {
     logger.error('Erreur changePassword:', error);
     return ApiResponse.serverError(res);
   }
 };
-
 /**
  * @desc    Confirmer changement de mot de passe
  * @route   GET /api/v1/auth/confirm-password-change/:token
