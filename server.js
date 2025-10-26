@@ -435,13 +435,7 @@ app.get('/confirm', async (req, res) => {
             .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
           </style>
         </head>
-        <body>
-          <div class="container">
-            <h1 class="error">Erreur</h1>
-            <p>${result.message}</p>
-            <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour a l'accueil</a>
-          </div>
-        </body>
+
         </html>
       `);
     }
