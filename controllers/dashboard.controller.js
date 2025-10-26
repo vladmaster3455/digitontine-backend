@@ -7,222 +7,7 @@ const { ApiResponse } = require('../utils/apiResponse');
 const { AppError } = require('../utils/errors');
 const mongoose = require('mongoose');
 
-// US : Tableau de bord Membre (CORRIGÉ)
-exports.dashboardMembre = async (req, res, next) => {
-  try {
-    const userId = new mongoose.Types.ObjectId(req.user.id);
 
-    // Mes tontines actives
-    const mesTontinesActives = await Tontine.find({
-      membres: userId,
-      statut: 'Active'
-    }).select('nom montantCotisation frequence dateDebut');
-
-    // Mes cotisations
-    const mesCotisations = await Transaction.aggregate([
-      { $match: { user: userId, type: 'Cotisation' } },
-      {
-        $group: {
-          _id: '$statut',
-          count: { $sum: 1 },
-          montantTotal: { $sum: '$montant' }
-        }
-      }
-    ]);
-
-    const totalCotise = mesCotisations
-      .filter(c => c._id === 'Validee')
-      .reduce((sum, c) => sum + c.montantTotal, 0);
-
-    // Mes gains
-    const mesGains = await Tirage.find({
-      beneficiaire: userId,
-      statut: 'Effectue'
-    }).select('tontine montant dateEffective');
-
-    const totalGagne = mesGains.reduce((sum, g) => sum + g.montant, 0);
-
-    // Mes penalites
-    const mesPenalites = await Penalite.aggregate([
-      { $match: { user: userId, statut: 'Appliquee' } },
-      { $group: { _id: null, total: { $sum: '$montant' } } }
-    ]);
-
-    // Prochaines echeances
-    const prochainesEcheances = await Transaction.find({
-      user: userId,
-      statut: 'En attente',
-      dateLimite: { $gte: new Date() }
-    })
-      .populate('tontine', 'nom')
-      .sort({ dateLimite: 1 })
-      .limit(5);
-
-    // Retards
-    const retards = await Transaction.countDocuments({
-      user: userId,
-      statut: 'En attente',
-      dateLimite: { $lt: new Date() }
-    });
-
-    //  Valeurs par défaut explicites
-    ApiResponse.success(res, {
-      resume: {
-        tontinesActives: mesTontinesActives?.length || 0,
-        totalCotise: totalCotise || 0,
-        totalGagne: totalGagne || 0,
-        totalPenalites: mesPenalites[0]?.total || 0,
-        retards: retards || 0  //  Ajout de la valeur par défaut
-      },
-      tontines: mesTontinesActives || [],
-      gains: mesGains || [],
-      prochainesEcheances: prochainesEcheances || []
-    }, 'Tableau de bord membre');
-  } catch (error) {
-    next(error);
-  }
-};
-
-// US : Tableau de bord Tresorier (CORRIGÉ)
-exports.dashboardTresorier = async (req, res, next) => {
-  try {
-    // KPIs principaux
-    const montantTotalCollecte = await Transaction.aggregate([
-      { $match: { statut: 'Validee', type: 'Cotisation' } },
-      { $group: { _id: null, total: { $sum: '$montant' } } }
-    ]);
-
-    const montantTotalDistribue = await Tirage.aggregate([
-      { $match: { statut: 'Effectue' } },
-      { $group: { _id: null, total: { $sum: '$montant' } } }
-    ]);
-
-    const totalCollecte = montantTotalCollecte[0]?.total || 0;
-    const totalDistribue = montantTotalDistribue[0]?.total || 0;
-    const soldeDisponible = totalCollecte - totalDistribue;
-
-    // Taux de recouvrement
-    const totalAttendu = await Transaction.countDocuments({ type: 'Cotisation' });
-    const totalValide = await Transaction.countDocuments({ 
-      type: 'Cotisation', 
-      statut: 'Validee' 
-    });
-    const tauxRecouvrement = totalAttendu > 0 
-      ? ((totalValide / totalAttendu) * 100).toFixed(2) 
-      : 0;
-
-    // Repartition par tontine
-    const repartitionParTontine = await Transaction.aggregate([
-      { $match: { statut: 'Validee', type: 'Cotisation' } },
-      {
-        $group: {
-          _id: '$tontine',
-          montant: { $sum: '$montant' },
-          nombre: { $sum: 1 }
-        }
-      },
-      {
-        $lookup: {
-          from: 'tontines',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'tontineInfo'
-        }
-      },
-      { $unwind: '$tontineInfo' },
-      {
-        $project: {
-          tontine: '$tontineInfo.nom',
-          montant: 1,
-          nombre: 1
-        }
-      }
-    ]);
-
-    // Evolution des cotisations (30 derniers jours)
-    const dateLimite = new Date();
-    dateLimite.setDate(dateLimite.getDate() - 30);
-
-    const evolutionCotisations = await Transaction.aggregate([
-      {
-        $match: {
-          statut: 'Validee',
-          type: 'Cotisation',
-          dateTransaction: { $gte: dateLimite }
-        }
-      },
-      {
-        $group: {
-          _id: {
-            $dateToString: { format: '%Y-%m-%d', date: '$dateTransaction' }
-          },
-          montant: { $sum: '$montant' },
-          nombre: { $sum: 1 }
-        }
-      },
-      { $sort: { _id: 1 } }
-    ]);
-
-    // Transactions en attente
-    const transactionsEnAttente = await Transaction.countDocuments({
-      statut: 'En attente'
-    });
-
-    // Penalites totales
-    const totalPenalites = await Penalite.aggregate([
-      { $match: { statut: 'Appliquee' } },
-      { $group: { _id: null, total: { $sum: '$montant' } } }
-    ]);
-
-    // Top 5 membres ponctuels
-    const topMembres = await Transaction.aggregate([
-      { $match: { statut: 'Validee', type: 'Cotisation' } },
-      {
-        $group: {
-          _id: '$user',
-          nombrePaiements: { $sum: 1 },
-          montantTotal: { $sum: '$montant' }
-        }
-      },
-      { $sort: { nombrePaiements: -1 } },
-      { $limit: 5 },
-      {
-        $lookup: {
-          from: 'users',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'userInfo'
-        }
-      },
-      { $unwind: '$userInfo' },
-      {
-        $project: {
-          prenom: '$userInfo.prenom',
-          nom: '$userInfo.nom',
-          nombrePaiements: 1,
-          montantTotal: 1
-        }
-      }
-    ]);
-
-    //  Valeurs par défaut explicites
-    ApiResponse.success(res, {
-      kpis: {
-        montantTotalCollecte: totalCollecte || 0,
-        montantTotalDistribue: totalDistribue || 0,
-        soldeDisponible: soldeDisponible || 0,
-        tauxRecouvrement: `${tauxRecouvrement || 0}%`,
-        transactionsEnAttente: transactionsEnAttente || 0,
-        totalPenalites: totalPenalites[0]?.total || 0
-      },
-      repartitionParTontine: repartitionParTontine || [],
-      evolutionCotisations: evolutionCotisations || [],
-      topMembres: topMembres || []
-    }, 'Tableau de bord tresorier');
-  } catch (error) {
-    next(error);
-  }
-};
 
 // US : Tableau de bord Administrateur
 exports.dashboardAdmin = async (req, res, next) => {
@@ -314,7 +99,232 @@ exports.dashboardAdmin = async (req, res, next) => {
   }
 };
 
+// US : Tableau de bord Membre (CORRIGÉ)
+exports.dashboardMembre = async (req, res, next) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.user.id);
 
+    // Mes tontines actives
+    const mesTontinesActives = await Tontine.find({
+      membres: userId,
+      statut: 'Active'
+    }).select('nom montantCotisation frequence dateDebut');
+
+    // Mes cotisations
+    const mesCotisations = await Transaction.aggregate([
+      { $match: { user: userId, type: 'Cotisation' } },
+      {
+        $group: {
+          _id: '$statut',
+          count: { $sum: 1 },
+          montantTotal: { $sum: '$montant' }
+        }
+      }
+    ]);
+
+    const totalCotise = mesCotisations
+      .filter(c => c._id === 'Validee')
+      .reduce((sum, c) => sum + c.montantTotal, 0);
+
+    // Mes gains
+    const mesGains = await Tirage.find({
+      beneficiaire: userId,
+      statut: 'Effectue'
+    }).select('tontine montant dateEffective');
+
+    const totalGagne = mesGains.reduce((sum, g) => sum + g.montant, 0);
+
+    // Mes penalites
+    const mesPenalites = await Penalite.aggregate([
+      { $match: { user: userId, statut: 'Appliquee' } },
+      { $group: { _id: null, total: { $sum: '$montant' } } }
+    ]);
+
+    // Prochaines echeances
+    const prochainesEcheances = await Transaction.find({
+      user: userId,
+      statut: 'En attente',
+      dateLimite: { $gte: new Date() }
+    })
+      .populate('tontine', 'nom')
+      .sort({ dateLimite: 1 })
+      .limit(5);
+
+    // Retards
+    const retards = await Transaction.countDocuments({
+      user: userId,
+      statut: 'En attente',
+      dateLimite: { $lt: new Date() }
+    });
+
+    // ✅ CORRECTION : Valeurs par défaut explicites
+    ApiResponse.success(res, {
+      resume: {
+        tontinesActives: mesTontinesActives?.length || 0,
+        totalCotise: totalCotise || 0,
+        totalGagne: totalGagne || 0,
+        totalPenalites: mesPenalites[0]?.total || 0,
+        retards: retards || 0  // ✅ Ajout de la valeur par défaut
+      },
+      tontines: mesTontinesActives || [],
+      gains: mesGains || [],
+      prochainesEcheances: prochainesEcheances || []
+    }, 'Tableau de bord membre');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// US : Tableau de bord Tresorier (CORRIGÉ)
+exports.dashboardTresorier = async (req, res, next) => {
+  try {
+    // KPIs principaux
+    const montantTotalCollecte = await Transaction.aggregate([
+      { $match: { statut: 'Validee', type: 'Cotisation' } },
+      { $group: { _id: null, total: { $sum: '$montant' } } }
+    ]);
+
+    const montantTotalDistribue = await Tirage.aggregate([
+      { $match: { statut: 'Effectue' } },
+      { $group: { _id: null, total: { $sum: '$montant' } } }
+    ]);
+
+    const totalCollecte = montantTotalCollecte[0]?.total || 0;
+    const totalDistribue = montantTotalDistribue[0]?.total || 0;
+    const soldeDisponible = totalCollecte - totalDistribue;
+
+    // Taux de recouvrement
+    const totalAttendu = await Transaction.countDocuments({ type: 'Cotisation' });
+    const totalValide = await Transaction.countDocuments({ 
+      type: 'Cotisation', 
+      statut: 'Validee' 
+    });
+    const tauxRecouvrement = totalAttendu > 0 
+      ? ((totalValide / totalAttendu) * 100).toFixed(2) 
+      : 0;
+
+    // Repartition par tontine
+    const repartitionParTontine = await Transaction.aggregate([
+      { $match: { statut: 'Validee', type: 'Cotisation' } },
+      {
+        $group: {
+          _id: '$tontine',
+          montant: { $sum: '$montant' },
+          nombre: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: 'tontines',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'tontineInfo'
+        }
+      },
+      { $unwind: '$tontineInfo' },
+      {
+        $project: {
+          tontine: '$tontineInfo.nom',
+          montant: 1,
+          nombre: 1
+        }
+      }
+    ]);
+
+    // Evolution des cotisations (30 derniers jours)
+    const dateLimite = new Date();
+    dateLimite.setDate(dateLimite.getDate() - 30);
+
+    const evolutionCotisations = await Transaction.aggregate([
+      {
+        $match: {
+          statut: 'Validee',
+          type: 'Cotisation',
+          dateTransaction: { $gte: dateLimite }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$dateTransaction' }
+          },
+          montant: { $sum: '$montant' },
+          nombre: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Transactions en attente - COUNT
+    const transactionsEnAttenteCount = await Transaction.countDocuments({
+      statut: 'En attente'
+    });
+
+    // Transactions en attente - LISTE (dernières 10)
+    const transactionsEnAttenteListe = await Transaction.find({
+      statut: 'En attente'
+    })
+      .populate('user', 'prenom nom')
+      .populate('tontine', 'nom')
+      .sort({ dateTransaction: -1 })
+      .limit(10);
+
+    // Penalites totales
+    const totalPenalites = await Penalite.aggregate([
+      { $match: { statut: 'Appliquee' } },
+      { $group: { _id: null, total: { $sum: '$montant' } } }
+    ]);
+
+    // Top 5 membres ponctuels
+    const topMembres = await Transaction.aggregate([
+      { $match: { statut: 'Validee', type: 'Cotisation' } },
+      {
+        $group: {
+          _id: '$user',
+          nombrePaiements: { $sum: 1 },
+          montantTotal: { $sum: '$montant' }
+        }
+      },
+      { $sort: { nombrePaiements: -1 } },
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'userInfo'
+        }
+      },
+      { $unwind: '$userInfo' },
+      {
+        $project: {
+          prenom: '$userInfo.prenom',
+          nom: '$userInfo.nom',
+          nombrePaiements: 1,
+          montantTotal: 1
+        }
+      }
+    ]);
+
+    // ✅ CORRECTION : Valeurs par défaut explicites
+    ApiResponse.success(res, {
+      kpis: {
+        montantTotalCollecte: totalCollecte || 0,
+        montantTotalDistribue: totalDistribue || 0,
+        soldeDisponible: soldeDisponible || 0,
+        tauxRecouvrement: `${tauxRecouvrement || 0}%`,
+        transactionsEnAttente: transactionsEnAttenteCount || 0,
+        totalPenalites: totalPenalites[0]?.total || 0
+      },
+      transactionsEnAttente: transactionsEnAttenteListe || [],  // ✅ AJOUTÉ
+      repartitionParTontine: repartitionParTontine || [],
+      evolutionCotisations: evolutionCotisations || [],
+      topMembres: topMembres || []
+    }, 'Tableau de bord tresorier');
+  } catch (error) {
+    next(error);
+  }
+};
 
 // US : Statistiques globales (Admin)
 exports.statistiquesGlobales = async (req, res, next) => {
