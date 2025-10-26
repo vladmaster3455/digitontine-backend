@@ -38,3 +38,32 @@
 [2025-10-26 09:57:11] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
 [2025-10-26 09:57:11] INFO:  Base de données: digitontine
 [2025-10-26 09:57:44] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-26 12:53:35] INFO: ========================================
+[2025-10-26 12:53:35] INFO: DigiTontine API demarre avec succes!
+[2025-10-26 12:53:35] INFO: Environnement: development
+[2025-10-26 12:53:35] INFO: URL: http://localhost:5000
+[2025-10-26 12:53:35] INFO: API Prefix: /digitontine
+[2025-10-26 12:53:35] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-26 12:53:35] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-26 12:53:35] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-26 12:53:35] INFO: Test Check: http://localhost:5000/test
+[2025-10-26 12:53:35] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-26 12:53:35] INFO: ========================================
+[2025-10-26 12:53:36] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-26 12:53:36] INFO:  Base de données: digitontine
+[2025-10-26 12:57:00] INFO: Connexion reussie - ssenghor911@gmail.com (Admin)
+[2025-10-26 12:57:00] INFO:  AUDIT: LOGIN_STEP_2 on User
+[2025-10-26 13:19:53] INFO: ========================================
+[2025-10-26 13:19:53] INFO: DigiTontine API demarre avec succes!
+[2025-10-26 13:19:53] INFO: Environnement: development
+[2025-10-26 13:19:53] INFO: URL: http://localhost:5000
+[2025-10-26 13:19:53] INFO: API Prefix: /digitontine
+[2025-10-26 13:19:53] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-26 13:19:53] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-26 13:19:53] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-26 13:19:53] INFO: Test Check: http://localhost:5000/test
+[2025-10-26 13:19:53] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-26 13:19:53] INFO: ========================================
+[2025-10-26 13:19:54] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-26 13:19:54] INFO:  Base de données: digitontine
+[2025-10-26 13:20:05] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...

@@ -63,28 +63,43 @@ const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',') 
   : ['http://localhost:3000'];
 
+// CORS - Autoriser React Native + Web
 app.use(cors({
   origin: (origin, callback) => {
-    // Autoriser les requetes sans origine (Postman, curl, Swagger UI meme origine)
-    if (!origin) return callback(null, true);
+    // React Native n'envoie PAS d'origine - TOUJOURS autoriser
+    if (!origin) {
+      return callback(null, true);
+    }
     
-    // Autoriser les origines dans la liste
+    // Liste des origines autorisées
+    const allowedOrigins = process.env.CORS_ORIGIN 
+      ? process.env.CORS_ORIGIN.split(',') 
+      : [];
+    
+    // Autoriser origines dans la liste
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     
-    // Autoriser localhost sur tous les ports (pour developpement)
-    if (process.env.NODE_ENV === 'development' && origin.startsWith('http://localhost')) {
+    // En développement, autoriser localhost
+    if (process.env.NODE_ENV === 'development') {
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        return callback(null, true);
+      }
+    }
+    
+    // Autoriser tout en développement (à désactiver en production)
+    if (process.env.NODE_ENV === 'development') {
       return callback(null, true);
     }
     
-    // Refuser les autres origines
-    logger.warn(`Origine CORS refusee: ${origin}`);
-    callback(new Error('Non autorise par CORS'));
+    logger.warn(` Origine CORS refusée: ${origin}`);
+    callback(new Error('Non autorisé par CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range']
 }));
 
 // Sanitize donnees MongoDB
