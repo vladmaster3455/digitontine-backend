@@ -310,7 +310,169 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpti
  *         description: Email ou telephone deja utilise
  */
 app.post('/create-admin-public', createAdmin);
+// Route de confirmation - DOIT etre AVANT le middleware verifyApiKey
+app.get('/confirm', async (req, res) => {
+  const { token, action } = req.query;
+  
+  if (!token || !action || !['approve', 'reject'].includes(action)) {
+    return res.status(400).send(`
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Erreur - DigiTontine</title>
+        <style>
+          body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
+          .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
+          .error { color: #dc3545; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1 class="error">Lien invalide</h1>
+          <p>Les parametres sont manquants ou incorrects.</p>
+        </div>
+      </body>
+      </html>
+    `);
+  }
 
+  try {
+    const crypto = require('crypto');
+    const User = require('./models/User');
+    const emailService = require('./services/email.service');
+    
+    // Hasher le token
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    
+    // Trouver l'utilisateur
+    const user = await User.findOne({
+      'pendingPasswordChange.confirmationToken': hashedToken,
+      'pendingPasswordChange.confirmationExpiry': { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.send(`
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Erreur - DigiTontine</title>
+          <style>
+            body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
+            .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
+            .error { color: #dc3545; }
+            .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1 class="error">Lien invalide ou expire</h1>
+            <p>Ce lien de confirmation n'est plus valide.</p>
+            <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour a l'accueil</a>
+          </div>
+        </body>
+        </html>
+      `);
+    }
+
+    // Executer l'action
+    let result;
+    if (action === 'approve') {
+      result = user.confirmPasswordChange(token);
+      if (result.success) {
+        await user.save();
+        await emailService.sendPasswordChangeApproved(user);
+      }
+    } else {
+      result = user.rejectPasswordChange(token);
+      if (result.success) {
+        await user.save();
+        await emailService.sendPasswordChangeRejected(user);
+      }
+    }
+
+    // Afficher le resultat
+    if (result.success) {
+      return res.send(`
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Succes - DigiTontine</title>
+          <style>
+            body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
+            .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
+            .success { color: #28a745; }
+            .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1 class="success">Succes</h1>
+            <p>${result.message}</p>
+            <p>${action === 'approve' ? 'Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.' : 'Votre ancien mot de passe reste actif.'}</p>
+            <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour a l'accueil</a>
+          </div>
+        </body>
+        </html>
+      `);
+    } else {
+      return res.send(`
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Erreur - DigiTontine</title>
+          <style>
+            body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
+            .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
+            .error { color: #dc3545; }
+            .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1 class="error">Erreur</h1>
+            <p>${result.message}</p>
+            <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour a l'accueil</a>
+          </div>
+        </body>
+        </html>
+      `);
+    }
+
+  } catch (error) {
+    logger.error('Erreur confirmation password:', error);
+    return res.send(`
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Erreur - DigiTontine</title>
+        <style>
+          body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
+          .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
+          .error { color: #dc3545; }
+          .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1 class="error">Erreur serveur</h1>
+          <p>Une erreur est survenue. Veuillez reessayer plus tard.</p>
+          <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour a l'accueil</a>
+        </div>
+      </body>
+      </html>
+    `);
+  }
+});
 // ========================================
 // MIDDLEWARE POUR ROUTES PROTEGEES
 // ========================================
@@ -340,101 +502,7 @@ app.use(`${API_PREFIX}/validations`, validationRoutes);
 // ========================================
 // GESTION DES ERREURS
 // ========================================
-app.get('/confirm', (req, res) => {
-  const { token, action } = req.query;
-  
-  if (!token || !action) {
-    return res.status(400).send('Parametres manquants');
-  }
 
-  const html = `
-    <!DOCTYPE html>
-    <html lang="fr">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Confirmation - DigiTontine</title>
-      <style>
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
-        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
-        h1 { color: #333; margin-bottom: 20px; }
-        .loading { display: block; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .message { margin: 20px 0; font-size: 16px; }
-        .success { color: #28a745; }
-        .error { color: #dc3545; }
-        .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
-        #result { display: none; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>DigiTontine</h1>
-        <div class="loading">
-          <div class="spinner"></div>
-          <p>Traitement en cours...</p>
-        </div>
-        <div id="result"></div>
-      </div>
-      <script>
-        async function confirmChange() {
-          try {
-            // CORRECTION ICI : Ajout du préfixe /digitontine
-            const response = await fetch('${process.env.BASE_URL}/digitontine/auth/confirm-password-change/${token}?action=${action}', {
-              method: 'GET',
-              headers: {
-                'X-API-Key': '${process.env.API_KEY || 'digitontine_2025_secret_key_change_this_in_production'}'
-              }
-            });
-            
-            const data = await response.json();
-            const resultDiv = document.getElementById('result');
-            const loadingDiv = document.querySelector('.loading');
-            
-            loadingDiv.style.display = 'none';
-            resultDiv.style.display = 'block';
-            
-            if (response.ok) {
-              resultDiv.innerHTML = \`
-                <p class="message success">
-                  <strong>✓ Succès !</strong><br>
-                  \${data.message || 'Changement confirmé'}
-                </p>
-                <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour à l'accueil</a>
-              \`;
-            } else {
-              resultDiv.innerHTML = \`
-                <p class="message error">
-                  <strong>✗ Erreur</strong><br>
-                  \${data.message || 'Une erreur est survenue'}
-                </p>
-                <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour à l'accueil</a>
-              \`;
-            }
-          } catch (error) {
-            console.error('Erreur:', error);
-            document.querySelector('.loading').style.display = 'none';
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('result').innerHTML = \`
-              <p class="message error">
-                <strong>✗ Erreur</strong><br>
-                Impossible de traiter la demande. Veuillez réessayer.
-              </p>
-              <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour à l'accueil</a>
-            \`;
-          }
-        }
-        
-        // Démarrer la confirmation automatiquement
-        confirmChange();
-      </script>
-    </body>
-    </html>
-  `;
-  
-  res.send(html);
-});
 // 404 - Route non trouvee
 app.use(notFoundHandler);
 // Route de confirmation de changement de mot de passe (page HTML simple)
