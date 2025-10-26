@@ -7,7 +7,83 @@ const { ApiResponse } = require('../utils/apiResponse');
 const { AppError } = require('../utils/errors');
 const mongoose = require('mongoose');
 
-// US 4.10 : Tableau de bord Tresorier
+// US : Tableau de bord Membre (CORRIGÉ)
+exports.dashboardMembre = async (req, res, next) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.user.id);
+
+    // Mes tontines actives
+    const mesTontinesActives = await Tontine.find({
+      membres: userId,
+      statut: 'Active'
+    }).select('nom montantCotisation frequence dateDebut');
+
+    // Mes cotisations
+    const mesCotisations = await Transaction.aggregate([
+      { $match: { user: userId, type: 'Cotisation' } },
+      {
+        $group: {
+          _id: '$statut',
+          count: { $sum: 1 },
+          montantTotal: { $sum: '$montant' }
+        }
+      }
+    ]);
+
+    const totalCotise = mesCotisations
+      .filter(c => c._id === 'Validee')
+      .reduce((sum, c) => sum + c.montantTotal, 0);
+
+    // Mes gains
+    const mesGains = await Tirage.find({
+      beneficiaire: userId,
+      statut: 'Effectue'
+    }).select('tontine montant dateEffective');
+
+    const totalGagne = mesGains.reduce((sum, g) => sum + g.montant, 0);
+
+    // Mes penalites
+    const mesPenalites = await Penalite.aggregate([
+      { $match: { user: userId, statut: 'Appliquee' } },
+      { $group: { _id: null, total: { $sum: '$montant' } } }
+    ]);
+
+    // Prochaines echeances
+    const prochainesEcheances = await Transaction.find({
+      user: userId,
+      statut: 'En attente',
+      dateLimite: { $gte: new Date() }
+    })
+      .populate('tontine', 'nom')
+      .sort({ dateLimite: 1 })
+      .limit(5);
+
+    // Retards
+    const retards = await Transaction.countDocuments({
+      user: userId,
+      statut: 'En attente',
+      dateLimite: { $lt: new Date() }
+    });
+
+    //  Valeurs par défaut explicites
+    ApiResponse.success(res, {
+      resume: {
+        tontinesActives: mesTontinesActives?.length || 0,
+        totalCotise: totalCotise || 0,
+        totalGagne: totalGagne || 0,
+        totalPenalites: mesPenalites[0]?.total || 0,
+        retards: retards || 0  //  Ajout de la valeur par défaut
+      },
+      tontines: mesTontinesActives || [],
+      gains: mesGains || [],
+      prochainesEcheances: prochainesEcheances || []
+    }, 'Tableau de bord membre');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// US : Tableau de bord Tresorier (CORRIGÉ)
 exports.dashboardTresorier = async (req, res, next) => {
   try {
     // KPIs principaux
@@ -129,18 +205,19 @@ exports.dashboardTresorier = async (req, res, next) => {
       }
     ]);
 
+    //  Valeurs par défaut explicites
     ApiResponse.success(res, {
       kpis: {
-        montantTotalCollecte: totalCollecte,
-        montantTotalDistribue: totalDistribue,
-        soldeDisponible,
-        tauxRecouvrement: `${tauxRecouvrement}%`,
-        transactionsEnAttente,
+        montantTotalCollecte: totalCollecte || 0,
+        montantTotalDistribue: totalDistribue || 0,
+        soldeDisponible: soldeDisponible || 0,
+        tauxRecouvrement: `${tauxRecouvrement || 0}%`,
+        transactionsEnAttente: transactionsEnAttente || 0,
         totalPenalites: totalPenalites[0]?.total || 0
       },
-      repartitionParTontine,
-      evolutionCotisations,
-      topMembres
+      repartitionParTontine: repartitionParTontine || [],
+      evolutionCotisations: evolutionCotisations || [],
+      topMembres: topMembres || []
     }, 'Tableau de bord tresorier');
   } catch (error) {
     next(error);
@@ -237,80 +314,7 @@ exports.dashboardAdmin = async (req, res, next) => {
   }
 };
 
-// US : Tableau de bord Membre
-exports.dashboardMembre = async (req, res, next) => {
-  try {
-    const userId = new mongoose.Types.ObjectId(req.user.id); // EN ObjectId
 
-    // Mes tontines actives
-    const mesTontinesActives = await Tontine.find({
-      membres: userId,
-      statut: 'Active'
-    }).select('nom montantCotisation frequence dateDebut');
-
-    // Mes cotisations
-    const mesCotisations = await Transaction.aggregate([
-      { $match: { user: userId, type: 'Cotisation' } }, //  c'est un ObjectId
-      {
-        $group: {
-          _id: '$statut',
-          count: { $sum: 1 },
-          montantTotal: { $sum: '$montant' }
-        }
-      }
-    ]);
-
-    const totalCotise = mesCotisations
-      .filter(c => c._id === 'Validee')
-      .reduce((sum, c) => sum + c.montantTotal, 0);
-
-    // Mes gains
-    const mesGains = await Tirage.find({
-      beneficiaire: userId,
-      statut: 'Effectue'
-    }).select('tontine montant dateEffective');
-
-    const totalGagne = mesGains.reduce((sum, g) => sum + g.montant, 0);
-
-    // Mes penalites
-    const mesPenalites = await Penalite.aggregate([
-      { $match: { user: userId, statut: 'Appliquee' } }, //   c'est un ObjectId
-      { $group: { _id: null, total: { $sum: '$montant' } } }
-    ]);
-
-    // Prochaines echeances
-    const prochainesEcheances = await Transaction.find({
-      user: userId,
-      statut: 'En attente',
-      dateLimite: { $gte: new Date() }
-    })
-      .populate('tontine', 'nom')
-      .sort({ dateLimite: 1 })
-      .limit(5);
-
-    // Retards
-    const retards = await Transaction.countDocuments({
-      user: userId,
-      statut: 'En attente',
-      dateLimite: { $lt: new Date() }
-    });
-
-    ApiResponse.success(res, {
-      resume: {
-        tontinesActives: mesTontinesActives.length,
-        totalCotise,
-        totalGagne,
-        totalPenalites: mesPenalites[0]?.total || 0,
-        retards
-      },
-      tontines: mesTontinesActives,
-      gains: mesGains,
-      prochainesEcheances
-    }, 'Tableau de bord membre');
-  } catch (error) {
-    next(error);
-  }
-};
 
 // US : Statistiques globales (Admin)
 exports.statistiquesGlobales = async (req, res, next) => {
