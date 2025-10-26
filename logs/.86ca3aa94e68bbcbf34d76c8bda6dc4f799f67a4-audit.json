@@ -29,6 +29,11 @@
             "date": 1761299325321,
             "name": "logs\\digitontine-2025-10-24.log",
             "hash": "2f747a777354481077f7d66c57e34573c7e4a5657ed65905657c9793a5080b7a"
+        },
+        {
+            "date": 1761472463170,
+            "name": "logs\\digitontine-2025-10-26.log",
+            "hash": "8b963a43561bf0779c8b29a45dccf075a8bb7f48a524e61318f1ad7b3fdf1df1"
         }
     ],
     "hashType": "sha256"
