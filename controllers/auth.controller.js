@@ -14,6 +14,7 @@ const login = async (req, res) => {
   try {
     const { identifier, motDePasse, skipOTP = false } = req.body;
 
+
     // Trouver l'utilisateur
     const user = await User.findByEmailOrPhone(identifier);
 
