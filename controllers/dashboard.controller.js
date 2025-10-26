@@ -3,7 +3,7 @@ const Tontine = require('../models/Tontine');
 const Transaction = require('../models/Transaction');
 const Tirage = require('../models/Tirage');
 const Penalite = require('../models/Penalite');
-const { ApiResponse } = require('../utils/apiResponse');
+const ApiResponse = require('../utils/apiResponse');
 const { AppError } = require('../utils/errors');
 const mongoose = require('mongoose');
 
