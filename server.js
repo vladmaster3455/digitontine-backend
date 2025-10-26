@@ -340,10 +340,6 @@ app.use(`${API_PREFIX}/validations`, validationRoutes);
 // ========================================
 // GESTION DES ERREURS
 // ========================================
-
-// 404 - Route non trouvee
-app.use(notFoundHandler);
-// Route de confirmation de changement de mot de passe (page HTML simple)
 app.get('/confirm', (req, res) => {
   const { token, action } = req.query;
   
@@ -439,6 +435,10 @@ app.get('/confirm', (req, res) => {
   
   res.send(html);
 });
+// 404 - Route non trouvee
+app.use(notFoundHandler);
+// Route de confirmation de changement de mot de passe (page HTML simple)
+
 // Gestionnaire d'erreurs global
 app.use(errorHandler);
 
