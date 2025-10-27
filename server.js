@@ -331,7 +331,7 @@ app.get('/confirm', async (req, res) => {
       <body>
         <div class="container">
           <h1 class="error">Lien invalide</h1>
-          <p>Les parametres sont manquants ou incorrects.</p>
+          <p>Les paramètres sont manquants ou incorrects.</p>
         </div>
       </body>
       </html>
@@ -364,10 +364,14 @@ app.get('/confirm', async (req, res) => {
             body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
             .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
             .error { color: #dc3545; }
-            .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
           </style>
         </head>
-     
+        <body>
+          <div class="container">
+            <h1 class="error">Lien expiré ou invalide</h1>
+            <p>Ce lien de confirmation n'est plus valide ou a déjà été utilisé.</p>
+          </div>
+        </body>
         </html>
       `);
     }
@@ -390,21 +394,29 @@ app.get('/confirm', async (req, res) => {
 
     // Afficher le resultat
     if (result.success) {
+      const message = action === 'approve' 
+        ? 'Changement de mot de passe approuvé avec succès !' 
+        : 'Changement de mot de passe rejeté avec succès !';
+      
       return res.send(`
         <!DOCTYPE html>
         <html lang="fr">
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Succes - DigiTontine</title>
+          <title>Succès - DigiTontine</title>
           <style>
             body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
             .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
             .success { color: #28a745; }
-            .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
           </style>
         </head>
-       
+        <body>
+          <div class="container">
+            <h1 class="success">✓ Succès</h1>
+            <p>${message}</p>
+          </div>
+        </body>
         </html>
       `);
     } else {
@@ -419,10 +431,14 @@ app.get('/confirm', async (req, res) => {
             body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
             .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
             .error { color: #dc3545; }
-            .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
           </style>
         </head>
-
+        <body>
+          <div class="container">
+            <h1 class="error">Erreur</h1>
+            <p>${result.message}</p>
+          </div>
+        </body>
         </html>
       `);
     }
@@ -440,10 +456,14 @@ app.get('/confirm', async (req, res) => {
           body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; margin: 0; }
           .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
           .error { color: #dc3545; }
-          .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
         </style>
       </head>
-
+      <body>
+        <div class="container">
+          <h1 class="error">Erreur serveur</h1>
+          <p>Une erreur s'est produite. Veuillez réessayer plus tard.</p>
+        </div>
+      </body>
       </html>
     `);
   }
