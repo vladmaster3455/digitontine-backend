@@ -19,16 +19,21 @@ const TontineSchema = new mongoose.Schema(
       maxlength: [500, 'La description ne peut pas dépasser 500 caractères'],
     },
 
-    // Configuration financière
-    montantCotisation: {
-      type: Number,
-      required: [true, 'Le montant de cotisation est requis'],
-      min: [1000, 'Le montant minimum est de 1000 FCFA'],
-      validate: {
-        validator: Number.isInteger,
-        message: 'Le montant doit être un nombre entier',
-      },
+ montantCotisation: {
+  type: Number,
+  required: [true, 'Le montant de cotisation est requis'],
+  // min: [0, 'Le montant doit être positif ou zéro']  → supprimé pour autoriser 0
+  validate: [
+    {
+      validator: Number.isInteger,
+      message: 'Le montant doit être un nombre entier',
     },
+    {
+      validator: (value) => value >= 0,
+      message: 'Le montant ne peut pas être négatif',
+    },
+  ],
+},
     frequence: {
       type: String,
       enum: {
