@@ -367,13 +367,7 @@ app.get('/confirm', async (req, res) => {
             .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
           </style>
         </head>
-        <body>
-          <div class="container">
-            <h1 class="error">Lien invalide ou expire</h1>
-            <p>Ce lien de confirmation n'est plus valide.</p>
-            <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour a l'accueil</a>
-          </div>
-        </body>
+     
         </html>
       `);
     }
@@ -410,14 +404,7 @@ app.get('/confirm', async (req, res) => {
             .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
           </style>
         </head>
-        <body>
-          <div class="container">
-            <h1 class="success">Succes</h1>
-            <p>${result.message}</p>
-            <p>${action === 'approve' ? 'Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.' : 'Votre ancien mot de passe reste actif.'}</p>
-            <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour a l'accueil</a>
-          </div>
-        </body>
+       
         </html>
       `);
     } else {
@@ -456,13 +443,7 @@ app.get('/confirm', async (req, res) => {
           .button { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
         </style>
       </head>
-      <body>
-        <div class="container">
-          <h1 class="error">Erreur serveur</h1>
-          <p>Une erreur est survenue. Veuillez reessayer plus tard.</p>
-          <a href="${process.env.FRONTEND_URL || process.env.BASE_URL}" class="button">Retour a l'accueil</a>
-        </div>
-      </body>
+
       </html>
     `);
   }
