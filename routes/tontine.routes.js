@@ -10,6 +10,7 @@ const {
   updateTontine,
   blockTontine,
   unblockTontine,
+  getTontineDetailsForMember,
   closeTontine,
   deleteTontine,
   listTontines,
@@ -65,6 +66,18 @@ router.get(
   '/me/tontines',
   verifyToken,
   mesTontines
+);
+/**
+ * @route   GET /digitontine/tontines/:tontineId/details
+ * @desc    Details d'une tontine (accessible aux membres)
+ * @access  Private (Membre de la tontine)
+ */
+router.get(
+  '/:tontineId/details',
+  verifyToken,
+  validateTontineId,
+  validate,
+  getTontineDetailsForMember
 );
 
 /**

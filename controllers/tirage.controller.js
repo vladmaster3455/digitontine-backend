@@ -8,6 +8,7 @@ const emailService = require('../services/email.service');
 const logger = require('../utils/logger');
 const { ApiResponse } = require('../utils/apiResponse');
 const { AppError } = require('../utils/errors');
+const ApiResponse = require('../utils/apiResponse');
 
 /**
  * @desc    Effectuer un tirage automatique
@@ -454,7 +455,6 @@ const listeTiragesTontine = async (req, res, next) => {
     next(error);
   }
 };
-
 /**
  * @desc    Mes gains (tirages gagnes par l'utilisateur)
  * @route   GET /digitontine/tirages/me/gains
@@ -471,13 +471,13 @@ const mesGains = async (req, res) => {
     const userId = req.user._id;
     logger.info(`Recherche gains pour userId: ${userId}`);
 
-    // Rechercher tous les tirages ou l'utilisateur est beneficiaire
+    // ✅ CORRECTION: beneficiaire au lieu de beneficiaireId
     let tirages = await Tirage.find({
-      beneficiaireId: userId
+      beneficiaire: userId  // ✅ PAS beneficiaireId
     })
       .populate('tontineId', 'nom montantCotisation frequence')
-      .sort({ dateTirage: -1 })
-      .lean(); // Convertir en objet JS simple
+      .sort({ dateEffective: -1 })
+      .lean();
 
     // S'assurer que tirages est un tableau
     if (!tirages) {
@@ -487,7 +487,7 @@ const mesGains = async (req, res) => {
 
     // Calculer le total des gains
     const totalGains = tirages.reduce((sum, tirage) => {
-      return sum + (tirage.montantDistribue || 0);
+      return sum + (tirage.montant || 0);  // ✅ montant au lieu de montantDistribue
     }, 0);
 
     logger.info(`${tirages.length} gain(s) trouve(s) pour ${req.user.email} - Total: ${totalGains} FCFA`);
@@ -500,10 +500,10 @@ const mesGains = async (req, res) => {
           nom: t.tontineId?.nom || 'Tontine inconnue'
         },
         numeroTirage: t.numeroTirage,
-        montant: t.montantDistribue,
-        dateEffective: t.dateTirage,
-        dateTirage: t.dateTirage,
-        statutPaiement: t.statutPaiement
+        montant: t.montant,  // ✅ montant au lieu de montantDistribue
+        dateEffective: t.dateEffective,
+        dateTirage: t.dateEffective,
+        statutPaiement: t.statut
       })),
       total: tirages.length,
       totalMontant: totalGains

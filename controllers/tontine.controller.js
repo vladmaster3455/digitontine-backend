@@ -956,7 +956,71 @@ const optInForTirage = async (req, res) => {
     return ApiResponse.serverError(res);
   }
 };
+/**
+ * @desc    Details d'une tontine pour un membre
+ * @route   GET /digitontine/tontines/:tontineId/details
+ * @access  Private (Membre de la tontine)
+ */
+const getTontineDetailsForMember = async (req, res) => {
+  try {
+    const { tontineId } = req.params;
+    const userId = req.user._id;
 
+    const tontine = await Tontine.findById(tontineId)
+      .populate('membres.userId', 'prenom nom email numeroTelephone')
+      .populate('tresorierAssigne', 'prenom nom email numeroTelephone');
+
+    if (!tontine) {
+      return ApiResponse.notFound(res, 'Tontine introuvable');
+    }
+
+    // Verifier que l'utilisateur est membre
+    const estMembre = tontine.membres.some(
+      m => m.userId._id.toString() === userId.toString()
+    );
+
+    if (!estMembre && req.user.role !== 'Administrateur' && req.user.role !== 'Tresorier') {
+      return ApiResponse.forbidden(res, 'Vous n\'etes pas membre de cette tontine');
+    }
+
+    const tirages = await Tirage.find({ tontineId })
+      .populate('beneficiaire', 'prenom nom email')
+      .sort({ dateEffective: -1 })
+      .limit(10);
+
+    return ApiResponse.success(res, {
+      tontine: {
+        id: tontine._id,
+        nom: tontine.nom,
+        description: tontine.description,
+        montantCotisation: tontine.montantCotisation,
+        frequence: tontine.frequence,
+        dateDebut: tontine.dateDebut,
+        statut: tontine.statut,
+        nombreMembres: tontine.nombreMembres,
+        tresorierAssigne: tontine.tresorierAssigne ? {
+          id: tontine.tresorierAssigne._id,
+          nom: tontine.tresorierAssigne.nomComplet,
+          email: tontine.tresorierAssigne.email,
+        } : null,
+        membres: tontine.membres.map((m) => ({
+          userId: m.userId._id,
+          nom: m.userId.nomComplet,
+          email: m.userId.email,
+          aGagne: m.aGagne,
+        })),
+        tiragesRecents: tirages.map((t) => ({
+          beneficiaire: t.beneficiaire?.nomComplet || 'N/A',
+          montant: t.montant,
+          dateEffective: t.dateEffective,
+        })),
+      },
+    });
+  } catch (error) {
+    logger.error('Erreur getTontineDetailsForMember:', error);
+    return ApiResponse.serverError(res);
+  }
+};
 module.exports = {
   createTontine,
   addMembers,
@@ -969,6 +1033,7 @@ module.exports = {
   deleteTontine,
   listTontines,
   getTontineDetails,
+  getTontineDetailsForMember,  
   optInForTirage,
   mesTontines,
 };
