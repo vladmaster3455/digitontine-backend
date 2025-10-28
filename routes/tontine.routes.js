@@ -53,7 +53,16 @@ router.get(
   validate,
   listTontines
 );
-
+/**
+ * @route   GET /digitontine/tontines/me/tontines
+ * @desc    Mes tontines (Membre/Trésorier)
+ * @access  Private
+ */
+router.get(
+  '/me/tontines',
+  verifyToken,
+  mesTontines
+);
 /**
  * @route   POST /digitontine/tontines
  * @desc    Créer une nouvelle tontine

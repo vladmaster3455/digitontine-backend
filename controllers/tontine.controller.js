@@ -96,7 +96,26 @@ const createTontine = async (req, res) => {
     return ApiResponse.serverError(res);
   }
 };
+const mesTontines = async (req, res) => {
+  try {
+    const userId = req.user._id;
 
+    const tontines = await Tontine.find({
+      'membres.userId': userId
+    })
+      .populate('tresorierAssigne', 'prenom nom')
+      .select('nom description montantCotisation frequence statut nombreMembres dateDebut')
+      .sort({ createdAt: -1 });
+
+    return ApiResponse.success(res, {
+      tontines,
+      total: tontines.length
+    }, `${tontines.length} tontine(s) trouvée(s)`);
+  } catch (error) {
+    logger.error('Erreur mesTontines:', error);
+    return ApiResponse.serverError(res);
+  }
+};
 const addMembers = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -864,4 +883,5 @@ module.exports = {
   listTontines,
   getTontineDetails,
   optInForTirage,
+  mesTontines,
 };
