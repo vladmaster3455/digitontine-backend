@@ -100,19 +100,20 @@ exports.dashboardAdmin = async (req, res, next) => {
 };
 
 // US : Tableau de bord Membre (CORRIGÉ)
+// US : Tableau de bord Membre (CORRIGÉ)
 exports.dashboardMembre = async (req, res, next) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
 
-    // Mes tontines actives
+    //  CORRECTION : Chercher dans le tableau membres.userId
     const mesTontinesActives = await Tontine.find({
-      membres: userId,
+      'membres.userId': userId,  //  CORRECT : chercher dans le sous-document
       statut: 'Active'
     }).select('nom montantCotisation frequence dateDebut');
 
     // Mes cotisations
     const mesCotisations = await Transaction.aggregate([
-      { $match: { user: userId, type: 'Cotisation' } },
+      { $match: { userId: userId, type: 'Cotisation' } },  //  CORRECTION : userId au lieu de user
       {
         $group: {
           _id: '$statut',
@@ -126,51 +127,54 @@ exports.dashboardMembre = async (req, res, next) => {
       .filter(c => c._id === 'Validee')
       .reduce((sum, c) => sum + c.montantTotal, 0);
 
-    // Mes gains
+    //  CORRECTION : Chercher beneficiaireId au lieu de beneficiaire
     const mesGains = await Tirage.find({
-      beneficiaire: userId,
+      beneficiaireId: userId,  //  CORRECTION
       statut: 'Effectue'
-    }).select('tontine montant dateEffective');
+    })
+      .populate('tontineId', 'nom')
+      .select('tontineId montant dateEffective');
 
     const totalGagne = mesGains.reduce((sum, g) => sum + g.montant, 0);
 
-    // Mes penalites
+    // Mes pénalités
     const mesPenalites = await Penalite.aggregate([
-      { $match: { user: userId, statut: 'Appliquee' } },
+      { $match: { userId: userId, statut: 'Appliquee' } },  //  CORRECTION : userId
       { $group: { _id: null, total: { $sum: '$montant' } } }
     ]);
 
-    // Prochaines echeances
+    // Prochaines échéances
     const prochainesEcheances = await Transaction.find({
-      user: userId,
+      userId: userId,  //  CORRECTION
       statut: 'En attente',
       dateLimite: { $gte: new Date() }
     })
-      .populate('tontine', 'nom')
+      .populate('tontineId', 'nom')
       .sort({ dateLimite: 1 })
       .limit(5);
 
     // Retards
     const retards = await Transaction.countDocuments({
-      user: userId,
+      userId: userId,  //  CORRECTION
       statut: 'En attente',
       dateLimite: { $lt: new Date() }
     });
 
-    // ✅ CORRECTION : Valeurs par défaut explicites
-    ApiResponse.success(res, {
+    //  STRUCTURE CORRECTE avec valeurs par défaut
+    return ApiResponse.success(res, {
       resume: {
         tontinesActives: mesTontinesActives?.length || 0,
         totalCotise: totalCotise || 0,
         totalGagne: totalGagne || 0,
         totalPenalites: mesPenalites[0]?.total || 0,
-        retards: retards || 0  // ✅ Ajout de la valeur par défaut
+        retards: retards || 0
       },
       tontines: mesTontinesActives || [],
       gains: mesGains || [],
       prochainesEcheances: prochainesEcheances || []
     }, 'Tableau de bord membre');
   } catch (error) {
+    console.error(' Erreur dashboardMembre:', error);
     next(error);
   }
 };
