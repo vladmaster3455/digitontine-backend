@@ -746,6 +746,7 @@ const deleteTontine = async (req, res) => {
  * @route   GET /digitontine/tontines
  * @access  Admin
  */
+
 const listTontines = async (req, res) => {
   try {
     const { page, limit, skip } = getPaginationParams(req.query);
@@ -806,6 +807,7 @@ const listTontines = async (req, res) => {
       })),
       { page, limit, total },
       {
+        message: 'Liste des tontines',
         compteurs: {
           actives,
           enAttente,
