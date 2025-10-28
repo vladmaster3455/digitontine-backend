@@ -6,6 +6,7 @@ const cors = require('cors');
 const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const morgan = require('morgan');
+app.set('trust proxy', 1);
 
 // Config & Utils
 const connectDB = require('./config/database');

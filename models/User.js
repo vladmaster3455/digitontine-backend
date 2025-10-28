@@ -1,7 +1,7 @@
 // models/User.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const { ROLES } = require('../config/constants');
+const { ROLES, ROLE_VALUES } = require('../config/constants'); // ✅ CHANGE: Ajoute ROLE_VALUES
 
 const UserSchema = new mongoose.Schema(
   {
@@ -105,14 +105,15 @@ const UserSchema = new mongoose.Schema(
     },
 
     // Role et statut
+    // ✅ CHANGE: Remplace TOUTE cette section par le code ci-dessous
     role: {
       type: String,
       enum: {
-        values: [ROLES.ADMIN, ROLES.TRESORIER, ROLES.MEMBRE],
-        message: 'Role invalide',
+        values: ROLE_VALUES,  // ✅ CHANGE: ['admin', 'tresorier', 'membre']
+        message: 'Le rôle doit être admin, tresorier ou membre',  // ✅ CHANGE: Nouveau message
       },
       required: [true, 'Le role est requis'],
-      default: ROLES.MEMBRE,
+      default: ROLES.MEMBRE,  // ✅ CHANGE: Reste la même logique
     },
     isActive: {
       type: Boolean,
@@ -186,7 +187,7 @@ const UserSchema = new mongoose.Schema(
 UserSchema.index({ role: 1, isActive: 1 });
 
 // ========================================
-// VIRTUALS (À AJOUTER APRÈS LES VIRTUALS EXISTANTS)
+// VIRTUALS
 // ========================================
 
 UserSchema.virtual('nomComplet').get(function () {
@@ -199,7 +200,6 @@ UserSchema.virtual('age').get(function () {
   return age;
 });
 
-//  AJOUT : Alias pour compatibilité frontend
 UserSchema.virtual('cni').get(function () {
   return this.carteIdentite;
 });
@@ -208,7 +208,6 @@ UserSchema.virtual('telephone').get(function () {
   return this.numeroTelephone;
 });
 
-//  AJOUT : Getter pour photo d'identité sécurisé
 UserSchema.virtual('photoIdentiteUrl').get(function () {
   return this.photoIdentite?.url || null;
 });
@@ -225,7 +224,6 @@ UserSchema.virtual('photoProfilUrl').get(function () {
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('motDePasse')) return next();
 
-  // Si flag _skipPasswordHash est present, ne pas hasher (deja fait dans pendingPasswordChange)
   if (this._skipPasswordHash) {
     delete this._skipPasswordHash;
     return next();
@@ -308,9 +306,6 @@ UserSchema.methods.updateProfilePhoto = function (url, publicId) {
   };
 };
 
-/**
- * Generer OTP de connexion
- */
 UserSchema.methods.generateLoginOTP = function () {
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const crypto = require('crypto');
@@ -322,9 +317,6 @@ UserSchema.methods.generateLoginOTP = function () {
   return code;
 };
 
-/**
- * Verifier OTP de connexion
- */
 UserSchema.methods.verifyLoginOTP = function (code) {
   const crypto = require('crypto');
   
@@ -351,9 +343,6 @@ UserSchema.methods.verifyLoginOTP = function (code) {
   return { success: false, message: 'Code incorrect' };
 };
 
-/**
- * Creer une demande de changement de mot de passe (en attente de confirmation)
- */
 UserSchema.methods.createPendingPasswordChange = async function (newPassword) {
   const crypto = require('crypto');
   const bcrypt = require('bcryptjs');
@@ -373,9 +362,6 @@ UserSchema.methods.createPendingPasswordChange = async function (newPassword) {
   return confirmationToken;
 };
 
-/**
- * Confirmer le changement de mot de passe
- */
 UserSchema.methods.confirmPasswordChange = function (token) {
   const crypto = require('crypto');
   
@@ -391,9 +377,8 @@ UserSchema.methods.confirmPasswordChange = function (token) {
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
   
   if (hashedToken === this.pendingPasswordChange.confirmationToken) {
-    // Appliquer le changement - Le mot de passe est DEJA hashe dans pendingPasswordChange
     this.motDePasse = this.pendingPasswordChange.newPasswordHash;
-    this._skipPasswordHash = true; // FLAG pour eviter le double hashage dans le hook pre-save
+    this._skipPasswordHash = true;
     this.lastPasswordChange = Date.now();
     this.isFirstLogin = false;
     this.pendingPasswordChange = undefined;
@@ -404,9 +389,6 @@ UserSchema.methods.confirmPasswordChange = function (token) {
   return { success: false, message: 'Lien de confirmation invalide' };
 };
 
-/**
- * Rejeter le changement de mot de passe
- */
 UserSchema.methods.rejectPasswordChange = function (token) {
   const crypto = require('crypto');
   
