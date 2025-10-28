@@ -851,7 +851,7 @@ const getTontineDetailsWithRoleCheck = async (req, res) => {
     // ========================================
     
     //  CAS 1 : Admin ou Trésorier → Accès COMPLET
-    if (currentUser.role === 'administrateur' || currentUser.role === 'tresorier') {
+    if (currentUser.role === 'admin' || currentUser.role === 'tresorier') {
       logger.info(`Accès complet tontine ${tontine.nom} par ${currentUser.role} ${currentUser.email}`);
       return getTontineDetails(req, res);  // Fonction existante (accès complet)
     }
