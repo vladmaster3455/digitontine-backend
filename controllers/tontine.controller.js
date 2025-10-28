@@ -820,7 +820,59 @@ const listTontines = async (req, res) => {
     return ApiResponse.serverError(res);
   }
 };
+/**
+ * @desc    Details d'une tontine (avec vérification de rôle automatique)
+ * @route   GET /digitontine/tontines/:tontineId
+ * @access  Private (tous les utilisateurs authentifiés)
+ * 
+ * ✅ Si Admin/Trésorier → Retourne TOUS les détails
+ * ✅ Si Membre → Vérifie qu'il fait partie de la tontine, retourne détails limités
+ */
+const getTontineDetailsWithRoleCheck = async (req, res) => {
+  try {
+    const { tontineId } = req.params;
+    const currentUser = req.user;
 
+    // ========================================
+    // 1. CHARGER LA TONTINE
+    // ========================================
+    const tontine = await Tontine.findById(tontineId)
+      .populate('membres.userId', 'prenom nom email numeroTelephone')
+      .populate('tresorierAssigne', 'prenom nom email numeroTelephone');
+
+    if (!tontine) {
+      return ApiResponse.notFound(res, 'Tontine introuvable');
+    }
+
+    // ========================================
+    // 2. VÉRIFIER LE RÔLE
+    // ========================================
+    
+    // ✅ CAS 1 : Admin ou Trésorier → Accès COMPLET
+    if (currentUser.role === 'Administrateur' || currentUser.role === 'Tresorier') {
+      logger.info(`Accès complet tontine ${tontine.nom} par ${currentUser.role} ${currentUser.email}`);
+      return getTontineDetails(req, res);  // Fonction existante (accès complet)
+    }
+
+    // ✅ CAS 2 : Membre → Vérifier qu'il fait partie de la tontine
+    const estMembre = tontine.membres.some(
+      m => m.userId._id.toString() === currentUser._id.toString()
+    );
+
+    if (!estMembre) {
+      logger.warn(`Tentative accès non autorisé tontine ${tontine.nom} par ${currentUser.email}`);
+      return ApiResponse.forbidden(res, 'Vous n\'êtes pas membre de cette tontine');
+    }
+
+    // ✅ CAS 3 : Membre vérifié → Retour détails limités
+    logger.info(`Accès membre tontine ${tontine.nom} par ${currentUser.email}`);
+    return getTontineDetailsForMember(req, res);  // Fonction existante (accès limité)
+
+  } catch (error) {
+    logger.error('Erreur getTontineDetailsWithRoleCheck:', error);
+    return ApiResponse.serverError(res);
+  }
+};
 /**
  * @desc    Details d'une tontine
  * @route   GET /digitontine/tontines/:tontineId
@@ -1034,6 +1086,7 @@ module.exports = {
   listTontines,
   getTontineDetails,
   getTontineDetailsForMember,  
+  getTontineDetailsWithRoleCheck,
   optInForTirage,
   mesTontines,
 };

@@ -11,6 +11,7 @@ const {
   blockTontine,
   unblockTontine,
   getTontineDetailsForMember,
+  getTontineDetailsWithRoleCheck,
   closeTontine,
   deleteTontine,
   listTontines,
@@ -105,10 +106,9 @@ router.post(
 router.get(
   '/:tontineId',
   verifyToken,
-  isAdmin,
   validateTontineId,
   validate,
-  getTontineDetails
+  getTontineDetailsWithRoleCheck 
 );
 
 /**
