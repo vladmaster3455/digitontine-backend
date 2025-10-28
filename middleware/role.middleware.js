@@ -4,7 +4,7 @@ const { ROLES } = require('../config/constants');
 const logger = require('../utils/logger');
 
 /**
- * ✅ CORRECTION : Fonction pour normaliser TOUS les variants de rôles
+ *  CORRECTION : Fonction pour normaliser TOUS les variants de rôles
  * Accepte: 'admin', 'Admin', 'ADMIN', 'Administrateur', etc.
  * Retourne: 'Administrateur', 'Tresorier', 'Membre'
  */
@@ -50,10 +50,10 @@ const checkRole = (...allowedRoles) => {
       return ApiResponse.unauthorized(res, 'Authentification requise');
     }
 
-    // ✅ CORRECTION : Normaliser le rôle de l'utilisateur
+    //  CORRECTION : Normaliser le rôle de l'utilisateur
     const userRole = normalizeRole(req.user.role);
     
-    // ✅ Normaliser les rôles autorisés
+    //  Normaliser les rôles autorisés
     const normalizedAllowedRoles = allowedRoles.map(normalizeRole);
 
     logger.debug(`🔍 Vérification rôle - User: ${req.user.email} - Role original: ${req.user.role} - Role normalisé: ${userRole} - Rôles autorisés: ${normalizedAllowedRoles.join(', ')}`);
@@ -61,7 +61,7 @@ const checkRole = (...allowedRoles) => {
     // Vérifier si l'utilisateur a un des rôles autorisés
     if (!normalizedAllowedRoles.includes(userRole)) {
       logger.warn(
-        `❌ Accès refusé - Utilisateur: ${req.user.email} (${req.user.role}) - Rôles requis: ${allowedRoles.join(', ')}`
+        ` Accès refusé - Utilisateur: ${req.user.email} (${req.user.role}) - Rôles requis: ${allowedRoles.join(', ')}`
       );
       return ApiResponse.forbidden(
         res,
@@ -69,7 +69,7 @@ const checkRole = (...allowedRoles) => {
       );
     }
 
-    logger.debug(`✅ Autorisation accordée - Utilisateur: ${req.user.email} (${userRole})`);
+    logger.debug(` Autorisation accordée - Utilisateur: ${req.user.email} (${userRole})`);
     next();
   };
 };
@@ -105,7 +105,7 @@ const isSelfOrAdmin = (req, res, next) => {
 
   const targetUserId = req.params.userId || req.params.id;
 
-  // ✅ CORRECTION : Normaliser le rôle avant la vérification
+  //  CORRECTION : Normaliser le rôle avant la vérification
   const userRole = normalizeRole(req.user.role);
 
   // Admin peut accéder à tout
@@ -119,7 +119,7 @@ const isSelfOrAdmin = (req, res, next) => {
   }
 
   logger.warn(
-    `❌ Tentative d'accès aux données d'un autre utilisateur - Utilisateur: ${req.user.email}`
+    ` Tentative d'accès aux données d'un autre utilisateur - Utilisateur: ${req.user.email}`
   );
   return ApiResponse.forbidden(res, 'Vous ne pouvez accéder qu\'à vos propres données');
 };
@@ -131,5 +131,5 @@ module.exports = {
   isTresorier,
   isMembre,
   isSelfOrAdmin,
-  normalizeRole, // ✅ Exporter pour réutilisation
+  normalizeRole, //  Exporter pour réutilisation
 };
