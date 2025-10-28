@@ -10,10 +10,9 @@ const { TONTINE_STATUS, ROLES } = require('../config/constants');
 const emailService = require('../services/email.service');
 
 /**
- * @desc    Créer une nouvelle tontine
+ * @desc    Creer une nouvelle tontine
  * @route   POST /digitontine/tontines
  * @access  Admin
- * US 2.1 : Création de tontine
  */
 const createTontine = async (req, res) => {
   try {
@@ -31,12 +30,14 @@ const createTontine = async (req, res) => {
       tresorierAssigneId,
     } = req.body;
     const admin = req.user;
- if (montantCotisation <= 0) {
-      return ApiResponse.error(res, 'Le montant de cotisation doit être supérieur à 0', 400);
+    
+    if (montantCotisation <= 0) {
+      return ApiResponse.error(res, 'Le montant de cotisation doit etre superieur a 0', 400);
     }
+    
     const existingTontine = await Tontine.findOne({ nom });
     if (existingTontine) {
-      return ApiResponse.conflict(res, 'Une tontine avec ce nom existe déjà');
+      return ApiResponse.conflict(res, 'Une tontine avec ce nom existe deja');
     }
 
     if (tresorierAssigneId) {
@@ -47,7 +48,7 @@ const createTontine = async (req, res) => {
       });
       
       if (!tresorier) {
-        return ApiResponse.error(res, 'Trésorier introuvable ou inactif', 400);
+        return ApiResponse.error(res, 'Tresorier introuvable ou inactif', 400);
       }
     }
 
@@ -68,7 +69,7 @@ const createTontine = async (req, res) => {
       membres: [],
     });
 
-    logger.info(`Tontine créée - ${tontine.nom} par ${admin.email}`);
+    logger.info(`Tontine creee - ${tontine.nom} par ${admin.email}`);
 
     return ApiResponse.success(
       res,
@@ -88,7 +89,7 @@ const createTontine = async (req, res) => {
           tresorierAssigne: tresorierAssigneId || null,
         },
       },
-      'Tontine créée avec succès',
+      'Tontine creee avec succes',
       201
     );
   } catch (error) {
@@ -96,10 +97,17 @@ const createTontine = async (req, res) => {
     return ApiResponse.serverError(res);
   }
 };
+
+/**
+ * @desc    Mes tontines (Membre/Tresorier)
+ * @route   GET /digitontine/tontines/me/tontines
+ * @access  Private
+ */
 const mesTontines = async (req, res) => {
   try {
     const userId = req.user._id;
 
+    // PAS de filtre sur le statut - on retourne TOUTES les tontines du membre
     const tontines = await Tontine.find({
       'membres.userId': userId
     })
@@ -110,12 +118,18 @@ const mesTontines = async (req, res) => {
     return ApiResponse.success(res, {
       tontines,
       total: tontines.length
-    }, `${tontines.length} tontine(s) trouvée(s)`);
+    }, `${tontines.length} tontine(s) trouvee(s)`);
   } catch (error) {
     logger.error('Erreur mesTontines:', error);
     return ApiResponse.serverError(res);
   }
 };
+
+/**
+ * @desc    Ajouter des membres a une tontine
+ * @route   POST /digitontine/tontines/:tontineId/membres
+ * @access  Admin
+ */
 const addMembers = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -130,7 +144,7 @@ const addMembers = async (req, res) => {
     if (tontine.statut !== TONTINE_STATUS.EN_ATTENTE) {
       return ApiResponse.error(
         res,
-        'Impossible d\'ajouter des membres après activation',
+        'Impossible d\'ajouter des membres apres activation',
         400
       );
     }
@@ -147,12 +161,12 @@ const addMembers = async (req, res) => {
         }
 
         if (!user.isActive) {
-          erreurs.push({ userId, message: 'Compte désactivé' });
+          erreurs.push({ userId, message: 'Compte desactive' });
           continue;
         }
 
         if (user.role !== ROLES.MEMBRE) {
-          erreurs.push({ userId, message: 'Seuls les membres peuvent être ajoutés' });
+          erreurs.push({ userId, message: 'Seuls les membres peuvent etre ajoutes' });
           continue;
         }
 
@@ -166,7 +180,7 @@ const addMembers = async (req, res) => {
         try {
           await emailService.sendTontineInvitation(user, tontine);
         } catch (emailError) {
-          logger.error(`Erreur envoi email à ${user.email}:`, emailError);
+          logger.error(`Erreur envoi email a ${user.email}:`, emailError);
         }
       } catch (error) {
         erreurs.push({ userId, message: error.message });
@@ -177,7 +191,7 @@ const addMembers = async (req, res) => {
     await tontine.save();
 
     logger.info(
-      `Membres ajoutés à ${tontine.nom} - ${membresAjoutes.length}/${membresIds.length} réussis`
+      `Membres ajoutes a ${tontine.nom} - ${membresAjoutes.length}/${membresIds.length} reussis`
     );
 
     return ApiResponse.success(res, {
@@ -195,6 +209,11 @@ const addMembers = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Retirer un membre d'une tontine
+ * @route   DELETE /digitontine/tontines/:tontineId/membres/:userId
+ * @access  Admin
+ */
 const removeMember = async (req, res) => {
   try {
     const { tontineId, userId } = req.params;
@@ -223,10 +242,10 @@ const removeMember = async (req, res) => {
       }
     }
 
-    logger.info(`Membre retiré de ${tontine.nom} - UserID: ${userId}`);
+    logger.info(`Membre retire de ${tontine.nom} - UserID: ${userId}`);
 
     return ApiResponse.success(res, {
-      message: 'Membre retiré avec succès',
+      message: 'Membre retire avec succes',
       tontine: {
         id: tontine._id,
         nom: tontine.nom,
@@ -244,6 +263,11 @@ const removeMember = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Activer une tontine
+ * @route   POST /digitontine/tontines/:tontineId/activate
+ * @access  Admin
+ */
 const activateTontine = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -261,7 +285,7 @@ const activateTontine = async (req, res) => {
     if (!tontine.tresorierAssigne) {
       return ApiResponse.error(
         res,
-        'Impossible d\'activer : aucun trésorier assigné à la tontine',
+        'Impossible d\'activer : aucun tresorier assigne a la tontine',
         400
       );
     }
@@ -278,13 +302,13 @@ const activateTontine = async (req, res) => {
         );
       } catch (emailError) {
         logger.error(
-          `Erreur envoi email à ${membre.userId.email}:`,
+          `Erreur envoi email a ${membre.userId.email}:`,
           emailError
         );
       }
     }
 
-    logger.info(`Tontine activée - ${tontine.nom} par ${admin.email}`);
+    logger.info(`Tontine activee - ${tontine.nom} par ${admin.email}`);
 
     return ApiResponse.success(res, {
       tontine: {
@@ -301,7 +325,7 @@ const activateTontine = async (req, res) => {
     
     if (error.message.includes('n\'est pas en attente') || 
         error.message.includes('membres requis') ||
-        error.message.includes('trésorier')) {
+        error.message.includes('tresorier')) {
       return ApiResponse.error(res, error.message, 400);
     }
     
@@ -309,6 +333,11 @@ const activateTontine = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Modifier une tontine
+ * @route   PUT /digitontine/tontines/:tontineId
+ * @access  Admin
+ */
 const updateTontine = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -347,7 +376,7 @@ const updateTontine = async (req, res) => {
             });
             
             if (!tresorier) {
-              return ApiResponse.error(res, 'Trésorier introuvable ou inactif', 400);
+              return ApiResponse.error(res, 'Tresorier introuvable ou inactif', 400);
             }
             
             tontine.historiqueModifications.push({
@@ -403,7 +432,7 @@ const updateTontine = async (req, res) => {
 
       if (attemptedForbidden.length > 0) {
         logger.warn(
-          `Tentative modification champs interdits après activation: ${attemptedForbidden.join(', ')}`
+          `Tentative modification champs interdits apres activation: ${attemptedForbidden.join(', ')}`
         );
       }
     }
@@ -411,7 +440,7 @@ const updateTontine = async (req, res) => {
     tontine.lastModifiedBy = admin._id;
     await tontine.save();
 
-    logger.info(`Tontine modifiée - ${tontine.nom} par ${admin.email}`);
+    logger.info(`Tontine modifiee - ${tontine.nom} par ${admin.email}`);
 
     return ApiResponse.success(res, {
       tontine: {
@@ -432,6 +461,11 @@ const updateTontine = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Bloquer une tontine
+ * @route   POST /digitontine/tontines/:tontineId/block
+ * @access  Admin
+ */
 const blockTontine = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -472,10 +506,10 @@ const blockTontine = async (req, res) => {
       }
     }
 
-    logger.info(`Tontine bloquée - ${tontine.nom} par ${admin.email} - Motif: ${motif}`);
+    logger.info(`Tontine bloquee - ${tontine.nom} par ${admin.email} - Motif: ${motif}`);
 
     return ApiResponse.success(res, {
-      message: 'Tontine bloquée avec succès',
+      message: 'Tontine bloquee avec succes',
       tontine: {
         id: tontine._id,
         nom: tontine.nom,
@@ -494,6 +528,11 @@ const blockTontine = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Debloquer/Reactiver une tontine
+ * @route   POST /digitontine/tontines/:tontineId/unblock
+ * @access  Admin
+ */
 const unblockTontine = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -520,10 +559,10 @@ const unblockTontine = async (req, res) => {
       }
     }
 
-    logger.info(`Tontine réactivée - ${tontine.nom} par ${admin.email}`);
+    logger.info(`Tontine reactivee - ${tontine.nom} par ${admin.email}`);
 
     return ApiResponse.success(res, {
-      message: 'Tontine réactivée avec succès',
+      message: 'Tontine reactivee avec succes',
       tontine: {
         id: tontine._id,
         nom: tontine.nom,
@@ -533,7 +572,7 @@ const unblockTontine = async (req, res) => {
   } catch (error) {
     logger.error('Erreur unblockTontine:', error);
     
-    if (error.message.includes('Seule une tontine bloquée')) {
+    if (error.message.includes('Seule une tontine bloquee')) {
       return ApiResponse.error(res, error.message, 400);
     }
     
@@ -541,6 +580,11 @@ const unblockTontine = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Cloturer une tontine
+ * @route   POST /digitontine/tontines/:tontineId/close
+ * @access  Admin
+ */
 const closeTontine = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -560,7 +604,7 @@ const closeTontine = async (req, res) => {
     if (tirages.length < tontine.membres.length) {
       return ApiResponse.error(
         res,
-        `Impossible de clôturer : ${tontine.membres.length - tirages.length} membre(s) n'ont pas encore gagné`,
+        `Impossible de cloturer : ${tontine.membres.length - tirages.length} membre(s) n'ont pas encore gagne`,
         400
       );
     }
@@ -572,9 +616,9 @@ const closeTontine = async (req, res) => {
     let rapportUrl = null;
     if (genererRapport) {
       try {
-        logger.info(`Rapport final généré pour ${tontine.nom}`);
+        logger.info(`Rapport final genere pour ${tontine.nom}`);
       } catch (pdfError) {
-        logger.error('Erreur génération rapport:', pdfError);
+        logger.error('Erreur generation rapport:', pdfError);
       }
     }
 
@@ -590,10 +634,10 @@ const closeTontine = async (req, res) => {
       }
     }
 
-    logger.info(`Tontine clôturée - ${tontine.nom} par ${admin.email}`);
+    logger.info(`Tontine cloturee - ${tontine.nom} par ${admin.email}`);
 
     return ApiResponse.success(res, {
-      message: 'Tontine clôturée avec succès',
+      message: 'Tontine cloturee avec succes',
       tontine: {
         id: tontine._id,
         nom: tontine.nom,
@@ -606,7 +650,7 @@ const closeTontine = async (req, res) => {
   } catch (error) {
     logger.error('Erreur closeTontine:', error);
     
-    if (error.message.includes('doivent avoir gagné')) {
+    if (error.message.includes('doivent avoir gagne')) {
       return ApiResponse.error(res, error.message, 400);
     }
     
@@ -614,6 +658,11 @@ const closeTontine = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Supprimer une tontine
+ * @route   DELETE /digitontine/tontines/:tontineId
+ * @access  Admin
+ */
 const deleteTontine = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -632,7 +681,7 @@ const deleteTontine = async (req, res) => {
     if (tontine.statut === TONTINE_STATUS.ACTIVE || tontine.statut === TONTINE_STATUS.BLOQUEE) {
       return ApiResponse.error(
         res,
-        'Impossible de supprimer une tontine active ou bloquée',
+        'Impossible de supprimer une tontine active ou bloquee',
         400
       );
     }
@@ -644,20 +693,20 @@ const deleteTontine = async (req, res) => {
       if (tontine.dateCloture > oneYearAgo) {
         return ApiResponse.error(
           res,
-          'Une tontine terminée ne peut être supprimée qu\'après 1 an',
+          'Une tontine terminee ne peut etre supprimee qu\'apres 1 an',
           400
         );
       }
     }
 
-    logger.info(`Archivage des données de ${tontine.nom}`);
+    logger.info(`Archivage des donnees de ${tontine.nom}`);
 
     await tontine.deleteOne();
 
-    logger.info(`Tontine supprimée - ${tontine.nom} par ${admin.email}`);
+    logger.info(`Tontine supprimee - ${tontine.nom} par ${admin.email}`);
 
     return ApiResponse.success(res, {
-      message: 'Tontine supprimée avec succès',
+      message: 'Tontine supprimee avec succes',
       deletedTontine: {
         id: tontine._id,
         nom: tontine.nom,
@@ -669,6 +718,11 @@ const deleteTontine = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Liste des tontines avec filtres
+ * @route   GET /digitontine/tontines
+ * @access  Admin
+ */
 const listTontines = async (req, res) => {
   try {
     const { page, limit, skip } = getPaginationParams(req.query);
@@ -744,6 +798,11 @@ const listTontines = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Details d'une tontine
+ * @route   GET /digitontine/tontines/:tontineId
+ * @access  Admin
+ */
 const getTontineDetails = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -820,6 +879,11 @@ const getTontineDetails = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Confirmer participation au prochain tirage
+ * @route   POST /digitontine/tontines/:tontineId/opt-in
+ * @access  Private (Membre de la tontine)
+ */
 const optInForTirage = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -832,7 +896,7 @@ const optInForTirage = async (req, res) => {
     }
 
     if (tontine.statut !== TONTINE_STATUS.ACTIVE) {
-      return ApiResponse.error(res, 'La tontine doit être active', 400);
+      return ApiResponse.error(res, 'La tontine doit etre active', 400);
     }
 
     const membre = tontine.membres.find(
@@ -840,11 +904,11 @@ const optInForTirage = async (req, res) => {
     );
     
     if (!membre) {
-      return ApiResponse.forbidden(res, 'Vous n\'êtes pas membre de cette tontine');
+      return ApiResponse.forbidden(res, 'Vous n\'etes pas membre de cette tontine');
     }
 
     if (membre.aGagne) {
-      return ApiResponse.error(res, 'Vous avez déjà gagné le tirage de cette tontine', 400);
+      return ApiResponse.error(res, 'Vous avez deja gagne le tirage de cette tontine', 400);
     }
 
     const nouvelleParticipation = participe !== false;
@@ -859,7 +923,7 @@ const optInForTirage = async (req, res) => {
 
     return ApiResponse.success(res, {
       message: nouvelleParticipation 
-        ? 'Participation au prochain tirage confirmée' 
+        ? 'Participation au prochain tirage confirmee' 
         : 'Vous ne participerez pas au prochain tirage',
       participeTirage: membre.participeTirage,
       dateOptIn: membre.dateOptIn,

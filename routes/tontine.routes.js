@@ -15,6 +15,7 @@ const {
   listTontines,
   getTontineDetails,
   optInForTirage,
+  mesTontines,
 } = require('../controllers/tontine.controller');
 const { body } = require('express-validator');
 const {
@@ -53,19 +54,22 @@ router.get(
   validate,
   listTontines
 );
+
 /**
  * @route   GET /digitontine/tontines/me/tontines
- * @desc    Mes tontines (Membre/Trésorier)
+ * @desc    Mes tontines (Membre/Tresorier)
  * @access  Private
+ * IMPORTANT: Cette route DOIT etre AVANT /:tontineId
  */
 router.get(
   '/me/tontines',
   verifyToken,
   mesTontines
 );
+
 /**
  * @route   POST /digitontine/tontines
- * @desc    Créer une nouvelle tontine
+ * @desc    Creer une nouvelle tontine
  * @access  Admin
  * US 2.1
  */
@@ -81,7 +85,7 @@ router.post(
 
 /**
  * @route   GET /digitontine/tontines/:tontineId
- * @desc    Détails d'une tontine
+ * @desc    Details d'une tontine
  * @access  Admin
  * US 2.11
  */
@@ -132,7 +136,7 @@ router.delete(
 
 /**
  * @route   POST /digitontine/tontines/:tontineId/membres
- * @desc    Ajouter des membres à une tontine
+ * @desc    Ajouter des membres a une tontine
  * @access  Admin
  * US 2.2
  */
@@ -145,6 +149,7 @@ router.post(
   auditLog('ADD_MEMBRES_TONTINE', 'Tontine'),
   addMembers
 );
+
 /**
  * @route   POST /digitontine/tontines/:tontineId/opt-in
  * @desc    Confirmer participation au prochain tirage
@@ -158,7 +163,7 @@ router.post(
   body('participe')
     .optional()
     .isBoolean()
-    .withMessage('participe doit être un booléen'),
+    .withMessage('participe doit etre un booleen'),
   validate,
   auditLog('TIRAGE_OPT_IN', 'Tontine'),
   optInForTirage
@@ -218,7 +223,7 @@ router.post(
 
 /**
  * @route   POST /digitontine/tontines/:tontineId/unblock
- * @desc    Débloquer/Réactiver une tontine
+ * @desc    Debloquer/Reactiver une tontine
  * @access  Admin
  * US 2.7
  */
@@ -234,7 +239,7 @@ router.post(
 
 /**
  * @route   POST /digitontine/tontines/:tontineId/close
- * @desc    Clôturer une tontine
+ * @desc    Cloturer une tontine
  * @access  Admin
  * US 2.8
  */
@@ -247,12 +252,17 @@ router.post(
   auditLog('CLOSE_TONTINE', 'Tontine'),
   closeTontine
 );
+
+// ========================================
+// DOCUMENTATION SWAGGER
+// ========================================
+
 /**
  * @swagger
  * /digitontine/tontines/{tontineId}:
  *   get:
  *     tags: [Tontines]
- *     summary: Détails d'une tontine
+ *     summary: Details d'une tontine
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -262,7 +272,7 @@ router.post(
  *         schema: { type: string }
  *     responses:
  *       200:
- *         description: Détails complets
+ *         description: Details complets
  *   put:
  *     tags: [Tontines]
  *     summary: Modifier une tontine
@@ -283,7 +293,7 @@ router.post(
  *               tauxPenalite: { type: number }
  *     responses:
  *       200:
- *         description: Tontine modifiée
+ *         description: Tontine modifiee
  *   delete:
  *     tags: [Tontines]
  *     summary: Supprimer une tontine
@@ -305,7 +315,7 @@ router.post(
  *               confirmation: { type: string, example: "SUPPRIMER" }
  *     responses:
  *       200:
- *         description: Tontine supprimée
+ *         description: Tontine supprimee
  */
 
 /**
@@ -332,7 +342,7 @@ router.post(
  *               membresIds: { type: array, items: { type: string } }
  *     responses:
  *       200:
- *         description: Membres ajoutés
+ *         description: Membres ajoutes
  */
 
 /**
@@ -350,7 +360,7 @@ router.post(
  *         schema: { type: string }
  *     responses:
  *       200:
- *         description: Tontine activée
+ *         description: Tontine activee
  */
 
 /**
@@ -377,7 +387,7 @@ router.post(
  *               motif: { type: string }
  *     responses:
  *       200:
- *         description: Tontine bloquée
+ *         description: Tontine bloquee
  */
 
 /**
@@ -385,7 +395,7 @@ router.post(
  * /digitontine/tontines/{tontineId}/close:
  *   post:
  *     tags: [Tontines]
- *     summary: Clôturer une tontine
+ *     summary: Cloturer une tontine
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -395,7 +405,7 @@ router.post(
  *         schema: { type: string }
  *     responses:
  *       200:
- *         description: Tontine clôturée
+ *         description: Tontine cloturee
  */
 
 module.exports = router;
