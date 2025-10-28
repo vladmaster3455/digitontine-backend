@@ -135,6 +135,12 @@ role: {
         return roleMap[value] || value.toLowerCase();
       }
     },
+     isActive: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
+
 
     // Tokens et securite
     resetPasswordToken: String,
