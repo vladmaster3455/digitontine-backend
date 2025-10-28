@@ -456,28 +456,63 @@ const listeTiragesTontine = async (req, res, next) => {
 };
 
 /**
- * @desc    Mes gains (Membre)
+ * @desc    Mes gains (tirages gagnes par l'utilisateur)
  * @route   GET /digitontine/tirages/me/gains
  * @access  Private (Membre)
  */
-const mesGains = async (req, res, next) => {
+const mesGains = async (req, res) => {
   try {
-    const tirages = await Tirage.find({
-      beneficiaire: req.user.id,
-      statut: 'Effectue'
+    // Verifier que req.user existe
+    if (!req.user || !req.user._id) {
+      logger.error('Erreur mesGains: req.user non defini');
+      return ApiResponse.error(res, 'Utilisateur non authentifie', 401);
+    }
+
+    const userId = req.user._id;
+    logger.info(`Recherche gains pour userId: ${userId}`);
+
+    // Rechercher tous les tirages ou l'utilisateur est beneficiaire
+    let tirages = await Tirage.find({
+      beneficiaireId: userId
     })
       .populate('tontineId', 'nom montantCotisation frequence')
-      .sort({ dateEffective: -1 });
+      .sort({ dateTirage: -1 })
+      .lean(); // Convertir en objet JS simple
 
-    const totalGagne = tirages.reduce((sum, t) => sum + t.montant, 0);
+    // S'assurer que tirages est un tableau
+    if (!tirages) {
+      logger.warn(`Aucun gain trouve pour userId: ${userId}`);
+      tirages = [];
+    }
+
+    // Calculer le total des gains
+    const totalGains = tirages.reduce((sum, tirage) => {
+      return sum + (tirage.montantDistribue || 0);
+    }, 0);
+
+    logger.info(`${tirages.length} gain(s) trouve(s) pour ${req.user.email} - Total: ${totalGains} FCFA`);
 
     return ApiResponse.success(res, {
-      tirages,
-      totalGagne,
-      nombreGains: tirages.length
-    }, 'Historique des gains');
+      tirages: tirages.map(t => ({
+        _id: t._id,
+        tontine: {
+          id: t.tontineId?._id,
+          nom: t.tontineId?.nom || 'Tontine inconnue'
+        },
+        numeroTirage: t.numeroTirage,
+        montant: t.montantDistribue,
+        dateEffective: t.dateTirage,
+        dateTirage: t.dateTirage,
+        statutPaiement: t.statutPaiement
+      })),
+      total: tirages.length,
+      totalMontant: totalGains
+    }, `${tirages.length} gain(s) trouve(s)`);
+
   } catch (error) {
-    next(error);
+    logger.error('Erreur mesGains:', error);
+    logger.error('Stack:', error.stack);
+    return ApiResponse.serverError(res);
   }
 };
 
