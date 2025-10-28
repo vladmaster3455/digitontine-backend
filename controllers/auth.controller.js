@@ -14,44 +14,56 @@ const login = async (req, res) => {
   try {
     const { identifier, motDePasse, skipOTP = false } = req.body;
 
+    logger.info(`[API] POST /auth/login`);
+    logger.info(`Data: ${JSON.stringify({ identifier, motDePasse })}`);
 
-    // Trouver l'utilisateur
+    // CORRECTION : Trouver l'utilisateur AVEC le mot de passe
     const user = await User.findByEmailOrPhone(identifier);
 
     if (!user) {
-      logger.warn(`Tentative connexion echouee - Utilisateur introuvable: ${identifier}`);
+      logger.warn(` Utilisateur introuvable: ${identifier}`);
       return ApiResponse.unauthorized(res, 'Identifiants incorrects');
     }
 
-    // Verifier si compte actif
+    logger.info(` Utilisateur trouvé: ${user.email}`);
+
+    // Vérifier si compte actif
     if (!user.isActive) {
-      logger.warn(`Tentative connexion compte desactive: ${user.email}`);
-      return ApiResponse.forbidden(res, 'Votre compte a ete desactive. Contactez l\'administrateur.');
+      logger.warn(` Compte désactivé: ${user.email}`);
+      return ApiResponse.forbidden(res, 'Votre compte a été désactivé');
     }
 
-    // Verifier mot de passe
+    // CRITIQUE : Vérifier le mot de passe AVANT de sauvegarder
+    logger.info(` Vérification mot de passe...`);
     const isPasswordValid = await user.comparePassword(motDePasse);
+    logger.info(`Résultat comparaison: ${isPasswordValid}`);
 
     if (!isPasswordValid) {
-      logger.warn(`Mot de passe incorrect pour: ${user.email}`);
-      user.logLogin(req.ip, req.get('user-agent'), false);
+      logger.warn(` Mot de passe incorrect pour: ${user.email}`);
+      // Logger la tentative SANS sauvegarder encore
+      user.loginHistory.push({
+        date: Date.now(),
+        ip: req.ip,
+        userAgent: req.get('user-agent'),
+        success: false,
+      });
       await user.save();
       return ApiResponse.unauthorized(res, 'Identifiants incorrects');
     }
 
-    // Si skipOTP = true, connecter directement sans OTP
+    logger.info(`Mot de passe correct pour: ${user.email}`);
+
+    // Si skipOTP = true, connecter directement
     if (skipOTP) {
-      // Logger la connexion
       user.logLogin(req.ip, req.get('user-agent'), true);
       await user.save();
 
-      // Recharger l'utilisateur
+      //  RECHARGER l'utilisateur SANS le mot de passe
       const updatedUser = await User.findById(user._id);
 
-      // Generer tokens JWT
       const { accessToken, refreshToken } = generateTokenPair(updatedUser);
 
-      logger.info(`Connexion directe reussie - ${updatedUser.email} (${updatedUser.role})`);
+      logger.info(` Connexion directe réussie - ${updatedUser.email}`);
 
       return ApiResponse.success(res, {
         user: {
@@ -68,35 +80,33 @@ const login = async (req, res) => {
         refreshToken,
         requiresPasswordChange: updatedUser.isFirstLogin,
         otpSkipped: true,
-      }, 'Connexion reussie');
+      }, 'Connexion réussie');
     }
 
-    // Sinon, generer et envoyer OTP
+    // Sinon, générer OTP
     const otpCode = user.generateLoginOTP();
     await user.save();
 
-    // Envoyer email avec code
+    // Envoyer email
     try {
       await emailService.sendLoginOTP(user, otpCode);
+      logger.info(` OTP envoyé à ${user.email}`);
     } catch (emailError) {
-      logger.error('Erreur envoi OTP:', emailError);
-      // Nettoyer l'OTP si echec
+      logger.error(' Erreur envoi OTP:', emailError);
       user.loginOTP = undefined;
       await user.save();
-      return ApiResponse.error(res, 'Erreur lors de l\'envoi du code. Reessayez.', 500);
+      return ApiResponse.error(res, 'Erreur lors de l\'envoi du code', 500);
     }
-
-    logger.info(`OTP envoye a ${user.email}`);
 
     return ApiResponse.success(res, {
       requiresOTP: true,
       email: user.email,
-      message: 'Un code de verification a ete envoye a votre email',
+      message: 'Code envoyé',
       expiresIn: '15 minutes',
-    }, 'Code envoye');
+    }, 'Code envoyé');
 
   } catch (error) {
-    logger.error('Erreur login:', error);
+    logger.error(' Erreur login:', error);
     return ApiResponse.serverError(res);
   }
 };
