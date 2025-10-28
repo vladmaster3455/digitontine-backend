@@ -105,20 +105,25 @@ const UserSchema = new mongoose.Schema(
     },
 
     // Role et statut
-    // ✅ CHANGE: Remplace TOUTE cette section par le code ci-dessous
-    role: {
-      type: String,
-      enum: {
-        values: ROLE_VALUES,  // ✅ CHANGE: ['admin', 'tresorier', 'membre']
-        message: 'Le rôle doit être admin, tresorier ou membre',  // ✅ CHANGE: Nouveau message
-      },
-      required: [true, 'Le role est requis'],
-      default: ROLES.MEMBRE,  // ✅ CHANGE: Reste la même logique
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
+   role: {
+  type: String,
+  enum: {
+    values: ['admin', 'tresorier', 'membre', 'Admin', 'Administrateur', 'Tresorier', 'Membre'],
+    message: 'Le rôle doit être admin, tresorier ou membre',
+  },
+  required: [true, 'Le role est requis'],
+  default: 'membre',
+  set: function(value) {
+    // Normalise à la sauvegarde
+    const roleMap = {
+      'Admin': 'admin',
+      'Administrateur': 'admin',
+      'Tresorier': 'tresorier',
+      'Membre': 'membre'
+    };
+    return roleMap[value] || value.toLowerCase();
+  }
+},
 
     // Tokens et securite
     resetPasswordToken: String,
