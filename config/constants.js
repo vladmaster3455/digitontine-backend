@@ -9,12 +9,15 @@ module.exports = {
     PORT: process.env.PORT || 5000,
   },
 
-  // ✅ CORRECTION : Rôles avec accents (comme dans la BDD)
+  // ✅ RÔLES - Utiliser des strings SIMPLES et COHÉRENTES
   ROLES: {
-    ADMIN: 'Administrateur',  // ✅ CORRIGÉ : 'Administrateur' au lieu de 'Admin'
-    TRESORIER: 'Tresorier',   // ✅ OK (sans accent)
-    MEMBRE: 'Membre',         // ✅ OK
+    ADMIN: 'admin',        // ✅ Minuscule, simple
+    TRESORIER: 'tresorier', // ✅ Minuscule, simple
+    MEMBRE: 'membre',      // ✅ Minuscule, simple
   },
+
+  // Liste pour validation Mongoose
+  ROLE_VALUES: ['admin', 'tresorier', 'membre'],
 
   // Statuts des tontines
   TONTINE_STATUS: {

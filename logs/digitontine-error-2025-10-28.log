@@ -1,0 +1,6 @@
+[2025-10-28 11:04:41] ERROR: Erreur login: User validation failed: role: Role invalide
+ValidationError: User validation failed: role: Role invalide
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)

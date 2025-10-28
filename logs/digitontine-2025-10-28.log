@@ -1,0 +1,63 @@
+[2025-10-28 10:34:03] INFO: ========================================
+[2025-10-28 10:34:03] INFO: DigiTontine API demarre avec succes!
+[2025-10-28 10:34:03] INFO: Environnement: development
+[2025-10-28 10:34:03] INFO: URL: https://digitontine-backend.onrender.com
+[2025-10-28 10:34:03] INFO: API Prefix: /digitontine
+[2025-10-28 10:34:03] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-28 10:34:03] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-28 10:34:03] INFO: Route publique admin: https://digitontine-backend.onrender.com/create-admin-public
+[2025-10-28 10:34:03] INFO: Test Check: https://digitontine-backend.onrender.com/test
+[2025-10-28 10:34:03] INFO: API DOCS: https://digitontine-backend.onrender.com/api-docs
+[2025-10-28 10:34:03] INFO: ========================================
+[2025-10-28 10:34:04] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-02.dq8jcnq.mongodb.net
+[2025-10-28 10:34:04] INFO:  Base de données: digitontine
+[2025-10-28 10:40:05] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-28 10:40:09] INFO: ========================================
+[2025-10-28 10:40:09] INFO: DigiTontine API demarre avec succes!
+[2025-10-28 10:40:09] INFO: Environnement: development
+[2025-10-28 10:40:09] INFO: URL: http://localhost:5000
+[2025-10-28 10:40:09] INFO: API Prefix: /digitontine
+[2025-10-28 10:40:09] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-28 10:40:09] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-28 10:40:09] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-28 10:40:09] INFO: Test Check: http://localhost:5000/test
+[2025-10-28 10:40:09] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-28 10:40:09] INFO: ========================================
+[2025-10-28 10:40:10] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-28 10:40:10] INFO:  Base de données: digitontine
+[2025-10-28 10:51:39] WARN:  MongoDB déconnecté
+[2025-10-28 10:51:56] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-28 10:52:01] INFO: ========================================
+[2025-10-28 10:52:01] INFO: DigiTontine API demarre avec succes!
+[2025-10-28 10:52:01] INFO: Environnement: development
+[2025-10-28 10:52:01] INFO: URL: http://localhost:5000
+[2025-10-28 10:52:01] INFO: API Prefix: /digitontine
+[2025-10-28 10:52:01] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-28 10:52:01] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-28 10:52:01] INFO: Route publique admin: http://localhost:5000/create-admin-public
+[2025-10-28 10:52:01] INFO: Test Check: http://localhost:5000/test
+[2025-10-28 10:52:01] INFO: API DOCS: http://localhost:5000/api-docs
+[2025-10-28 10:52:01] INFO: ========================================
+[2025-10-28 10:52:03] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-01.dq8jcnq.mongodb.net
+[2025-10-28 10:52:03] INFO:  Base de données: digitontine
+[2025-10-28 11:04:30] WARN: 🔍 Route non trouvée: POST /auth/login - IP: ::1
+[2025-10-28 11:04:41] ERROR: Erreur login: User validation failed: role: Role invalide
+ValidationError: User validation failed: role: Role invalide
+    at Document.invalidate (C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3362:32)
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\document.js:3123:17
+    at C:\Users\simplon\Desktop\soutenance\digitontine-backend\node_modules\mongoose\lib\schemaType.js:1417:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:85:11)
+[2025-10-28 11:06:17] INFO: SIGINT recu (Ctrl+C). Fermeture en cours...
+[2025-10-28 11:06:24] INFO: ========================================
+[2025-10-28 11:06:24] INFO: DigiTontine API demarre avec succes!
+[2025-10-28 11:06:24] INFO: Environnement: development
+[2025-10-28 11:06:24] INFO: URL: https://digitontine-backend.onrender.com
+[2025-10-28 11:06:24] INFO: API Prefix: /digitontine
+[2025-10-28 11:06:24] INFO: Cle API: ACTIVEE sur toutes les routes /digitontine/*
+[2025-10-28 11:06:24] INFO: Middleware Password Change: ACTIF sur routes protegees
+[2025-10-28 11:06:24] INFO: Route publique admin: https://digitontine-backend.onrender.com/create-admin-public
+[2025-10-28 11:06:24] INFO: Test Check: https://digitontine-backend.onrender.com/test
+[2025-10-28 11:06:24] INFO: API DOCS: https://digitontine-backend.onrender.com/api-docs
+[2025-10-28 11:06:24] INFO: ========================================
+[2025-10-28 11:06:25] INFO:  MongoDB connecté: ac-bdhxmqs-shard-00-00.dq8jcnq.mongodb.net
+[2025-10-28 11:06:25] INFO:  Base de données: digitontine
