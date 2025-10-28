@@ -14,11 +14,10 @@ const AuditLogSchema = new mongoose.Schema(
       required: [true, 'L\'email utilisateur est requis'],
       index: true,
     },
-    userRole: {
-      type: String,
-      enum: ['Admin', 'Tresorier', 'Membre', 'Système'],
-    },
-
+userRole: {
+  type: String,
+  enum: ['admin', 'tresorier', 'membre', 'Système'], //  minuscules
+},
     // Action effectuée
     action: {
       type: String,

@@ -93,6 +93,7 @@ const TontineSchema = new mongoose.Schema(
   },
 ],
     // Trésorier assigné à cette tontine (OBLIGATOIRE pour activation)
+// Tontine.js - CORRECTION
 tresorierAssigne: {
   type: mongoose.Schema.Types.ObjectId,
   ref: 'User',
@@ -101,7 +102,7 @@ tresorierAssigne: {
       if (!userId) return true;
       const User = mongoose.model('User');
       const user = await User.findById(userId);
-      return user && user.role === 'Tresorier' && user.isActive;
+      return user && user.role === 'tresorier' && user.isActive; // ✅ MINUSCULE
     },
     message: 'Le trésorier assigné doit être un Trésorier actif'
   }

@@ -39,12 +39,12 @@ const ValidationRequestSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    initiatedByRole: {
-      type: String,
-      enum: ['Admin'],
-      default: 'Admin',
-      required: true,
-    },
+initiatedByRole: {
+  type: String,
+  enum: ['admin'], //  minuscule
+  default: 'admin',
+  required: true,
+},
 
     // Code OTP Admin (celui qui initie)
     adminOTP: {
