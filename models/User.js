@@ -104,26 +104,37 @@ const UserSchema = new mongoose.Schema(
       default: Date.now,
     },
 
-    // Role et statut
-   role: {
-  type: String,
-  enum: {
-    values: ['admin', 'tresorier', 'membre', 'Admin', 'Administrateur', 'Tresorier', 'Membre'],
-    message: 'Le rôle doit être admin, tresorier ou membre',
-  },
-  required: [true, 'Le role est requis'],
-  default: 'membre',
-  set: function(value) {
-    // Normalise à la sauvegarde
-    const roleMap = {
-      'Admin': 'admin',
-      'Administrateur': 'admin',
-      'Tresorier': 'tresorier',
-      'Membre': 'membre'
-    };
-    return roleMap[value] || value.toLowerCase();
-  }
-},
+role: {
+      type: String,
+      enum: {
+        values: ROLE_VALUES, // ['admin', 'tresorier', 'membre']
+        message: 'Le rôle doit être admin, tresorier ou membre',
+      },
+      required: [true, 'Le role est requis'],
+      default: ROLES.MEMBRE,
+      // ✅ NORMALISATION : Convertit tout en minuscules + mapping
+      set: function(value) {
+        if (!value) return ROLES.MEMBRE;
+        
+        // Map les anciens formats vers les nouveaux
+        const roleMap = {
+          'admin': 'admin',
+          'Admin': 'admin',
+          'ADMIN': 'admin',
+          'administrateur': 'admin',
+          'Administrateur': 'admin',
+          'ADMINISTRATEUR': 'admin',
+          'tresorier': 'tresorier',
+          'Tresorier': 'tresorier',
+          'TRESORIER': 'tresorier',
+          'membre': 'membre',
+          'Membre': 'membre',
+          'MEMBRE': 'membre',
+        };
+        
+        return roleMap[value] || value.toLowerCase();
+      }
+    },
 
     // Tokens et securite
     resetPasswordToken: String,
