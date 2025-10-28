@@ -856,7 +856,7 @@ const getTontineDetailsWithRoleCheck = async (req, res) => {
       return getTontineDetails(req, res);  // Fonction existante (accès complet)
     }
 
-    // ✅ CAS 2 : Membre → Vérifier qu'il fait partie de la tontine
+    //  CAS 2 : Membre → Vérifier qu'il fait partie de la tontine
     const estMembre = tontine.membres.some(
       m => m.userId._id.toString() === currentUser._id.toString()
     );
