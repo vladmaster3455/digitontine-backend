@@ -103,24 +103,47 @@ const createTontine = async (req, res) => {
  * @route   GET /digitontine/tontines/me/tontines
  * @access  Private
  */
+/**
+ * @desc    Mes tontines (Membre/Tresorier)
+ * @route   GET /digitontine/tontines/me/tontines
+ * @access  Private
+ */
 const mesTontines = async (req, res) => {
   try {
-    const userId = req.user._id;
+    // Verifier que req.user existe
+    if (!req.user || !req.user._id) {
+      logger.error('Erreur mesTontines: req.user non defini');
+      return ApiResponse.error(res, 'Utilisateur non authentifie', 401);
+    }
 
-    // PAS de filtre sur le statut - on retourne TOUTES les tontines du membre
-    const tontines = await Tontine.find({
+    const userId = req.user._id;
+    logger.info(`Recherche tontines pour userId: ${userId}`);
+
+    // Requete MongoDB avec gestion d'erreurs
+    let tontines = await Tontine.find({
       'membres.userId': userId
     })
       .populate('tresorierAssigne', 'prenom nom')
       .select('nom description montantCotisation frequence statut nombreMembres dateDebut')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean(); // Convertir en objet JS simple
+
+    // S'assurer que tontines est un tableau
+    if (!tontines) {
+      logger.warn(`Aucune tontine trouvee pour userId: ${userId}`);
+      tontines = [];
+    }
+
+    logger.info(`${tontines.length} tontine(s) trouvee(s) pour ${req.user.email}`);
 
     return ApiResponse.success(res, {
       tontines,
       total: tontines.length
     }, `${tontines.length} tontine(s) trouvee(s)`);
+    
   } catch (error) {
     logger.error('Erreur mesTontines:', error);
+    logger.error('Stack:', error.stack);
     return ApiResponse.serverError(res);
   }
 };
