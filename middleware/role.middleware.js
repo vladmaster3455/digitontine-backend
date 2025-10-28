@@ -4,6 +4,16 @@ const { ROLES } = require('../config/constants');
 const logger = require('../utils/logger');
 
 /**
+ *  Fonction pour normaliser les rôles (accepter "Admin" et "Administrateur")
+ * @param {string} role - Rôle à normaliser
+ * @returns {string} - Rôle normalisé
+ */
+const normalizeRole = (role) => {
+  if (role === 'Admin') return 'Administrateur';
+  return role;
+};
+
+/**
  * Middleware pour vérifier si l'utilisateur a le(s) rôle(s) requis
  * @param {...string} allowedRoles - Liste des rôles autorisés
  */
@@ -15,10 +25,16 @@ const checkRole = (...allowedRoles) => {
       return ApiResponse.unauthorized(res, 'Authentification requise');
     }
 
+    //  CORRECTION : Normaliser le rôle de l'utilisateur
+    const userRole = normalizeRole(req.user.role);
+    
+    //  Normaliser les rôles autorisés
+    const normalizedAllowedRoles = allowedRoles.map(normalizeRole);
+
     // Vérifier si l'utilisateur a un des rôles autorisés
-    if (!allowedRoles.includes(req.user.role)) {
+    if (!normalizedAllowedRoles.includes(userRole)) {
       logger.warn(
-        ` Accès refusé - User: ${req.user.email} (${req.user.role}) - Rôles requis: ${allowedRoles.join(', ')}`
+        ` Accès refusé - Utilisateur: ${req.user.email} (${req.user.role}) - Rôles requis: ${allowedRoles.join(', ')}`
       );
       return ApiResponse.forbidden(
         res,
@@ -26,7 +42,7 @@ const checkRole = (...allowedRoles) => {
       );
     }
 
-    logger.debug(`Autorisation accordée - User: ${req.user.email} (${req.user.role})`);
+    logger.debug(` Autorisation accordée - Utilisateur: ${req.user.email} (${req.user.role})`);
     next();
   };
 };
@@ -62,8 +78,11 @@ const isSelfOrAdmin = (req, res, next) => {
 
   const targetUserId = req.params.userId || req.params.id;
 
+  //  CORRECTION : Normaliser le rôle avant la vérification
+  const userRole = normalizeRole(req.user.role);
+
   // Admin peut accéder à tout
-  if (req.user.role === ROLES.ADMIN) {
+  if (userRole === ROLES.ADMIN) {
     return next();
   }
 
@@ -73,7 +92,7 @@ const isSelfOrAdmin = (req, res, next) => {
   }
 
   logger.warn(
-    ` Tentative d'accès aux données d'un autre utilisateur - User: ${req.user.email}`
+    ` Tentative d'accès aux données d'un autre utilisateur - Utilisateur: ${req.user.email}`
   );
   return ApiResponse.forbidden(res, 'Vous ne pouvez accéder qu\'à vos propres données');
 };
@@ -85,4 +104,5 @@ module.exports = {
   isTresorier,
   isMembre,
   isSelfOrAdmin,
+  normalizeRole, //  Exporter pour réutilisation si nécessaire
 };
