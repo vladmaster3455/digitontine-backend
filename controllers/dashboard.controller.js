@@ -7,8 +7,6 @@ const ApiResponse = require('../utils/apiResponse');
 const { AppError } = require('../utils/errors');
 const mongoose = require('mongoose');
 
-
-
 // US : Tableau de bord Administrateur
 exports.dashboardAdmin = async (req, res, next) => {
   try {
@@ -57,10 +55,10 @@ exports.dashboardAdmin = async (req, res, next) => {
       { $limit: 5 }
     ]);
 
-    // Logs d'audit recents
+    // ✅ CORRECTION : Logs d'audit - populate('userId') au lieu de populate('user')
     const AuditLog = require('../models/AuditLog');
     const logsRecents = await AuditLog.find()
-      .populate('user', 'prenom nom role')
+      .populate('userId', 'prenom nom role')  // ✅ CORRIGÉ : userId au lieu de user
       .sort({ timestamp: -1 })
       .limit(10);
 
@@ -100,20 +98,19 @@ exports.dashboardAdmin = async (req, res, next) => {
 };
 
 // US : Tableau de bord Membre (CORRIGÉ)
-// US : Tableau de bord Membre (CORRIGÉ)
 exports.dashboardMembre = async (req, res, next) => {
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
 
-    //  CORRECTION : Chercher dans le tableau membres.userId
+    // Chercher dans le tableau membres.userId
     const mesTontinesActives = await Tontine.find({
-      'membres.userId': userId,  //  CORRECT : chercher dans le sous-document
+      'membres.userId': userId,
       statut: 'Active'
     }).select('nom montantCotisation frequence dateDebut');
 
     // Mes cotisations
     const mesCotisations = await Transaction.aggregate([
-      { $match: { userId: userId, type: 'Cotisation' } },  //  CORRECTION : userId au lieu de user
+      { $match: { userId: userId, type: 'Cotisation' } },
       {
         $group: {
           _id: '$statut',
@@ -127,9 +124,9 @@ exports.dashboardMembre = async (req, res, next) => {
       .filter(c => c._id === 'Validee')
       .reduce((sum, c) => sum + c.montantTotal, 0);
 
-    //  CORRECTION : Chercher beneficiaireId au lieu de beneficiaire
+    // Mes gains
     const mesGains = await Tirage.find({
-      beneficiaireId: userId,  //  CORRECTION
+      beneficiaireId: userId,
       statut: 'Effectue'
     })
       .populate('tontineId', 'nom')
@@ -139,13 +136,13 @@ exports.dashboardMembre = async (req, res, next) => {
 
     // Mes pénalités
     const mesPenalites = await Penalite.aggregate([
-      { $match: { userId: userId, statut: 'Appliquee' } },  //  CORRECTION : userId
+      { $match: { userId: userId, statut: 'Appliquee' } },
       { $group: { _id: null, total: { $sum: '$montant' } } }
     ]);
 
     // Prochaines échéances
     const prochainesEcheances = await Transaction.find({
-      userId: userId,  //  CORRECTION
+      userId: userId,
       statut: 'En attente',
       dateLimite: { $gte: new Date() }
     })
@@ -155,12 +152,11 @@ exports.dashboardMembre = async (req, res, next) => {
 
     // Retards
     const retards = await Transaction.countDocuments({
-      userId: userId,  //  CORRECTION
+      userId: userId,
       statut: 'En attente',
       dateLimite: { $lt: new Date() }
     });
 
-    //  STRUCTURE CORRECTE avec valeurs par défaut
     return ApiResponse.success(res, {
       resume: {
         tontinesActives: mesTontinesActives?.length || 0,
@@ -174,7 +170,7 @@ exports.dashboardMembre = async (req, res, next) => {
       prochainesEcheances: prochainesEcheances || []
     }, 'Tableau de bord membre');
   } catch (error) {
-    console.error(' Erreur dashboardMembre:', error);
+    console.error('❌ Erreur dashboardMembre:', error);
     next(error);
   }
 };
@@ -264,12 +260,12 @@ exports.dashboardTresorier = async (req, res, next) => {
       statut: 'En attente'
     });
 
-    // Transactions en attente - LISTE (dernières 10)
+    // ✅ CORRECTION : Transactions en attente - populate('userId') et populate('tontineId')
     const transactionsEnAttenteListe = await Transaction.find({
       statut: 'En attente'
     })
-      .populate('user', 'prenom nom')
-      .populate('tontine', 'nom')
+      .populate('userId', 'prenom nom')      // ✅ CORRIGÉ : userId au lieu de user
+      .populate('tontineId', 'nom')          // ✅ CORRIGÉ : tontineId au lieu de tontine
       .sort({ dateTransaction: -1 })
       .limit(10);
 
@@ -279,12 +275,12 @@ exports.dashboardTresorier = async (req, res, next) => {
       { $group: { _id: null, total: { $sum: '$montant' } } }
     ]);
 
-    // Top 5 membres ponctuels
+    // ✅ CORRECTION : Top 5 membres ponctuels - populate('userId')
     const topMembres = await Transaction.aggregate([
       { $match: { statut: 'Validee', type: 'Cotisation' } },
       {
         $group: {
-          _id: '$user',
+          _id: '$userId',  // ✅ CORRIGÉ : userId au lieu de user
           nombrePaiements: { $sum: 1 },
           montantTotal: { $sum: '$montant' }
         }
@@ -310,7 +306,6 @@ exports.dashboardTresorier = async (req, res, next) => {
       }
     ]);
 
-    // ✅ CORRECTION : Valeurs par défaut explicites
     ApiResponse.success(res, {
       kpis: {
         montantTotalCollecte: totalCollecte || 0,
@@ -320,7 +315,7 @@ exports.dashboardTresorier = async (req, res, next) => {
         transactionsEnAttente: transactionsEnAttenteCount || 0,
         totalPenalites: totalPenalites[0]?.total || 0
       },
-      transactionsEnAttente: transactionsEnAttenteListe || [],  // ✅ AJOUTÉ
+      transactionsEnAttente: transactionsEnAttenteListe || [],
       repartitionParTontine: repartitionParTontine || [],
       evolutionCotisations: evolutionCotisations || [],
       topMembres: topMembres || []
