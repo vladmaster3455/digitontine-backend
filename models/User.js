@@ -106,14 +106,13 @@ const UserSchema = new mongoose.Schema(
 
 role: {
       type: String,
-      required: [true, 'Le role est requis'],
+      required: [true, 'Le rôle est requis'],
       default: ROLES.MEMBRE, // 'membre'
       
-      // ✅ NORMALISATION EN PREMIER (avant validation)
+      // ✅ NORMALISATION EN PREMIER
       set: function(value) {
         if (!value) return ROLES.MEMBRE;
         
-        // Map les anciens formats vers les nouveaux
         const roleMap = {
           'admin': 'admin',
           'Admin': 'admin',
@@ -129,15 +128,18 @@ role: {
           'MEMBRE': 'membre',
         };
         
-        const normalized = roleMap[value] || value.toLowerCase();
-        return normalized;
+        return roleMap[value] || value.toLowerCase();
       },
       
       // ✅ VALIDATION APRÈS normalisation
       enum: {
-        values: ROLE_VALUES, // ['admin', 'tresorier', 'membre']
-        message: 'Le rôle doit être admin, tresorier ou membre',
+        values: ROLE_VALUES || ['admin', 'tresorier', 'membre'],
+        message: 'Rôle invalide',
       },
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
 
     // Tokens et securite
