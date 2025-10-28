@@ -106,13 +106,10 @@ const UserSchema = new mongoose.Schema(
 
 role: {
       type: String,
-      enum: {
-        values: ROLE_VALUES, // ['admin', 'tresorier', 'membre']
-        message: 'Le rôle doit être admin, tresorier ou membre',
-      },
       required: [true, 'Le role est requis'],
-      default: ROLES.MEMBRE,
-      // ✅ NORMALISATION : Convertit tout en minuscules + mapping
+      default: ROLES.MEMBRE, // 'membre'
+      
+      // ✅ NORMALISATION EN PREMIER (avant validation)
       set: function(value) {
         if (!value) return ROLES.MEMBRE;
         
@@ -132,15 +129,16 @@ role: {
           'MEMBRE': 'membre',
         };
         
-        return roleMap[value] || value.toLowerCase();
-      }
+        const normalized = roleMap[value] || value.toLowerCase();
+        return normalized;
+      },
+      
+      // ✅ VALIDATION APRÈS normalisation
+      enum: {
+        values: ROLE_VALUES, // ['admin', 'tresorier', 'membre']
+        message: 'Le rôle doit être admin, tresorier ou membre',
+      },
     },
-     isActive: {
-      type: Boolean,
-      default: true,
-      index: true,
-    },
-
 
     // Tokens et securite
     resetPasswordToken: String,
