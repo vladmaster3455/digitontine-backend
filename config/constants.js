@@ -9,11 +9,11 @@ module.exports = {
     PORT: process.env.PORT || 5000,
   },
 
-  // Rôles utilisateurs
+  // ✅ CORRECTION : Rôles avec accents (comme dans la BDD)
   ROLES: {
-    ADMIN: 'Admin',
-    TRESORIER: 'Tresorier',
-    MEMBRE: 'Membre',
+    ADMIN: 'Administrateur',  // ✅ CORRIGÉ : 'Administrateur' au lieu de 'Admin'
+    TRESORIER: 'Tresorier',   // ✅ OK (sans accent)
+    MEMBRE: 'Membre',         // ✅ OK
   },
 
   // Statuts des tontines
