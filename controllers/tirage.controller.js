@@ -120,18 +120,20 @@ const effectuerTirageAutomatique = async (req, res, next) => {
 
     const montantTotal = tontine.montantCotisation * tontine.membres.length;
 
-    // Créer le tirage
-    const nouveauTirage = await Tirage.create({
-      tontineId,
-      beneficiaire: beneficiaire.userId._id,
-      montant: montantTotal,
-      dateEffective: new Date(),
-      typeTirage: 'Automatique',
-      statut: 'Effectue',
-      effectuePar: req.user.id
-    });
+   // controllers/tirage.controller.js
+// REMPLACER la section de création du tirage (ligne 40-55 environ)
 
-    await nouveauTirage.populate('beneficiaire', 'prenom nom email numeroTelephone');
+const nouveauTirage = await Tirage.create({
+  tontineId,
+  beneficiaireId: beneficiaire.userId._id,  // CORRECTION: était "beneficiaire"
+  montant: montantTotal,
+  dateEffective: new Date(),
+  typeTirage: 'Automatique',
+  statut: 'Effectue',
+  effectuePar: req.user.id
+});
+
+await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');  // CORRECTION: était "beneficiaire"
 
     // Créer un log d'audit
     await AuditLog.create({

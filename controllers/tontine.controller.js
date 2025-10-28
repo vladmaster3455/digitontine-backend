@@ -31,7 +31,9 @@ const createTontine = async (req, res) => {
       tresorierAssigneId,
     } = req.body;
     const admin = req.user;
-
+ if (montantCotisation <= 0) {
+      return ApiResponse.error(res, 'Le montant de cotisation doit être supérieur à 0', 400);
+    }
     const existingTontine = await Tontine.findOne({ nom });
     if (existingTontine) {
       return ApiResponse.conflict(res, 'Une tontine avec ce nom existe déjà');
