@@ -7,7 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const morgan = require('morgan');
 
-app.set('trust proxy', 1);
+
 // Config & Utils
 const connectDB = require('./config/database');
 const { APP } = require('./config/constants');
@@ -38,7 +38,7 @@ const { createAdmin } = require('./controllers/auth.controller');
 // INITIALISATION APP
 // ========================================
 const app = express();
-
+app.set('trust proxy', 1);
 // ========================================
 // CONNEXION BASE DE DONNEES
 // ========================================
