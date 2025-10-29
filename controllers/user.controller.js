@@ -455,8 +455,10 @@ const listUsers = async (req, res) => {
   try {
     const { page, limit, skip } = getPaginationParams(req.query);
     const { role, isActive, search } = req.query;
+    const admin = req.user;  //  AJOUTER : Récupérer l'admin
 
-    const query = {};
+    //  CHANGER : Ajouter filtre createdBy
+    const query = { createdBy: admin._id };
 
     if (role) query.role = role;
     if (isActive !== undefined) query.isActive = isActive === 'true';
@@ -478,6 +480,7 @@ const listUsers = async (req, res) => {
       User.countDocuments(query),
     ]);
 
+    // ✅ GARDER : Le retour (c'est important !)
     return ApiResponse.successWithPagination(
       res,
       users.map(user => ({

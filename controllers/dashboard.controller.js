@@ -26,10 +26,9 @@ const nouveauxCeMois = await User.countDocuments({
 });
 
 const repartitionRoles = await User.aggregate([
-  { $match: { createdBy: adminId } },
+  { $match: { createdBy: adminId } },  // ← AJOUTER CETTE LIGNE
   { $group: { _id: '$role', count: { $sum: 1 } } }
 ]);
-
     //  CORRECTION : Statistiques tontines (SEULEMENT celles créées par cet admin)
     const totalTontines = await Tontine.countDocuments({ createdBy: adminId });
     const tontinesActives = await Tontine.countDocuments({ 
