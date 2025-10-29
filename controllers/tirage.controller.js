@@ -567,7 +567,7 @@ const detailsTirage = async (req, res, next) => {
 /**
  * @desc    Effectuer un tirage automatique MODE TEST (sans validations)
  * @route   POST /digitontine/tirages/tontine/:tontineId/automatique-test
- * @access  Admin/Trésorier
+ * @access  Admin/Tresorier
  */
 const effectuerTirageAutomatiqueTest = async (req, res, next) => {
   try {
@@ -581,52 +581,53 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     }
 
     if (tontine.statut !== 'Active') {
-      throw new AppError('La tontine doit être active', 400);
+      throw new AppError('La tontine doit etre active', 400);
     }
 
-    // Récupérer les tirages existants
+    // Recuperer les tirages existants
     const tiragesExistants = await Tirage.find({ 
       tontineId, 
-      statut: 'Effectue' 
-    }).distinct('beneficiaire');
+      statutPaiement: { $in: ['en_attente', 'paye'] }  // Tous les tirages valides
+    }).distinct('beneficiaireId');
 
-    // ✅ MODE TEST : Tous les membres n'ayant pas gagné sont éligibles
+    // MODE TEST : Tous les membres n'ayant pas gagne sont eligibles
     const membresEligibles = tontine.membres.filter(
       m => !tiragesExistants.some(t => t.equals(m.userId._id))
     );
 
     if (membresEligibles.length === 0) {
-      throw new AppError('Tous les membres ont déjà gagné', 400);
+      throw new AppError('Tous les membres ont deja gagne', 400);
     }
 
-    logger.warn(`⚠️ MODE TEST activé - Tirage sans vérifications`);
+    logger.warn(`MODE TEST active - Tirage sans verifications`);
 
-    // Calculer échéance
-    const echeanceActuelle = tiragesExistants.length + 1;
+    // Calculer le prochain numero de tirage
+    const numeroTirage = await Tirage.getProchainNumero(tontineId);
 
-    // Sélectionner au hasard
+    // Selectionner au hasard
     const beneficiaire = membresEligibles[
       Math.floor(Math.random() * membresEligibles.length)
     ];
 
     const montantTotal = tontine.montantCotisation * tontine.membres.length;
 
-    // Créer tirage
+    // Creer tirage avec les bons champs
     const nouveauTirage = await Tirage.create({
       tontineId,
-      beneficiaireId: beneficiaire.userId._id,
-      montant: montantTotal,
-      dateEffective: new Date(),
-      typeTirage: 'Automatique (TEST)',
-      statut: 'Effectue',
-      effectuePar: req.user.id
+      beneficiaireId: beneficiaire.userId._id,  // Correct
+      numeroTirage,  // AJOUTE
+      montantDistribue: montantTotal,  // CORRIGE (pas "montant")
+      dateTirage: new Date(),
+      methodeTirage: 'aleatoire',
+      statutPaiement: 'en_attente',
+      createdBy: req.user._id  // CORRIGE (pas "effectuePar")
     });
 
     await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');
 
     // Logger
     await AuditLog.create({
-      user: req.user.id,
+      user: req.user._id,
       action: 'TIRAGE_TEST',
       details: {
         tirageId: nouveauTirage._id,
@@ -634,7 +635,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
         beneficiaire: beneficiaire.userId._id,
         montant: montantTotal,
         mode: 'TEST',
-        echeanceNumero: echeanceActuelle
+        numeroTirage
       },
       ipAddress: req.ip
     });
@@ -651,22 +652,23 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     }
 
     logger.info(
-      `✅ Tirage TEST effectué - Tontine: ${tontine.nom}, ` +
+      `Tirage TEST effectue - Tontine: ${tontine.nom}, ` +
       `Gagnant: ${beneficiaire.userId.email}`
     );
 
     return ApiResponse.success(res, {
       tirage: {
         id: nouveauTirage._id,
+        numeroTirage: nouveauTirage.numeroTirage,
         beneficiaire: {
           id: beneficiaire.userId._id,
           nom: beneficiaire.userId.nomComplet,
           email: beneficiaire.userId.email
         },
-        montant: nouveauTirage.montant,
-        dateEffective: nouveauTirage.dateEffective,
-        typeTirage: nouveauTirage.typeTirage,
-        statut: nouveauTirage.statut
+        montant: nouveauTirage.montantDistribue,
+        dateTirage: nouveauTirage.dateTirage,
+        methodeTirage: nouveauTirage.methodeTirage,
+        statutPaiement: nouveauTirage.statutPaiement
       },
       tontine: {
         id: tontine._id,
@@ -674,11 +676,11 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
       },
       details: {
         mode: 'TEST',
-        echeanceNumero: echeanceActuelle,
+        numeroTirage,
         membresEligibles: membresEligibles.length,
-        avertissement: ' Tirage effectué sans vérification des cotisations ni opt-in'
+        avertissement: 'Tirage effectue sans verification des cotisations ni opt-in'
       }
-    }, 'Tirage TEST effectué avec succès', 201);
+    }, 'Tirage TEST effectue avec succes', 201);
   } catch (error) {
     next(error);
   }
