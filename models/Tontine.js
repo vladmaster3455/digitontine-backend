@@ -215,22 +215,23 @@ TontineSchema.index({ 'membres.userId': 1 });
 // ========================================
 // VIRTUALS
 // ========================================
+// (avec protection undefined)
 TontineSchema.virtual('nombreMembres').get(function () {
-  return this.membres.length;
+  return this.membres?.length || 0;
 });
 
 TontineSchema.virtual('nombreMembresActifs').get(function () {
-  return this.membres.filter((m) => !m.aGagne).length;
+  return this.membres?.filter((m) => !m.aGagne).length || 0;
 });
 
 TontineSchema.virtual('estComplet').get(function () {
-  return this.membres.length >= this.nombreMembresMax;
+  return (this.membres?.length || 0) >= this.nombreMembresMax;
 });
 
 TontineSchema.virtual('peutEtreActive').get(function () {
   return (
     this.statut === TONTINE_STATUS.EN_ATTENTE &&
-    this.membres.length >= this.nombreMembresMin
+    (this.membres?.length || 0) >= this.nombreMembresMin
   );
 });
 

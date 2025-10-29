@@ -309,13 +309,14 @@ exports.dashboardTresorier = async (req, res, next) => {
       }
     ]);
 
-    // ✅ NOUVEAU : Récupérer les tontines où le trésorier est assigné
-    const mesTontines = await Tontine.find({
-      tresorierAssigne: tresorierUserId
-    })
-      .select('nom description montantCotisation frequence statut nombreMembres dateDebut')
-      .sort({ createdAt: -1 })
-      .limit(10);
+    //  NOUVEAU : Récupérer les tontines où le trésorier est assigné
+ //  Ajout du champ 'membres'
+const mesTontines = await Tontine.find({
+  tresorierAssigne: tresorierUserId
+})
+  .select('nom description montantCotisation frequence statut membres dateDebut')
+  .sort({ createdAt: -1 })
+  .limit(10);
 
     ApiResponse.success(res, {
       kpis: {
