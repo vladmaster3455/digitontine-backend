@@ -176,8 +176,11 @@ exports.dashboardMembre = async (req, res, next) => {
 };
 
 // US : Tableau de bord Tresorier (CORRIGÉ)
+// US : Tableau de bord Tresorier (CORRIGÉ)
 exports.dashboardTresorier = async (req, res, next) => {
   try {
+    const tresorierUserId = new mongoose.Types.ObjectId(req.user.id);
+
     // KPIs principaux
     const montantTotalCollecte = await Transaction.aggregate([
       { $match: { statut: 'Validee', type: 'Cotisation' } },
@@ -208,7 +211,7 @@ exports.dashboardTresorier = async (req, res, next) => {
       { $match: { statut: 'Validee', type: 'Cotisation' } },
       {
         $group: {
-          _id: '$tontine',
+          _id: '$tontineId',
           montant: { $sum: '$montant' },
           nombre: { $sum: 1 }
         }
@@ -260,12 +263,12 @@ exports.dashboardTresorier = async (req, res, next) => {
       statut: 'En attente'
     });
 
-    // ✅ CORRECTION : Transactions en attente - populate('userId') et populate('tontineId')
+    // Transactions en attente - LISTE avec populate
     const transactionsEnAttenteListe = await Transaction.find({
       statut: 'En attente'
     })
-      .populate('userId', 'prenom nom')      // ✅ CORRIGÉ : userId au lieu de user
-      .populate('tontineId', 'nom')          // ✅ CORRIGÉ : tontineId au lieu de tontine
+      .populate('userId', 'prenom nom')
+      .populate('tontineId', 'nom')
       .sort({ dateTransaction: -1 })
       .limit(10);
 
@@ -275,12 +278,12 @@ exports.dashboardTresorier = async (req, res, next) => {
       { $group: { _id: null, total: { $sum: '$montant' } } }
     ]);
 
-    // ✅ CORRECTION : Top 5 membres ponctuels - populate('userId')
+    // Top 5 membres ponctuels
     const topMembres = await Transaction.aggregate([
       { $match: { statut: 'Validee', type: 'Cotisation' } },
       {
         $group: {
-          _id: '$userId',  // ✅ CORRIGÉ : userId au lieu de user
+          _id: '$userId',
           nombrePaiements: { $sum: 1 },
           montantTotal: { $sum: '$montant' }
         }
@@ -306,6 +309,14 @@ exports.dashboardTresorier = async (req, res, next) => {
       }
     ]);
 
+    // ✅ NOUVEAU : Récupérer les tontines où le trésorier est assigné
+    const mesTontines = await Tontine.find({
+      tresorierAssigne: tresorierUserId
+    })
+      .select('nom description montantCotisation frequence statut nombreMembres dateDebut')
+      .sort({ createdAt: -1 })
+      .limit(10);
+
     ApiResponse.success(res, {
       kpis: {
         montantTotalCollecte: totalCollecte || 0,
@@ -318,7 +329,8 @@ exports.dashboardTresorier = async (req, res, next) => {
       transactionsEnAttente: transactionsEnAttenteListe || [],
       repartitionParTontine: repartitionParTontine || [],
       evolutionCotisations: evolutionCotisations || [],
-      topMembres: topMembres || []
+      topMembres: topMembres || [],
+      mesTontines: mesTontines || []  // ✅ AJOUTÉ
     }, 'Tableau de bord tresorier');
   } catch (error) {
     next(error);
