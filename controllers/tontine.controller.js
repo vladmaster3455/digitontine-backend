@@ -778,8 +778,10 @@ const listTontines = async (req, res) => {
   try {
     const { page, limit, skip } = getPaginationParams(req.query);
     const { statut, search, dateDebut, dateFin } = req.query;
+    const admin = req.user;  // ← AJOUTER : Récupérer l'admin
 
-    const query = {};
+    //  AJOUTER : Filtre createdBy
+    const query = { createdBy: admin._id };
 
     if (statut) {
       query.statut = statut;
@@ -809,11 +811,12 @@ const listTontines = async (req, res) => {
       Tontine.countDocuments(query),
     ]);
 
+    // ✅ IMPORTANT : Aussi filtrer les compteurs !
     const [actives, enAttente, terminees, bloquees] = await Promise.all([
-      Tontine.countDocuments({ statut: TONTINE_STATUS.ACTIVE }),
-      Tontine.countDocuments({ statut: TONTINE_STATUS.EN_ATTENTE }),
-      Tontine.countDocuments({ statut: TONTINE_STATUS.TERMINEE }),
-      Tontine.countDocuments({ statut: TONTINE_STATUS.BLOQUEE }),
+      Tontine.countDocuments({ createdBy: admin._id, statut: TONTINE_STATUS.ACTIVE }),
+      Tontine.countDocuments({ createdBy: admin._id, statut: TONTINE_STATUS.EN_ATTENTE }),
+      Tontine.countDocuments({ createdBy: admin._id, statut: TONTINE_STATUS.TERMINEE }),
+      Tontine.countDocuments({ createdBy: admin._id, statut: TONTINE_STATUS.BLOQUEE }),
     ]);
 
     return ApiResponse.successWithPagination(
