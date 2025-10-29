@@ -30,12 +30,12 @@ const effectuerTirageAutomatique = async (req, res, next) => {
     }
 
     // Récupérer les tirages existants
-    const tiragesExistants = await Tirage.find({ 
-      tontineId, 
-      statut: 'Effectue' 
-    }).distinct('beneficiaire');
+  const tiragesExistants = await Tirage.find({ 
+  tontineId, 
+  statutPaiement: { $in: ['en_attente', 'paye'] }
+}).distinct('beneficiaireId');
 
-    // ✅ Appliquer opt-in automatique
+    //  Appliquer opt-in automatique
     const maintenant = Date.now();
     const delaiMs = tontine.delaiOptIn * 60 * 1000;
 
@@ -52,7 +52,7 @@ const effectuerTirageAutomatique = async (req, res, next) => {
           membre.dateOptIn = Date.now();
           
           logger.info(
-            `✅ Opt-in automatique pour ${membre.userId.email} ` +
+            ` Opt-in automatique pour ${membre.userId.email} ` +
             `(délai ${tontine.delaiOptIn} min dépassé)`
           );
         }
@@ -61,7 +61,7 @@ const effectuerTirageAutomatique = async (req, res, next) => {
 
     await tontine.save();
 
-    // ✅ Filtrer les membres éligibles (n'ont pas encore gagné ET participent au tirage)
+    // Filtrer les membres éligibles (n'ont pas encore gagné ET participent au tirage)
     const membresEligibles = tontine.membres.filter(
       m => !tiragesExistants.some(t => t.equals(m.userId._id)) 
         && m.participeTirage === true
@@ -570,7 +570,7 @@ const detailsTirage = async (req, res, next) => {
  * @access  Admin/Tresorier
  * 
  * FLUX COMPLET :
- * 1. Envoyer emails de notification aux membres
+ * 1. Envoyer emails de notification aux membres + Admin + Tresorier
  * 2. Attendre delai opt-in (ex: 15 minutes)
  * 3. Appliquer opt-in automatique pour non-repondants
  * 4. Effectuer le tirage parmi ceux qui participent
@@ -581,7 +581,8 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     const { tontineId } = req.params;
 
     const tontine = await Tontine.findById(tontineId)
-      .populate('membres.userId', 'prenom nom email numeroTelephone');
+      .populate('membres.userId', 'prenom nom email numeroTelephone')
+      .populate('createdBy', 'prenom nom email numeroTelephone role');
 
     if (!tontine) {
       throw new AppError('Tontine introuvable', 404);
@@ -611,6 +612,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     const dateTirageProchaine = new Date(Date.now() + tontine.delaiOptIn * 60 * 1000);
     let notificationsSent = 0;
 
+    // NOTIFIER LES MEMBRES DE LA TONTINE
     for (const membre of tontine.membres) {
       const aDejaGagne = tiragesExistants.some(
         t => t.equals(membre.userId._id)
@@ -630,9 +632,114 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
             tontine.delaiOptIn
           );
           notificationsSent++;
-          logger.info(`Email envoye a ${membre.userId.email}`);
+          logger.info(`Email envoye au MEMBRE: ${membre.userId.email}`);
         } catch (error) {
           logger.error(`Erreur notification pour ${membre.userId.email}:`, error);
+        }
+      }
+    }
+
+    // NOTIFIER L'ADMIN QUI LANCE LE TIRAGE (req.user)
+    const adminLanceur = req.user;
+    const adminEstMembre = tontine.membres.some(
+      m => m.userId._id.equals(adminLanceur._id)
+    );
+    const adminADejaGagne = tiragesExistants.some(t => t.equals(adminLanceur._id));
+
+    // Si l'admin n'est PAS membre de la tontine ET n'a pas deja gagne
+    if (!adminEstMembre && !adminADejaGagne) {
+      // Ajouter l'admin comme participant temporaire
+      tontine.membres.push({
+        userId: adminLanceur._id,
+        dateAdhesion: Date.now(),
+        role: 'Administrateur',
+        statut: 'Actif',
+        dateNotificationTirage: Date.now(),
+        participeTirage: false,
+        optInAutomatique: false
+      });
+
+      try {
+        await emailService.sendTirageNotification(
+          adminLanceur, 
+          tontine, 
+          dateTirageProchaine,
+          tontine.delaiOptIn
+        );
+        notificationsSent++;
+        logger.info(`Email envoye a l'ADMIN lanceur: ${adminLanceur.email}`);
+      } catch (error) {
+        logger.error(`Erreur notification admin:`, error);
+      }
+    }
+
+    // NOTIFIER LE CREATEUR DE LA TONTINE (si different de l'admin lanceur)
+    if (tontine.createdBy && !tontine.createdBy._id.equals(adminLanceur._id)) {
+      const createurEstMembre = tontine.membres.some(
+        m => m.userId._id.equals(tontine.createdBy._id)
+      );
+      const createurADejaGagne = tiragesExistants.some(t => t.equals(tontine.createdBy._id));
+
+      if (!createurEstMembre && !createurADejaGagne) {
+        // Ajouter le createur comme participant
+        tontine.membres.push({
+          userId: tontine.createdBy._id,
+          dateAdhesion: Date.now(),
+          role: tontine.createdBy.role || 'Tresorier',
+          statut: 'Actif',
+          dateNotificationTirage: Date.now(),
+          participeTirage: false,
+          optInAutomatique: false
+        });
+
+        try {
+          await emailService.sendTirageNotification(
+            tontine.createdBy, 
+            tontine, 
+            dateTirageProchaine,
+            tontine.delaiOptIn
+          );
+          notificationsSent++;
+          logger.info(`Email envoye au CREATEUR: ${tontine.createdBy.email}`);
+        } catch (error) {
+          logger.error(`Erreur notification createur:`, error);
+        }
+      }
+    }
+
+    // CHERCHER UN TRESORIER ASSIGNE (si existe dans le modele)
+    // Note: A adapter selon votre modele Tontine
+    if (tontine.tresorierAssigne) {
+      const tresorier = await User.findById(tontine.tresorierAssigne);
+      if (tresorier) {
+        const tresorierEstMembre = tontine.membres.some(
+          m => m.userId._id.equals(tresorier._id)
+        );
+        const tresorierADejaGagne = tiragesExistants.some(t => t.equals(tresorier._id));
+
+        if (!tresorierEstMembre && !tresorierADejaGagne) {
+          tontine.membres.push({
+            userId: tresorier._id,
+            dateAdhesion: Date.now(),
+            role: 'Tresorier',
+            statut: 'Actif',
+            dateNotificationTirage: Date.now(),
+            participeTirage: false,
+            optInAutomatique: false
+          });
+
+          try {
+            await emailService.sendTirageNotification(
+              tresorier, 
+              tontine, 
+              dateTirageProchaine,
+              tontine.delaiOptIn
+            );
+            notificationsSent++;
+            logger.info(`Email envoye au TRESORIER assigne: ${tresorier.email}`);
+          } catch (error) {
+            logger.error(`Erreur notification tresorier:`, error);
+          }
         }
       }
     }
@@ -640,7 +747,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     // Sauvegarder apres les notifications
     await tontine.save();
 
-    logger.warn(`Notifications envoyees: ${notificationsSent} membre(s)`);
+    logger.warn(`Notifications envoyees: ${notificationsSent} personne(s) (membres + admin + tresorier)`);
 
     // ========================================
     // ETAPE 3 : ATTENDRE LE DELAI OPT-IN (TEST)
@@ -773,12 +880,12 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
             optInAutomatiques: optInAutoCount,
             membresEligibles: membresEligibles.length,
           },
-          avertissement: 'Tirage TEST avec notification + opt-in complet'
+          avertissement: 'Tirage TEST avec notification (membres + admin + tresorier) + opt-in complet'
         },
         statusCode: 201,
         success: true,
         severity: 'warning',
-        tags: ['tirage', 'test', 'automatique', 'avec-notification']
+        tags: ['tirage', 'test', 'automatique', 'avec-notification', 'admin-tresorier']
       });
     } catch (auditError) {
       logger.error('Erreur creation AuditLog:', auditError);
@@ -847,7 +954,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
         etape4_membresEligibles: membresEligibles.length,
         etape5_tirageEffectue: true,
         etape6_resultatEnvoyee: true,
-        message: 'Tirage TEST avec notification, opt-in, et resultats'
+        message: 'Tirage TEST avec notification (membres + admin + tresorier), opt-in, et resultats'
       }
     }, 'Tirage TEST effectue avec succes', 201);
 

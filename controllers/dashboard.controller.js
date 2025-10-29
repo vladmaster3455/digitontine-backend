@@ -10,6 +10,8 @@ const mongoose = require('mongoose');
 // US : Tableau de bord Administrateur
 exports.dashboardAdmin = async (req, res, next) => {
   try {
+    const adminId = new mongoose.Types.ObjectId(req.user.id);
+
     // Statistiques utilisateurs
     const totalUtilisateurs = await User.countDocuments();
     const utilisateursActifs = await User.countDocuments({ statut: 'Actif' });
@@ -23,14 +25,40 @@ exports.dashboardAdmin = async (req, res, next) => {
       { $group: { _id: '$role', count: { $sum: 1 } } }
     ]);
 
-    // Statistiques tontines
-    const totalTontines = await Tontine.countDocuments();
-    const tontinesActives = await Tontine.countDocuments({ statut: 'Active' });
-    const tontinesTerminees = await Tontine.countDocuments({ statut: 'Terminee' });
-    const tontinesEnAttente = await Tontine.countDocuments({ statut: 'En attente' });
+    // ✅ CORRECTION : Statistiques tontines (SEULEMENT celles créées par cet admin)
+    const totalTontines = await Tontine.countDocuments({ createdBy: adminId });
+    const tontinesActives = await Tontine.countDocuments({ 
+      createdBy: adminId, 
+      statut: 'Active' 
+    });
+    const tontinesTerminees = await Tontine.countDocuments({ 
+      createdBy: adminId, 
+      statut: 'Terminee' 
+    });
+    const tontinesEnAttente = await Tontine.countDocuments({ 
+      createdBy: adminId, 
+      statut: 'En attente' 
+    });
+    const tontinesBloquees = await Tontine.countDocuments({ 
+      createdBy: adminId, 
+      statut: 'Bloquee' 
+    });
 
-    // Statistiques financieres (vue globale)
+    // ✅ Mes tontines (celles créées par cet admin)
+    const mesTontines = await Tontine.find({ createdBy: adminId })
+      .populate('tresorierAssigne', 'prenom nom email')
+      .select('nom description montantCotisation frequence statut membres dateDebut dateActivation')
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean();
+
+    // ✅ Statistiques financières (SEULEMENT pour mes tontines)
+    const mesTontinesIds = mesTontines.map(t => t._id);
+    
     const statsFinancieres = await Transaction.aggregate([
+      {
+        $match: { tontineId: { $in: mesTontinesIds } }
+      },
       {
         $group: {
           _id: '$statut',
@@ -40,9 +68,14 @@ exports.dashboardAdmin = async (req, res, next) => {
       }
     ]);
 
-    // Tontines les plus actives
+    // ✅ Tontines les plus actives (parmi MES tontines)
     const tontinesPopulaires = await Tontine.aggregate([
-      { $match: { statut: 'Active' } },
+      { 
+        $match: { 
+          createdBy: adminId,
+          statut: 'Active' 
+        } 
+      },
       {
         $project: {
           nom: 1,
@@ -55,20 +88,19 @@ exports.dashboardAdmin = async (req, res, next) => {
       { $limit: 5 }
     ]);
 
-    // ✅ CORRECTION : Logs d'audit - populate('userId') au lieu de populate('user')
+    // Logs d'audit
     const AuditLog = require('../models/AuditLog');
     const logsRecents = await AuditLog.find()
-      .populate('userId', 'prenom nom role')  // ✅ CORRIGÉ : userId au lieu de user
+      .populate('userId', 'prenom nom role')
       .sort({ timestamp: -1 })
       .limit(10);
 
-    // Alertes (membres en retard, tontines problematiques)
+    // ✅ Alertes (SEULEMENT pour mes tontines)
     const membresEnRetard = await Transaction.countDocuments({
+      tontineId: { $in: mesTontinesIds },
       statut: 'En attente',
       dateLimite: { $lt: new Date() }
     });
-
-    const tontinesBloquees = await Tontine.countDocuments({ statut: 'Bloquee' });
 
     ApiResponse.success(res, {
       utilisateurs: {
@@ -83,7 +115,8 @@ exports.dashboardAdmin = async (req, res, next) => {
         terminees: tontinesTerminees,
         enAttente: tontinesEnAttente,
         bloquees: tontinesBloquees,
-        populaires: tontinesPopulaires
+        populaires: tontinesPopulaires,
+        mesTontines: mesTontines || []  // ✅ AJOUTÉ : Liste complète
       },
       financier: statsFinancieres,
       alertes: {
@@ -176,19 +209,39 @@ exports.dashboardMembre = async (req, res, next) => {
 };
 
 // US : Tableau de bord Tresorier (CORRIGÉ)
-// US : Tableau de bord Tresorier (CORRIGÉ)
 exports.dashboardTresorier = async (req, res, next) => {
   try {
     const tresorierUserId = new mongoose.Types.ObjectId(req.user.id);
 
-    // KPIs principaux
+    // ✅ Récupérer les tontines où le trésorier est assigné
+    const mesTontines = await Tontine.find({
+      tresorierAssigne: tresorierUserId
+    })
+      .select('nom description montantCotisation frequence statut membres dateDebut')
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    const mesTontinesIds = mesTontines.map(t => t._id);
+
+    // KPIs principaux (SEULEMENT pour mes tontines)
     const montantTotalCollecte = await Transaction.aggregate([
-      { $match: { statut: 'Validee', type: 'Cotisation' } },
+      { 
+        $match: { 
+          tontineId: { $in: mesTontinesIds },
+          statut: 'Validee', 
+          type: 'Cotisation' 
+        } 
+      },
       { $group: { _id: null, total: { $sum: '$montant' } } }
     ]);
 
     const montantTotalDistribue = await Tirage.aggregate([
-      { $match: { statut: 'Effectue' } },
+      { 
+        $match: { 
+          tontineId: { $in: mesTontinesIds },
+          statut: 'Effectue' 
+        } 
+      },
       { $group: { _id: null, total: { $sum: '$montant' } } }
     ]);
 
@@ -196,9 +249,13 @@ exports.dashboardTresorier = async (req, res, next) => {
     const totalDistribue = montantTotalDistribue[0]?.total || 0;
     const soldeDisponible = totalCollecte - totalDistribue;
 
-    // Taux de recouvrement
-    const totalAttendu = await Transaction.countDocuments({ type: 'Cotisation' });
+    // Taux de recouvrement (pour mes tontines)
+    const totalAttendu = await Transaction.countDocuments({ 
+      tontineId: { $in: mesTontinesIds },
+      type: 'Cotisation' 
+    });
     const totalValide = await Transaction.countDocuments({ 
+      tontineId: { $in: mesTontinesIds },
       type: 'Cotisation', 
       statut: 'Validee' 
     });
@@ -208,7 +265,13 @@ exports.dashboardTresorier = async (req, res, next) => {
 
     // Repartition par tontine
     const repartitionParTontine = await Transaction.aggregate([
-      { $match: { statut: 'Validee', type: 'Cotisation' } },
+      { 
+        $match: { 
+          tontineId: { $in: mesTontinesIds },
+          statut: 'Validee', 
+          type: 'Cotisation' 
+        } 
+      },
       {
         $group: {
           _id: '$tontineId',
@@ -241,6 +304,7 @@ exports.dashboardTresorier = async (req, res, next) => {
     const evolutionCotisations = await Transaction.aggregate([
       {
         $match: {
+          tontineId: { $in: mesTontinesIds },
           statut: 'Validee',
           type: 'Cotisation',
           dateTransaction: { $gte: dateLimite }
@@ -258,13 +322,14 @@ exports.dashboardTresorier = async (req, res, next) => {
       { $sort: { _id: 1 } }
     ]);
 
-    // Transactions en attente - COUNT
+    // Transactions en attente
     const transactionsEnAttenteCount = await Transaction.countDocuments({
+      tontineId: { $in: mesTontinesIds },
       statut: 'En attente'
     });
 
-    // Transactions en attente - LISTE avec populate
     const transactionsEnAttenteListe = await Transaction.find({
+      tontineId: { $in: mesTontinesIds },
       statut: 'En attente'
     })
       .populate('userId', 'prenom nom')
@@ -274,13 +339,24 @@ exports.dashboardTresorier = async (req, res, next) => {
 
     // Penalites totales
     const totalPenalites = await Penalite.aggregate([
-      { $match: { statut: 'Appliquee' } },
+      { 
+        $match: { 
+          tontineId: { $in: mesTontinesIds },
+          statut: 'Appliquee' 
+        } 
+      },
       { $group: { _id: null, total: { $sum: '$montant' } } }
     ]);
 
     // Top 5 membres ponctuels
     const topMembres = await Transaction.aggregate([
-      { $match: { statut: 'Validee', type: 'Cotisation' } },
+      { 
+        $match: { 
+          tontineId: { $in: mesTontinesIds },
+          statut: 'Validee', 
+          type: 'Cotisation' 
+        } 
+      },
       {
         $group: {
           _id: '$userId',
@@ -309,15 +385,6 @@ exports.dashboardTresorier = async (req, res, next) => {
       }
     ]);
 
-    //  NOUVEAU : Récupérer les tontines où le trésorier est assigné
- //  Ajout du champ 'membres'
-const mesTontines = await Tontine.find({
-  tresorierAssigne: tresorierUserId
-})
-  .select('nom description montantCotisation frequence statut membres dateDebut')
-  .sort({ createdAt: -1 })
-  .limit(10);
-
     ApiResponse.success(res, {
       kpis: {
         montantTotalCollecte: totalCollecte || 0,
@@ -331,7 +398,7 @@ const mesTontines = await Tontine.find({
       repartitionParTontine: repartitionParTontine || [],
       evolutionCotisations: evolutionCotisations || [],
       topMembres: topMembres || [],
-      mesTontines: mesTontines || []  // ✅ AJOUTÉ
+      mesTontines: mesTontines || []
     }, 'Tableau de bord tresorier');
   } catch (error) {
     next(error);
