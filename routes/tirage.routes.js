@@ -82,7 +82,14 @@ router.get(
   verifyToken,
   tirageController.mesGains
 );
+// AJOUTER APRÈS la route /me/gains (avant les commentaires swagger)
 
+router.post(
+  '/:tontineId/opt-out',
+  verifyToken,
+  auditLog('TIRAGE_OPT_OUT', 'Tirage'),
+  tirageController.optOutForTirage
+);
 /**
  * @swagger
  * /digitontine/tirages/tontine/{tontineId}/notify:
