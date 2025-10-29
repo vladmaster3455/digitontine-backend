@@ -912,7 +912,7 @@ const optOutForTirage = async (req, res) => {
 module.exports = {
   effectuerTirageAutomatique,
   effectuerTirageManuel,
-  effectuerTirageAutomatiqueTest,  // ✅ NOUVEAU
+  effectuerTirageAutomatiqueTest,  //  NOUVEAU
   annulerTirage,
   listeTiragesTontine,
   mesGains,
