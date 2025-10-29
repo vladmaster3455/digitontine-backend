@@ -30,6 +30,7 @@ const transactionRoutes = require('./routes/transaction.routes');
 const tirageRoutes = require('./routes/tirage.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
 const validationRoutes = require('./routes/validation.routes');
+const notificationRoutes = require('./routes/notification.routes');
 
 // Controller pour route publique admin
 const { createAdmin } = require('./controllers/auth.controller');
