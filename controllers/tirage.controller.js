@@ -14,7 +14,6 @@ const ApiResponse = require('../utils/apiResponse');
  * @route   POST /digitontine/tirages/tontine/:tontineId/automatique
  * @access  Admin/Trésorier
  */
-
 const effectuerTirageAutomatique = async (req, res, next) => {
   try {
     const { tontineId } = req.params;
@@ -36,7 +35,33 @@ const effectuerTirageAutomatique = async (req, res, next) => {
       statut: 'Effectue' 
     }).distinct('beneficiaire');
 
-    // Filtrer les membres éligibles (n'ont pas encore gagné ET participent au tirage)
+    // ✅ Appliquer opt-in automatique
+    const maintenant = Date.now();
+    const delaiMs = tontine.delaiOptIn * 60 * 1000;
+
+    for (const membre of tontine.membres) {
+      const aDejaGagne = tiragesExistants.some(t => t.equals(membre.userId._id));
+      
+      if (!aDejaGagne && membre.dateNotificationTirage) {
+        const tempsEcoule = maintenant - membre.dateNotificationTirage.getTime();
+        
+        // Si délai dépassé ET pas encore confirmé → Opt-in automatique
+        if (tempsEcoule >= delaiMs && !membre.participeTirage) {
+          membre.participeTirage = true;
+          membre.optInAutomatique = true;
+          membre.dateOptIn = Date.now();
+          
+          logger.info(
+            `✅ Opt-in automatique pour ${membre.userId.email} ` +
+            `(délai ${tontine.delaiOptIn} min dépassé)`
+          );
+        }
+      }
+    }
+
+    await tontine.save();
+
+    // ✅ Filtrer les membres éligibles (n'ont pas encore gagné ET participent au tirage)
     const membresEligibles = tontine.membres.filter(
       m => !tiragesExistants.some(t => t.equals(m.userId._id)) 
         && m.participeTirage === true
@@ -61,8 +86,7 @@ const effectuerTirageAutomatique = async (req, res, next) => {
     // Calculer le numéro d'échéance actuelle
     const echeanceActuelle = tiragesExistants.length + 1;
 
-    // CORRECTION: Vérifier les cotisations validées pour cette échéance
-    // On compte les cotisations validées par membre unique pour cette échéance
+    // Vérifier les cotisations validées pour cette échéance
     const cotisationsValidees = await Transaction.aggregate([
       {
         $match: {
@@ -74,7 +98,7 @@ const effectuerTirageAutomatique = async (req, res, next) => {
       },
       {
         $group: {
-          _id: '$userId', // Grouper par membre
+          _id: '$userId',
           count: { $sum: 1 }
         }
       }
@@ -82,7 +106,7 @@ const effectuerTirageAutomatique = async (req, res, next) => {
 
     const nombreMembresAyantCotise = cotisationsValidees.length;
 
-    // OPTION 1: Vérifier que tous les membres ont cotisé (strict)
+    // Vérifier que tous les membres ont cotisé (mode STRICT)
     if (nombreMembresAyantCotise < tontine.membres.length) {
       logger.warn(
         `Cotisations incomplètes pour échéance ${echeanceActuelle}: ` +
@@ -96,23 +120,6 @@ const effectuerTirageAutomatique = async (req, res, next) => {
       );
     }
 
-    // OPTION 2: Accepter le tirage si au moins les membres éligibles ont cotisé (moins strict)
-    // Décommentez cette section si vous préférez cette approche
-    /*
-    const membresEligiblesIds = membresEligibles.map(m => m.userId._id.toString());
-    const membresEligiblesAyantCotise = cotisationsValidees.filter(
-      c => membresEligiblesIds.includes(c._id.toString())
-    ).length;
-
-    if (membresEligiblesAyantCotise < membresEligibles.length) {
-      throw new AppError(
-        `${membresEligiblesAyantCotise}/${membresEligibles.length} membres eligibles ont cotisé. ` +
-        `Tirage impossible.`,
-        400
-      );
-    }
-    */
-
     // Sélectionner un bénéficiaire au hasard parmi les membres éligibles
     const beneficiaire = membresEligibles[
       Math.floor(Math.random() * membresEligibles.length)
@@ -120,20 +127,18 @@ const effectuerTirageAutomatique = async (req, res, next) => {
 
     const montantTotal = tontine.montantCotisation * tontine.membres.length;
 
-   // controllers/tirage.controller.js
-// REMPLACER la section de création du tirage (ligne 40-55 environ)
+    // Créer le tirage
+    const nouveauTirage = await Tirage.create({
+      tontineId,
+      beneficiaireId: beneficiaire.userId._id,
+      montant: montantTotal,
+      dateEffective: new Date(),
+      typeTirage: 'Automatique',
+      statut: 'Effectue',
+      effectuePar: req.user.id
+    });
 
-const nouveauTirage = await Tirage.create({
-  tontineId,
-  beneficiaireId: beneficiaire.userId._id,  // CORRECTION: était "beneficiaire"
-  montant: montantTotal,
-  dateEffective: new Date(),
-  typeTirage: 'Automatique',
-  statut: 'Effectue',
-  effectuePar: req.user.id
-});
-
-await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');  // CORRECTION: était "beneficiaire"
+    await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');
 
     // Créer un log d'audit
     await AuditLog.create({
@@ -243,36 +248,43 @@ const notifyUpcomingTirage = async (req, res) => {
     }).distinct('beneficiaire');
 
     let notificationsSent = 0;
-    let notificationsFailed = 0;
 
+    // ✅ Envoyer notifications uniquement
     for (const membre of tontine.membres) {
       const aDejaGagne = tiragesExistants.some(t => t.equals(membre.userId._id));
       
       if (!aDejaGagne) {
+        // ✅ Enregistrer la date de notification
+        membre.dateNotificationTirage = Date.now();
+        membre.participeTirage = false;  // Reset pour nouveau tirage
+        membre.optInAutomatique = false; // Reset
+        
         try {
           await emailService.sendTirageNotification(
             membre.userId, 
             tontine, 
-            new Date(dateTirage)
+            new Date(dateTirage),
+            tontine.delaiOptIn
           );
           notificationsSent++;
         } catch (error) {
           logger.error(`Erreur notification pour ${membre.userId.email}:`, error);
-          notificationsFailed++;
         }
       }
     }
 
+    // ✅ Sauvegarder une seule fois
+    await tontine.save();
+
     logger.info(
-      `Notifications tirage envoyees pour ${tontine.nom}: ` +
-      `${notificationsSent} reussies, ${notificationsFailed} echouees`
+      `Notifications tirage envoyees pour ${tontine.nom}: ${notificationsSent} membres notifies`
     );
 
     return ApiResponse.success(res, {
-      message: 'Notifications envoyees',
+      message: `Notifications envoyees. Délai opt-in : ${tontine.delaiOptIn} minutes`,
       notificationsSent,
-      notificationsFailed,
-      dateTirage,
+      delaiOptIn: tontine.delaiOptIn,
+      dateExpiration: new Date(Date.now() + tontine.delaiOptIn * 60 * 1000)
     });
   } catch (error) {
     logger.error('Erreur notification tirage:', error);
@@ -552,11 +564,129 @@ const detailsTirage = async (req, res, next) => {
     next(error);
   }
 };
+/**
+ * @desc    Effectuer un tirage automatique MODE TEST (sans validations)
+ * @route   POST /digitontine/tirages/tontine/:tontineId/automatique-test
+ * @access  Admin/Trésorier
+ */
+const effectuerTirageAutomatiqueTest = async (req, res, next) => {
+  try {
+    const { tontineId } = req.params;
 
-// ✅ EXPORT CORRECT
+    const tontine = await Tontine.findById(tontineId)
+      .populate('membres.userId', 'prenom nom email numeroTelephone');
+
+    if (!tontine) {
+      throw new AppError('Tontine introuvable', 404);
+    }
+
+    if (tontine.statut !== 'Active') {
+      throw new AppError('La tontine doit être active', 400);
+    }
+
+    // Récupérer les tirages existants
+    const tiragesExistants = await Tirage.find({ 
+      tontineId, 
+      statut: 'Effectue' 
+    }).distinct('beneficiaire');
+
+    // ✅ MODE TEST : Tous les membres n'ayant pas gagné sont éligibles
+    const membresEligibles = tontine.membres.filter(
+      m => !tiragesExistants.some(t => t.equals(m.userId._id))
+    );
+
+    if (membresEligibles.length === 0) {
+      throw new AppError('Tous les membres ont déjà gagné', 400);
+    }
+
+    logger.warn(`⚠️ MODE TEST activé - Tirage sans vérifications`);
+
+    // Calculer échéance
+    const echeanceActuelle = tiragesExistants.length + 1;
+
+    // Sélectionner au hasard
+    const beneficiaire = membresEligibles[
+      Math.floor(Math.random() * membresEligibles.length)
+    ];
+
+    const montantTotal = tontine.montantCotisation * tontine.membres.length;
+
+    // Créer tirage
+    const nouveauTirage = await Tirage.create({
+      tontineId,
+      beneficiaireId: beneficiaire.userId._id,
+      montant: montantTotal,
+      dateEffective: new Date(),
+      typeTirage: 'Automatique (TEST)',
+      statut: 'Effectue',
+      effectuePar: req.user.id
+    });
+
+    await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');
+
+    // Logger
+    await AuditLog.create({
+      user: req.user.id,
+      action: 'TIRAGE_TEST',
+      details: {
+        tirageId: nouveauTirage._id,
+        tontineId,
+        beneficiaire: beneficiaire.userId._id,
+        montant: montantTotal,
+        mode: 'TEST',
+        echeanceNumero: echeanceActuelle
+      },
+      ipAddress: req.ip
+    });
+
+    // Notifications
+    try {
+      await emailService.sendTirageWinnerNotification(
+        beneficiaire.userId,
+        nouveauTirage,
+        tontine
+      );
+    } catch (emailError) {
+      logger.error('Erreur email gagnant:', emailError);
+    }
+
+    logger.info(
+      `✅ Tirage TEST effectué - Tontine: ${tontine.nom}, ` +
+      `Gagnant: ${beneficiaire.userId.email}`
+    );
+
+    return ApiResponse.success(res, {
+      tirage: {
+        id: nouveauTirage._id,
+        beneficiaire: {
+          id: beneficiaire.userId._id,
+          nom: beneficiaire.userId.nomComplet,
+          email: beneficiaire.userId.email
+        },
+        montant: nouveauTirage.montant,
+        dateEffective: nouveauTirage.dateEffective,
+        typeTirage: nouveauTirage.typeTirage,
+        statut: nouveauTirage.statut
+      },
+      tontine: {
+        id: tontine._id,
+        nom: tontine.nom
+      },
+      details: {
+        mode: 'TEST',
+        echeanceNumero: echeanceActuelle,
+        membresEligibles: membresEligibles.length,
+        avertissement: ' Tirage effectué sans vérification des cotisations ni opt-in'
+      }
+    }, 'Tirage TEST effectué avec succès', 201);
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = {
   effectuerTirageAutomatique,
   effectuerTirageManuel,
+  effectuerTirageAutomatiqueTest,  // ✅ NOUVEAU
   annulerTirage,
   listeTiragesTontine,
   mesGains,

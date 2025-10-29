@@ -52,24 +52,38 @@ const createTontine = async (req, res) => {
       }
     }
 
-    const tontine = await Tontine.create({
-      nom,
-      description,
-      montantCotisation,
-      frequence,
-      dateDebut,
-      dateFin,
-      nombreMembresMin: nombreMembresMin || 3,
-      nombreMembresMax: nombreMembresMax || 50,
-      tauxPenalite: tauxPenalite || 5,
-      delaiGrace: delaiGrace || 2,
-      tresorierAssigne: tresorierAssigneId || null,
-      statut: TONTINE_STATUS.EN_ATTENTE,
-      createdBy: admin._id,
-      membres: [],
-    });
+   const tontine = await Tontine.create({
+  nom,
+  description,
+  montantCotisation,
+  frequence,
+  dateDebut,
+  dateFin,
+  nombreMembresMin: nombreMembresMin || 1,  // ✅ CHANGÉ : min=1
+  nombreMembresMax: nombreMembresMax || 50,
+  tauxPenalite: tauxPenalite || 5,
+  delaiGrace: delaiGrace || 2,
+  delaiOptIn: 15,  // ✅ NOUVEAU : délai opt-in par défaut
+  tresorierAssigne: tresorierAssigneId || null,
+  statut: TONTINE_STATUS.EN_ATTENTE,
+  createdBy: admin._id,
+  membres: [],  //  Vide au départ
+});
 
-    logger.info(`Tontine creee - ${tontine.nom} par ${admin.email}`);
+//  NOUVEAU : Ajouter automatiquement l'Admin
+tontine.ajouterMembre(admin._id);
+
+//  NOUVEAU : Si Trésorier assigné, l'ajouter aussi
+if (tresorierAssigneId) {
+  tontine.ajouterMembre(tresorierAssigneId);
+}
+
+await tontine.save();
+
+logger.info(
+  `Tontine creee - ${tontine.nom} par ${admin.email} ` +
+  `(Admin + ${tresorierAssigneId ? 'Trésorier' : 'pas de trésorier'} auto-ajoutés)`
+);
 
     return ApiResponse.success(
       res,

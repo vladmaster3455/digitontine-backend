@@ -874,10 +874,9 @@ const sendTirageResultNotification = async (user, tirage, tontine, beneficiaire)
 /**
  * Notifier les membres d'un tirage a venir
  */
-const sendTirageNotification = async (user, tontine, dateTirage) => {
+const sendTirageNotification = async (user, tontine, dateTirage, delaiOptIn = 15) => {
   try {
-    const dateEcheanceOptOut = new Date();
-    dateEcheanceOptOut.setDate(dateEcheanceOptOut.getDate() + 2);
+    const dateExpiration = new Date(Date.now() + delaiOptIn * 60 * 1000);
 
     const content = `
       <p>Bonjour <strong>${user.prenom} ${user.nom}</strong>,</p>
@@ -889,26 +888,32 @@ const sendTirageNotification = async (user, tontine, dateTirage) => {
         <strong>Montant a gagner :</strong> ${formatCurrency(tontine.montantCotisation * tontine.nombreMembres)}
       </div>
       
-      <p><strong>Souhaitez-vous participer a ce tirage ?</strong></p>
-      
-      <div class="success-box">
-        Par defaut, vous participez automatiquement au tirage.
-      </div>
-      
       <div class="warning-box">
-        <strong>Important :</strong> Si vous ne souhaitez PAS participer a ce tirage, 
-        vous devez nous en informer avant le <strong>${formatDate(dateEcheanceOptOut)}</strong>.<br><br>
-        Apres cette date, votre participation sera consideree comme confirmee.
+        <h3> CONFIRMATION REQUISE</h3>
+        <p>Vous devez confirmer votre participation avant le :</p>
+        <p style="font-size: 18px; font-weight: bold;">
+          ${formatDate(dateExpiration)}
+        </p>
+        <p>Délai : <strong>${delaiOptIn} minutes</strong></p>
       </div>
       
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${process.env.FRONTEND_URL}/tontines/${tontine._id}/opt-out" class="button" style="background: #dc3545;">
-          Ne pas participer a ce tirage
+      <p>
+        <a href="${process.env.FRONTEND_URL}/tontines/${tontine._id}/opt-in" 
+           style="background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+          ✅ JE PARTICIPE
         </a>
-      </div>
+      </p>
       
-      <p style="color: #666; font-size: 14px;">
-        Note : Vous pourrez participer aux tirages suivants meme si vous refusez celui-ci.
+      <p>
+        <a href="${process.env.FRONTEND_URL}/tontines/${tontine._id}/opt-out"
+           style="color: #dc3545;">
+           Je ne participe pas
+        </a>
+      </p>
+      
+      <p style="color: #856404;">
+         Si vous ne confirmez pas dans les ${delaiOptIn} minutes, 
+        <strong>vous serez automatiquement inscrit au tirage</strong>.
       </p>
     `;
 
@@ -918,14 +923,13 @@ const sendTirageNotification = async (user, tontine, dateTirage) => {
       getEmailTemplate('Tirage au sort', content)
     );
 
-    logger.info(`Notification tirage envoyee a ${user.email}`);
+    logger.info(`Notification tirage envoyee a ${user.email} (délai: ${delaiOptIn}min)`);
     return true;
   } catch (error) {
     logger.error('Erreur notification tirage:', error);
     throw error;
   }
 };
-
 /**
  * Notifier ajout a tontine (ancienne fonction pour compatibilite)
  */

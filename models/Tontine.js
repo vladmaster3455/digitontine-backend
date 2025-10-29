@@ -62,36 +62,33 @@ const TontineSchema = new mongoose.Schema(
     dateCloture: Date,
 
     // Membres
-   membres: [
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    dateAjout: {
-      type: Date,
-      default: Date.now,
-    },
-    aGagne: {
-      type: Boolean,
-      default: false,
-    },
-    dateGain: Date,
-    montantGagne: Number,
-    
-    // NOUVEAUX CHAMPS POUR OPT-IN TIRAGE
-    participeTirage: {
-      type: Boolean,
-      default: true,
-      description: 'Le membre souhaite participer au prochain tirage'
-    },
-    dateOptIn: {
-      type: Date,
-      description: 'Date de dernière confirmation de participation'
-    },
+ membres: [{
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  dateAjout: { type: Date, default: Date.now },
+  aGagne: { type: Boolean, default: false },
+  dateGain: Date,
+  montantGagne: Number,
+  
+  //  NOUVEAUX CHAMPS OPT-IN
+  participeTirage: {
+    type: Boolean,
+    default: false,  //  CHANGÉ : false par défaut
+    description: 'Le membre souhaite participer au prochain tirage'
   },
-],
+  dateOptIn: {
+    type: Date,
+    description: 'Date de dernière confirmation de participation'
+  },
+  dateNotificationTirage: {  //  NOUVEAU
+    type: Date,
+    description: 'Date de notification du prochain tirage'
+  },
+  optInAutomatique: {  //  NOUVEAU
+    type: Boolean,
+    default: false,
+    description: 'Participation confirmée automatiquement après délai'
+  }
+}],
     // Trésorier assigné à cette tontine (OBLIGATOIRE pour activation)
 // Tontine.js - CORRECTION
 tresorierAssigne: {
@@ -124,7 +121,13 @@ tresorierAssigne: {
         message: 'Le maximum doit être supérieur ou égal au minimum',
       },
     },
-
+delaiOptIn: {
+  type: Number,
+  default: 15,  //  15 minutes par défaut
+  min: [5, 'Délai minimum 5 minutes'],
+  max: [1440, 'Délai maximum 24 heures'],
+  description: "Délai (en minutes) avant opt-in automatique"
+},
     // Statut
     statut: {
       type: String,
@@ -329,15 +332,18 @@ TontineSchema.methods.activer = function () {
     throw new Error('La tontine n\'est pas en attente');
   }
 
-  if (this.membres.length < this.nombreMembresMin) {
+  //  NOUVEAU : Validation avec admin + trésorier
+  const minRequis = 3;  // Admin + Trésorier + 1 membre minimum
+  if (this.membres.length < minRequis) {
     throw new Error(
-      `Minimum ${this.nombreMembresMin} membres requis (actuellement ${this.membres.length})`
+      `Au moins ${minRequis} membres requis (Admin, Trésorier, et minimum 1 membre). ` +
+      `Actuellement : ${this.membres.length}`
     );
   }
   
-  // NOUVELLE VERIFICATION : Trésorier obligatoire
+  // ✅ Vérification trésorier obligatoire
   if (!this.tresorierAssigne) {
-    throw new Error('Un trésorier doit être assigné avant l\'activation de la tontine');
+    throw new Error('Un trésorier doit être assigné avant l\'activation');
   }
 
   // Générer le calendrier si pas déjà fait

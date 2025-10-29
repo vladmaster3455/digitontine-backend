@@ -32,6 +32,14 @@ router.post(
   auditLog('TIRAGE_AUTOMATIQUE', 'Tirage'),
   tirageController.effectuerTirageAutomatique
 );
+//  NOUVEAU : Tirage automatique MODE TEST (Admin/Trésorier)
+router.post(
+  '/tontine/:tontineId/automatique-test',
+  verifyToken,
+  isAdminOrTresorier,
+  auditLog('TIRAGE_AUTOMATIQUE_TEST', 'Tirage'),
+  tirageController.effectuerTirageAutomatiqueTest
+);
 
 // Tirage manuel (Admin uniquement)
 router.post(
