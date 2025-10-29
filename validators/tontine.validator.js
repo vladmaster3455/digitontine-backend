@@ -21,17 +21,17 @@ const validateCreateTontine = [
     .isLength({ max: 500 })
     .withMessage('La description ne peut pas dépasser 500 caractères'),
 
-  body('montantCotisation')
-    .notEmpty()
-    .withMessage('Le montant de cotisation est requis')
-    .isInt({ min: 1000 })
-    .withMessage('Le montant minimum est de 1000 FCFA')
-    .custom((value) => {
-      if (value % 1 !== 0) {
-        throw new Error('Le montant doit être un nombre entier');
-      }
-      return true;
-    }),
+body('montantCotisation')
+  .notEmpty()
+  .withMessage('Le montant de cotisation est requis')
+  .isInt({ min: 1 })  //  CHANGÉ : min: 1 au lieu de 1000
+  .withMessage('Le montant doit être supérieur à 0')
+  .custom((value) => {
+    if (value % 1 !== 0) {
+      throw new Error('Le montant doit être un nombre entier');
+    }
+    return true;
+  }),
 
   body('frequence')
     .notEmpty()
@@ -143,10 +143,10 @@ const validateUpdateTontine = [
     .withMessage('Le délai de grâce doit être entre 0 et 30 jours'),
 
   // Ces champs ne peuvent être modifiés après activation
-  body('montantCotisation')
-    .optional()
-    .isInt({ min: 1000 })
-    .withMessage('Le montant minimum est de 1000 FCFA'),
+body('montantCotisation')
+  .optional()
+  .isInt({ min: 1 })
+  .withMessage('Le montant doit être supérieur à 0'),
 
   body('frequence')
     .optional()
