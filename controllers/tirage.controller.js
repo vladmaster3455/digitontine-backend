@@ -587,7 +587,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     // Recuperer les tirages existants
     const tiragesExistants = await Tirage.find({ 
       tontineId, 
-      statutPaiement: { $in: ['en_attente', 'paye'] }  // Tous les tirages valides
+      statutPaiement: { $in: ['en_attente', 'paye'] }
     }).distinct('beneficiaireId');
 
     // MODE TEST : Tous les membres n'ayant pas gagne sont eligibles
@@ -614,31 +614,58 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     // Creer tirage avec les bons champs
     const nouveauTirage = await Tirage.create({
       tontineId,
-      beneficiaireId: beneficiaire.userId._id,  // Correct
-      numeroTirage,  // AJOUTE
-      montantDistribue: montantTotal,  // CORRIGE (pas "montant")
+      beneficiaireId: beneficiaire.userId._id,
+      numeroTirage,
+      montantDistribue: montantTotal,
       dateTirage: new Date(),
       methodeTirage: 'aleatoire',
       statutPaiement: 'en_attente',
-      createdBy: req.user._id  // CORRIGE (pas "effectuePar")
+      createdBy: req.user._id
     });
 
     await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');
 
-    // Logger
-    await AuditLog.create({
-      user: req.user._id,
-      action: 'TIRAGE_TEST',
-      details: {
-        tirageId: nouveauTirage._id,
-        tontineId,
-        beneficiaire: beneficiaire.userId._id,
-        montant: montantTotal,
-        mode: 'TEST',
-        numeroTirage
-      },
-      ipAddress: req.ip
-    });
+    // Normaliser le role pour AuditLog (minuscules)
+    const normalizeRoleForAudit = (role) => {
+      const roleMap = {
+        'Administrateur': 'admin',
+        'Tresorier': 'tresorier',
+        'Membre': 'membre'
+      };
+      return roleMap[role] || 'membre';
+    };
+
+    // Logger avec CREATE_TIRAGE (action existante)
+    try {
+      await AuditLog.create({
+        userId: req.user._id,
+        userEmail: req.user.email,
+        userRole: normalizeRoleForAudit(req.user.role),
+        action: 'CREATE_TIRAGE',
+        resource: 'Tirage',
+        resourceId: nouveauTirage._id,
+        details: {
+          method: req.method,
+          url: req.originalUrl,
+          ip: req.ip,
+          userAgent: req.get('user-agent'),
+          tirageId: nouveauTirage._id,
+          tontineId,
+          beneficiaire: beneficiaire.userId._id,
+          montant: montantTotal,
+          mode: 'TEST',
+          numeroTirage,
+          typeTirage: 'Automatique (TEST)',
+          avertissement: 'Tirage effectue sans verification des cotisations ni opt-in'
+        },
+        statusCode: 201,
+        success: true,
+        severity: 'warning',
+        tags: ['tirage', 'test', 'automatique']
+      });
+    } catch (auditError) {
+      logger.error('Erreur creation AuditLog:', auditError);
+    }
 
     // Notifications
     try {
@@ -653,7 +680,8 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
 
     logger.info(
       `Tirage TEST effectue - Tontine: ${tontine.nom}, ` +
-      `Gagnant: ${beneficiaire.userId.email}`
+      `Gagnant: ${beneficiaire.userId.email}, ` +
+      `Numero: ${numeroTirage}`
     );
 
     return ApiResponse.success(res, {
