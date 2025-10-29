@@ -13,19 +13,24 @@ exports.dashboardAdmin = async (req, res, next) => {
     const adminId = new mongoose.Types.ObjectId(req.user.id);
 
     // Statistiques utilisateurs
-    const totalUtilisateurs = await User.countDocuments();
-    const utilisateursActifs = await User.countDocuments({ statut: 'Actif' });
-    const nouveauxCeMois = await User.countDocuments({
-      dateCreation: {
-        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-      }
-    });
+   const totalUtilisateurs = await User.countDocuments({ createdBy: adminId });
+const utilisateursActifs = await User.countDocuments({ 
+  createdBy: adminId,
+  statut: 'Actif' 
+});
+const nouveauxCeMois = await User.countDocuments({
+  createdBy: adminId,
+  dateCreation: {
+    $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+  }
+});
 
-    const repartitionRoles = await User.aggregate([
-      { $group: { _id: '$role', count: { $sum: 1 } } }
-    ]);
+const repartitionRoles = await User.aggregate([
+  { $match: { createdBy: adminId } },
+  { $group: { _id: '$role', count: { $sum: 1 } } }
+]);
 
-    // ✅ CORRECTION : Statistiques tontines (SEULEMENT celles créées par cet admin)
+    //  CORRECTION : Statistiques tontines (SEULEMENT celles créées par cet admin)
     const totalTontines = await Tontine.countDocuments({ createdBy: adminId });
     const tontinesActives = await Tontine.countDocuments({ 
       createdBy: adminId, 
