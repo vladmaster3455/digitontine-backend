@@ -108,27 +108,40 @@ const createTontine = async (req, res) => {
  * @route   GET /digitontine/tontines/me/tontines
  * @access  Private
  */
+// ✅ NOUVEAU CODE - Cherche dans membres OU tresorierAssigne
 const mesTontines = async (req, res) => {
   try {
-    // Verifier que req.user existe
     if (!req.user || !req.user._id) {
       logger.error('Erreur mesTontines: req.user non defini');
       return ApiResponse.error(res, 'Utilisateur non authentifie', 401);
     }
 
     const userId = req.user._id;
-    logger.info(`Recherche tontines pour userId: ${userId}`);
+    const userRole = req.user.role;
+    logger.info(`Recherche tontines pour userId: ${userId}, role: ${userRole}`);
 
-    // Requete MongoDB avec gestion d'erreurs
-    let tontines = await Tontine.find({
-      'membres.userId': userId
-    })
+    // ✅ CORRECTION : Requête différente selon le rôle
+    let query = {};
+    
+    if (userRole === 'tresorier' || userRole === 'Tresorier') {
+      // Trésorier : chercher dans tresorierAssigne OU membres
+      query = {
+        $or: [
+          { tresorierAssigne: userId },
+          { 'membres.userId': userId }
+        ]
+      };
+    } else {
+      // Membre : chercher uniquement dans membres
+      query = { 'membres.userId': userId };
+    }
+
+    let tontines = await Tontine.find(query)
       .populate('tresorierAssigne', 'prenom nom')
-      .select('nom description montantCotisation frequence statut nombreMembres dateDebut')
+      .select('nom description montantCotisation frequence statut membres dateDebut')
       .sort({ createdAt: -1 })
-      .lean(); // Convertir en objet JS simple
+      .lean();
 
-    // S'assurer que tontines est un tableau
     if (!tontines) {
       logger.warn(`Aucune tontine trouvee pour userId: ${userId}`);
       tontines = [];
@@ -830,14 +843,12 @@ const listTontines = async (req, res) => {
  * ✅ Si Admin/Trésorier → Retourne TOUS les détails
  * ✅ Si Membre → Vérifie qu'il fait partie de la tontine, retourne détails limités
  */
+// ✅ NOUVEAU CODE - Vérifie si trésorier assigné OU membre
 const getTontineDetailsWithRoleCheck = async (req, res) => {
   try {
     const { tontineId } = req.params;
     const currentUser = req.user;
 
-    // ========================================
-    // 1. CHARGER LA TONTINE
-    // ========================================
     const tontine = await Tontine.findById(tontineId)
       .populate('membres.userId', 'prenom nom email numeroTelephone')
       .populate('tresorierAssigne', 'prenom nom email numeroTelephone');
@@ -846,17 +857,34 @@ const getTontineDetailsWithRoleCheck = async (req, res) => {
       return ApiResponse.notFound(res, 'Tontine introuvable');
     }
 
-    // ========================================
-    // 2. VÉRIFIER LE RÔLE
-    // ========================================
-    
-    //  CAS 1 : Admin ou Trésorier → Accès COMPLET
-    if (currentUser.role === 'admin' || currentUser.role === 'tresorier') {
-      logger.info(`Accès complet tontine ${tontine.nom} par ${currentUser.role} ${currentUser.email}`);
-      return getTontineDetails(req, res);  // Fonction existante (accès complet)
+    // ✅ CORRECTION : Normaliser le rôle
+    const userRole = currentUser.role?.toLowerCase();
+
+    // ✅ CAS 1 : Admin → Accès COMPLET
+    if (userRole === 'admin' || userRole === 'administrateur') {
+      logger.info(`Accès complet tontine ${tontine.nom} par Admin ${currentUser.email}`);
+      return getTontineDetails(req, res);
     }
 
-    //  CAS 2 : Membre → Vérifier qu'il fait partie de la tontine
+    // ✅ CAS 2 : Trésorier → Vérifier s'il est assigné OU membre
+    if (userRole === 'tresorier') {
+      const estTresorierAssigne = tontine.tresorierAssigne && 
+        tontine.tresorierAssigne._id.toString() === currentUser._id.toString();
+      
+      const estMembreTontine = tontine.membres.some(
+        m => m.userId._id.toString() === currentUser._id.toString()
+      );
+
+      if (estTresorierAssigne || estMembreTontine) {
+        logger.info(`Accès trésorier tontine ${tontine.nom} par ${currentUser.email}`);
+        return getTontineDetails(req, res);
+      }
+
+      logger.warn(`Trésorier ${currentUser.email} non assigné à ${tontine.nom}`);
+      return ApiResponse.forbidden(res, 'Vous n\'êtes pas le trésorier de cette tontine');
+    }
+
+    // ✅ CAS 3 : Membre → Vérifier qu'il fait partie de la tontine
     const estMembre = tontine.membres.some(
       m => m.userId._id.toString() === currentUser._id.toString()
     );
@@ -866,9 +894,8 @@ const getTontineDetailsWithRoleCheck = async (req, res) => {
       return ApiResponse.forbidden(res, 'Vous n\'êtes pas membre de cette tontine');
     }
 
-    // ✅ CAS 3 : Membre vérifié → Retour détails limités
     logger.info(`Accès membre tontine ${tontine.nom} par ${currentUser.email}`);
-    return getTontineDetailsForMember(req, res);  // Fonction existante (accès limité)
+    return getTontineDetailsForMember(req, res);
 
   } catch (error) {
     logger.error('Erreur getTontineDetailsWithRoleCheck:', error);
