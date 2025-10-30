@@ -12,6 +12,10 @@ const multer = require('multer');
 const logger = require('../utils/logger');
 const { verifyToken } = require('../middleware/auth.middleware');
 
+//  Parser JSON pour les routes proxy
+const jsonParser = express.json({ limit: '10mb' });
+const urlEncodedParser = express.urlencoded({ extended: true, limit: '10mb' });
+
 // Configuration Multer pour gérer les fichiers en mémoire
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -93,12 +97,18 @@ router.use((req, res, next) => {
   const contentType = req.headers['content-type'] || '';
   
   if (contentType.includes('multipart/form-data')) {
-    logger.info('[PROXY]  Parsing multipart/form-data avec Multer');
+    logger.info('[PROXY] Parsing multipart/form-data avec Multer');
     return parseMultipart(req, res, next);
   }
   
   next();
 });
+
+// ========================================
+// MIDDLEWARE: Parser JSON AVANT conditionalAuth
+// ========================================
+router.use(jsonParser);
+router.use(urlEncodedParser);
 
 // ========================================
 // ROUTE PROXY PRINCIPALE
@@ -112,6 +122,7 @@ router.all('/*', conditionalAuth, async (req, res) => {
     const fullUrl = `${internalUrl}/digitontine/${path}`;
     
     logger.info(`[PROXY] → Forwardage vers: ${fullUrl}`);
+    logger.debug(`[PROXY] → Body reçu:`, req.body);
     
     // Construire les headers
     const headers = {
@@ -183,7 +194,7 @@ router.all('/*', conditionalAuth, async (req, res) => {
       
       if (req.body && Object.keys(req.body).length > 0) {
         axiosConfig.data = req.body;
-        logger.debug(`[PROXY] → Body JSON envoyé`);
+        logger.debug(`[PROXY] → Body JSON envoyé:`, axiosConfig.data);
       }
     }
     
