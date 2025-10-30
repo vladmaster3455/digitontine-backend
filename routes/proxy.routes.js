@@ -1,7 +1,7 @@
 // routes/proxy.routes.js
 /**
  * Proxy pour ajouter automatiquement la clé API
- * Le client n'envoie PAS la clé, le serveur l'ajoute
+ *  FIXÉ: Évite la boucle infinie en forwardant vers localhost en local
  */
 
 const express = require('express');
@@ -20,8 +20,7 @@ const upload = multer({
   },
 });
 
-// Middleware pour parser multipart/form-data
-const parseMultipart = upload.any(); // Accepte tous les champs et fichiers
+const parseMultipart = upload.any();
 
 /**
  * Routes publiques (sans authentification JWT)
@@ -37,6 +36,18 @@ const publicRoutes = [
   '/auth/refresh-token',
   '/transactions/webhook/wave'
 ];
+
+/**
+ * 🔧 FONCTION: Déterminer l'URL interne pour forwarder
+ * En développement: localhost:5000
+ * En production: toujours localhost (car même serveur)
+ */
+const getInternalApiUrl = () => {
+  // En production ET développement: forwarder vers localhost
+  // Car le proxy et l'API sont sur le MÊME serveur
+  const port = process.env.PORT || 5000;
+  return `http://localhost:${port}`;
+};
 
 /**
  * Middleware proxy : Ajoute la clé API à toutes les requêtes
@@ -71,11 +82,10 @@ const conditionalAuth = (req, res, next) => {
     return next();
   }
   
-  logger.info(`[PROXY]  Route protégée: ${path} - authentification requise`);
+  logger.info(`[PROXY] Route protégée: ${path} - authentification requise`);
   return verifyToken(req, res, next);
 };
 
-// Appliquer le middleware proxy à toutes les routes
 router.use(proxyWithApiKey);
 
 // Middleware pour parser multipart AVANT conditionalAuth
@@ -83,24 +93,30 @@ router.use((req, res, next) => {
   const contentType = req.headers['content-type'] || '';
   
   if (contentType.includes('multipart/form-data')) {
-    logger.info('[PROXY] 📎 Parsing multipart/form-data avec Multer');
+    logger.info('[PROXY]  Parsing multipart/form-data avec Multer');
     return parseMultipart(req, res, next);
   }
   
   next();
 });
 
-// Route proxy générique : forwarder TOUTES les requêtes avec la clé API
+// ========================================
+// ROUTE PROXY PRINCIPALE
+// ========================================
 router.all('/*', conditionalAuth, async (req, res) => {
   try {
     const path = req.params[0] || '';
-    const fullUrl = `${process.env.BASE_URL}/digitontine/${path}`;
+    
+    //  FIXÉ: Utiliser localhost au lieu de BASE_URL
+    const internalUrl = getInternalApiUrl();
+    const fullUrl = `${internalUrl}/digitontine/${path}`;
     
     logger.info(`[PROXY] → Forwardage vers: ${fullUrl}`);
     
-    // Construire les headers de base
+    // Construire les headers
     const headers = {
       'X-API-Key': process.env.API_KEY,
+      'X-Forwarded-For': req.ip, // Transmettre l'IP du client
     };
     
     // Ajouter le token JWT si présent
@@ -109,26 +125,24 @@ router.all('/*', conditionalAuth, async (req, res) => {
       logger.info(`[PROXY] → Token JWT transmis`);
     }
     
-    // Préparer la config axios
     const axiosConfig = {
       method: req.method,
       url: fullUrl,
       headers: headers,
-      validateStatus: () => true,
+      validateStatus: () => true, // Ne pas lever d'erreur sur les codes d'erreur HTTP
     };
     
-    // Ajouter query params si présents
+    // Ajouter query params
     if (Object.keys(req.query).length > 0) {
       axiosConfig.params = req.query;
     }
     
-    //  GESTION SPÉCIALE MULTIPART/FORM-DATA
+    // GESTION MULTIPART/FORM-DATA
     const contentType = req.headers['content-type'] || '';
     
     if (contentType.includes('multipart/form-data')) {
-      logger.info(`[PROXY] 📎 Détection multipart/form-data - forwarding RAW`);
+      logger.info(`[PROXY]  Détection multipart/form-data - forwarding RAW`);
       
-      // Créer un FormData à partir des champs et fichiers de la requête
       const formData = new FormData();
       
       // Ajouter les champs texte
@@ -143,7 +157,6 @@ router.all('/*', conditionalAuth, async (req, res) => {
       
       // Ajouter les fichiers
       if (req.files) {
-        // Multer: req.files est un objet avec des arrays de fichiers
         Object.keys(req.files).forEach(fieldName => {
           const files = req.files[fieldName];
           files.forEach(file => {
@@ -151,31 +164,26 @@ router.all('/*', conditionalAuth, async (req, res) => {
               filename: file.originalname,
               contentType: file.mimetype
             });
-            logger.info(`[PROXY] 📎 File: ${fieldName} = ${file.originalname}`);
+            logger.info(`[PROXY]  File: ${fieldName} = ${file.originalname}`);
           });
         });
       } else if (req.file) {
-        // Multer: req.file pour un seul fichier
         formData.append(req.file.fieldname, req.file.buffer, {
           filename: req.file.originalname,
           contentType: req.file.mimetype
         });
-        logger.info(`[PROXY] 📎 File: ${req.file.fieldname} = ${req.file.originalname}`);
+        logger.info(`[PROXY]  File: ${req.file.fieldname} = ${req.file.originalname}`);
       }
       
-      // Utiliser FormData comme data
       axiosConfig.data = formData;
-      
-      // Ajouter les headers de FormData (avec boundary)
       Object.assign(axiosConfig.headers, formData.getHeaders());
       
     } else if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
-      // JSON normal
       axiosConfig.headers['Content-Type'] = 'application/json';
       
       if (req.body && Object.keys(req.body).length > 0) {
         axiosConfig.data = req.body;
-        logger.info(`[PROXY] → Body JSON envoyé`);
+        logger.debug(`[PROXY] → Body JSON envoyé`);
       }
     }
     
@@ -184,7 +192,7 @@ router.all('/*', conditionalAuth, async (req, res) => {
     
     logger.info(`[PROXY] ← Réponse: ${response.status}`);
     
-    // Retourner la réponse
+    // Retourner la réponse au client
     res.status(response.status).json(response.data);
     
   } catch (error) {
