@@ -114,9 +114,22 @@ app.use(compression());
 // MIDDLEWARE PARSING & LOGGING
 // ========================================
 
-// Body parser
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+//  Body parser SAUF pour /api/proxy/* (géré par Multer dans le proxy)
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/proxy')) {
+    return next();
+  }
+  express.json({ limit: '10mb' })(req, res, next);
+});
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/proxy')) {
+    return next();
+  }
+  express.urlencoded({ extended: true, limit: '10mb' })(req, res, next);
+});
+
+
 
 // Logging HTTP
 if (process.env.NODE_ENV === 'development') {
