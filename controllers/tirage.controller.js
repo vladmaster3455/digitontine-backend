@@ -762,16 +762,16 @@ const detailsTirage = async (req, res, next) => {
 };
 
 /**
- * @desc    Effectuer un tirage automatique MODE TEST (AVEC notification + opt-in)
+ * @desc    Effectuer un tirage automatique MODE TEST (AVEC notification + opt-in intelligent)
  * @route   POST /digitontine/tirages/tontine/:tontineId/automatique-test
  * @access  Admin/Tresorier
  * 
- * FLUX COMPLET :
- * 1. Envoyer emails de notification aux membres + Admin + Tresorier
- * 2. Attendre delai opt-in (ex: 15 minutes)
- * 3. Appliquer opt-in automatique pour non-repondants
- * 4. Effectuer le tirage parmi ceux qui participent
- * 5. Envoyer resultats
+ * LOGIQUE :
+ * 1. Envoyer notifications à tous les participants
+ * 2. Boucle de vérification (polling) :
+ *    - Tous ont confirmé (oui/non) ? -> Tirage commence
+ *    - Délai écoulé ? -> Opt-in auto pour non-répondants -> Tirage commence
+ * 3. Effectuer le tirage et envoyer résultats
  */
 const effectuerTirageAutomatiqueTest = async (req, res, next) => {
   try {
@@ -789,7 +789,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
       throw new AppError('La tontine doit etre active', 400);
     }
 
-    logger.warn(`MODE TEST: Debut tirage automatique - Tontine: ${tontine.nom}`);
+    logger.warn(`[TIRAGE TEST] Debut - Tontine: ${tontine.nom}`);
 
     // ========================================
     // ETAPE 1 : RECUPERER LES GAGNANTS EXISTANTS
@@ -799,266 +799,226 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
       statutPaiement: { $in: ['en_attente', 'paye'] }
     }).distinct('beneficiaireId');
 
-    logger.info(`Tirages existants: ${tiragesExistants.length}`);
-
-    logger.info(`📊 Tontine "${tontine.nom}" a ${tontine.membres.length} membres`);
-
-logger.info(`🏆 Tirages existants: ${tiragesExistants.length}`);
-logger.info(`Membres déjà gagnants:`);
-
-for (const id of tiragesExistants) {
-  const user = await User.findById(id);
-  logger.info(`  - ${user?.email}`);
-}
-
-logger.info(`Membres à notifier:`);
-for (const membre of tontine.membres) {
-  const aDejaGagne = tiragesExistants.some(t => t.equals(membre.userId._id));
-  logger.info(`  ${aDejaGagne ? '' : ''} ${membre.userId.email} (aDejaGagne: ${aDejaGagne})`);
-}
+    logger.info(`[TIRAGE TEST] Tirages existants: ${tiragesExistants.length}`);
+    logger.info(`[TIRAGE TEST] Tontine "${tontine.nom}" a ${tontine.membres.length} membres`);
 
     // ========================================
-    // ETAPE 2 : ENVOYER EMAILS DE NOTIFICATION
+    // ETAPE 2 : CONSTRUIRE LA LISTE DES PARTICIPANTS
     // ========================================
-    logger.warn(`ETAPE 1 (TEST): Envoi des notifications...`);
-    
-    const dateTirageProchaine = new Date(Date.now() + tontine.delaiOptIn * 60 * 1000);
-    let notificationsSent = 0;
+    const participants = [];
 
-    // NOTIFIER LES MEMBRES DE LA TONTINE
+    // Ajouter les membres de la tontine
     for (const membre of tontine.membres) {
-      const aDejaGagne = tiragesExistants.some(
-        t => t.equals(membre.userId._id)
-      );
-        logger.info(`   aDejaGagne: ${aDejaGagne}`); 
+      const aDejaGagne = tiragesExistants.some(t => t.equals(membre.userId._id));
       if (!aDejaGagne) {
-        // Enregistrer la date de notification
-        membre.dateNotificationTirage = Date.now();
-        membre.participeTirage = false;  // Reset pour nouveau tirage
-        membre.optInAutomatique = false; // Reset
-        
-        try {
-          await notificationService.sendTirageNotification(
-            membre.userId, 
-            tontine, 
-            dateTirageProchaine,
-            tontine.delaiOptIn
-          );
-          notificationsSent++;
-          logger.info(`Email envoye au MEMBRE: ${membre.userId.email}`);
-        } catch (error) {
-          logger.error(`Erreur notification pour ${membre.userId.email}:`, error);
-        }
-      }
-    }
-
-    // NOTIFIER L'ADMIN QUI LANCE LE TIRAGE (req.user)
-    const adminLanceur = req.user;
-    const adminEstMembre = tontine.membres.some(
-      m => m.userId._id.equals(adminLanceur._id)
-    );
-    const adminADejaGagne = tiragesExistants.some(t => t.equals(adminLanceur._id));
-
-    // Si l'admin n'est PAS membre de la tontine ET n'a pas deja gagne
-    if (!adminEstMembre && !adminADejaGagne) {
-      // Ajouter l'admin comme participant temporaire
-      tontine.membres.push({
-        userId: adminLanceur._id,
-        dateAdhesion: Date.now(),
-        role: 'Administrateur',
-        statut: 'Actif',
-        dateNotificationTirage: Date.now(),
-        participeTirage: false,
-        optInAutomatique: false
-      });
-
-      try {
-        await notificationService.sendTirageNotification(
-          adminLanceur, 
-          tontine, 
-          dateTirageProchaine,
-          tontine.delaiOptIn
-        );
-        notificationsSent++;
-        logger.info(`Email envoye a l'ADMIN lanceur: ${adminLanceur.email}`);
-      } catch (error) {
-        logger.error(`Erreur notification admin:`, error);
-      }
-    }
-
-    // NOTIFIER LE CREATEUR DE LA TONTINE (si different de l'admin lanceur)
-    if (tontine.createdBy && !tontine.createdBy._id.equals(adminLanceur._id)) {
-      const createurEstMembre = tontine.membres.some(
-        m => m.userId._id.equals(tontine.createdBy._id)
-      );
-      const createurADejaGagne = tiragesExistants.some(t => t.equals(tontine.createdBy._id));
-
-      if (!createurEstMembre && !createurADejaGagne) {
-        // Ajouter le createur comme participant
-        tontine.membres.push({
-          userId: tontine.createdBy._id,
-          dateAdhesion: Date.now(),
-          role: tontine.createdBy.role || 'Tresorier',
-          statut: 'Actif',
+        participants.push({
+          userId: membre.userId._id,
+          email: membre.userId.email,
+          nom: `${membre.userId.prenom} ${membre.userId.nom}`,
+          type: 'Membre',
           dateNotificationTirage: Date.now(),
           participeTirage: false,
           optInAutomatique: false
         });
-
-        try {
-          await notificationService.sendTirageNotification(
-            tontine.createdBy, 
-            tontine, 
-            dateTirageProchaine,
-            tontine.delaiOptIn
-          );
-          notificationsSent++;
-          logger.info(`Email envoye au CREATEUR: ${tontine.createdBy.email}`);
-        } catch (error) {
-          logger.error(`Erreur notification createur:`, error);
-        }
       }
     }
 
-    // CHERCHER UN TRESORIER ASSIGNE (si existe dans le modele)
-    // Note: A adapter selon votre modele Tontine
-    if (tontine.tresorierAssigne) {
-      const tresorier = await User.findById(tontine.tresorierAssigne);
-      if (tresorier) {
-        const tresorierEstMembre = tontine.membres.some(
-          m => m.userId._id.equals(tresorier._id)
-        );
-        const tresorierADejaGagne = tiragesExistants.some(t => t.equals(tresorier._id));
+    // Ajouter l'admin lanceur (s'il n'est pas deja membre)
+    const adminLanceur = req.user;
+    const adminEstMembre = tontine.membres.some(m => m.userId._id.equals(adminLanceur._id));
+    const adminADejaGagne = tiragesExistants.some(t => t.equals(adminLanceur._id));
 
-        if (!tresorierEstMembre && !tresorierADejaGagne) {
-          tontine.membres.push({
+    if (!adminEstMembre && !adminADejaGagne) {
+      participants.push({
+        userId: adminLanceur._id,
+        email: adminLanceur.email,
+        nom: adminLanceur.nomComplet,
+        type: 'Admin',
+        dateNotificationTirage: Date.now(),
+        participeTirage: false,
+        optInAutomatique: false
+      });
+    }
+
+    // Note: Createur = Admin dans la plupart des cas, deja ajoute plus haut
+
+    // Ajouter le tresorier assigne (s'il existe et n'est pas deja present)
+    if (tontine.tresorierAssigne) {
+      const tresorierADejaDansListe = participants.some(p => p.userId.equals(tontine.tresorierAssigne._id));
+      const tresorierADejaGagne = tiragesExistants.some(t => t.equals(tontine.tresorierAssigne._id));
+
+      if (!tresorierADejaDansListe && !tresorierADejaGagne) {
+        const tresorier = await User.findById(tontine.tresorierAssigne);
+        if (tresorier) {
+          participants.push({
             userId: tresorier._id,
-            dateAdhesion: Date.now(),
-            role: 'Tresorier',
-            statut: 'Actif',
+            email: tresorier.email,
+            nom: tresorier.nomComplet,
+            type: 'Tresorier',
             dateNotificationTirage: Date.now(),
             participeTirage: false,
             optInAutomatique: false
           });
-
-          try {
-            await notificationService.sendTirageNotification(
-              tresorier, 
-              tontine, 
-              dateTirageProchaine,
-              tontine.delaiOptIn
-            );
-            notificationsSent++;
-            logger.info(`Email envoye au TRESORIER assigne: ${tresorier.email}`);
-          } catch (error) {
-            logger.error(`Erreur notification tresorier:`, error);
-          }
         }
       }
     }
 
-    // Sauvegarder apres les notifications
-    await tontine.save();
-
-    logger.warn(`Notifications envoyees: ${notificationsSent} personne(s) (membres + admin + tresorier)`);
+    logger.info(`[TIRAGE TEST] Participants a notifier: ${participants.length}`);
 
     // ========================================
-    // ETAPE 3 : ATTENDRE LE DELAI OPT-IN (TEST)
+    // ETAPE 3 : ENVOYER NOTIFICATIONS
     // ========================================
-    logger.warn(`ETAPE 2 (TEST): ATTENTE DE ${tontine.delaiOptIn} MINUTES...`);
-    logger.warn(`Les membres ont jusqu'a ${new Date(dateTirageProchaine).toLocaleTimeString('fr-FR')} pour repondre`);
-    
-    const delaiMs = tontine.delaiOptIn * 60 * 1000;
-    await new Promise(resolve => setTimeout(resolve, delaiMs));
+    logger.warn(`[TIRAGE TEST] ETAPE 1: Envoi des notifications...`);
 
-    logger.warn(`Delai d'opt-in (TEST) termine`);
+    const dateTirageProchaine = new Date(Date.now() + tontine.delaiOptIn * 60 * 1000);
+    let notificationsSent = 0;
 
-    // ========================================
-    // ETAPE 4 : RECHARGER + APPLIQUER OPT-IN AUTOMATIQUE
-    // ========================================
-    logger.warn(`ETAPE 3 (TEST): Reactualisation et opt-in automatique...`);
-    
-    const tontineReload = await Tontine.findById(tontineId)
-      .populate('membres.userId', 'prenom nom email numeroTelephone');
+    for (const participant of participants) {
+      const user = await User.findById(participant.userId);
+      if (!user) continue;
 
-    if (!tontineReload) {
-      throw new AppError('Tontine non trouvee apres delai', 404);
+      try {
+        await notificationService.sendTirageNotification(
+          user,
+          tontine,
+          dateTirageProchaine,
+          tontine.delaiOptIn
+        );
+        notificationsSent++;
+        logger.info(`[TIRAGE TEST] Email envoye: ${participant.email}`);
+      } catch (error) {
+        logger.error(`[TIRAGE TEST] Erreur email ${participant.email}:`, error.message);
+      }
     }
 
+    logger.warn(`[TIRAGE TEST] ${notificationsSent}/${participants.length} notifications envoyees`);
+
+    // Mettre a jour la tontine avec les participants
+    for (const participant of participants) {
+      const membreExistant = tontine.membres.find(m => m.userId._id.equals(participant.userId));
+      if (membreExistant) {
+        membreExistant.dateNotificationTirage = participant.dateNotificationTirage;
+        membreExistant.participeTirage = false;
+        membreExistant.optInAutomatique = false;
+      } else {
+        tontine.membres.push({
+          userId: participant.userId,
+          dateNotificationTirage: participant.dateNotificationTirage,
+          participeTirage: false,
+          optInAutomatique: false
+        });
+      }
+    }
+
+    await tontine.save();
+
+    // ========================================
+    // ETAPE 4 : BOUCLE D'ATTENTE INTELLIGENTE
+    // ========================================
+    logger.warn(`[TIRAGE TEST] ETAPE 2: Attente intelligente (delai max: ${tontine.delaiOptIn} min)...`);
+
+    const timeoutMs = tontine.delaiOptIn * 60 * 1000;
+    const pollIntervalMs = 5000; // Verifier toutes les 5 secondes
+    const startTime = Date.now();
+    let tousOntConfirme = false;
+
+    while (Date.now() - startTime < timeoutMs && !tousOntConfirme) {
+      // Recharger la tontine pour obtenir les confirmations actuelles
+      const tontineActuelle = await Tontine.findById(tontineId);
+
+      // Verifier combien de participants ont confirme leur choix
+      let confirmations = 0;
+      for (const participant of participants) {
+        const membreActuel = tontineActuelle.membres.find(m => m.userId._id.equals(participant.userId));
+        if (membreActuel && (membreActuel.participeTirage !== undefined)) {
+          confirmations++;
+        }
+      }
+
+      // Si tous ont confirme -> commencer le tirage immediatement
+      if (confirmations === participants.length) {
+        tousOntConfirme = true;
+        const tempsEcoule = Date.now() - startTime;
+        const minutesEcoulees = Math.round(tempsEcoule / 60000 * 10) / 10;
+        logger.warn(`[TIRAGE TEST] Tous les participants ont confirme apres ${minutesEcoulees} min`);
+        break;
+      }
+
+      // Attendre avant la prochaine verification
+      await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+    }
+
+    // ========================================
+    // ETAPE 5 : APPLIQUER OPT-IN AUTOMATIQUE
+    // ========================================
+    logger.warn(`[TIRAGE TEST] ETAPE 3: Opt-in automatique pour les non-repondants...`);
+
+    const tontineReload = await Tontine.findById(tontineId);
     let optInAutoCount = 0;
 
-    for (const membre of tontineReload.membres) {
-      const aDejaGagne = tiragesExistants.some(
-        t => t.equals(membre.userId._id)
-      );
+    for (const participant of participants) {
+      const membreActuel = tontineReload.membres.find(m => m.userId._id.equals(participant.userId));
       
-      // Appliquer opt-in automatique pour ceux qui n'ont pas repondu
-      if (!aDejaGagne && !membre.participeTirage && membre.dateNotificationTirage) {
-        membre.participeTirage = true;
-        membre.optInAutomatique = true;
-        membre.dateOptIn = Date.now();
+      if (membreActuel && membreActuel.participeTirage === false) {
+        // Non-repondant : appliquer opt-in automatique
+        membreActuel.participeTirage = true;
+        membreActuel.optInAutomatique = true;
+        membreActuel.dateOptIn = Date.now();
         optInAutoCount++;
         
-        logger.info(
-          `Opt-in AUTO applique pour ${membre.userId.email}`
-        );
+        logger.info(`[TIRAGE TEST] Opt-in AUTO: ${participant.email}`);
       }
     }
 
     await tontineReload.save();
-    logger.warn(`Opt-in automatiques appliques: ${optInAutoCount}`);
+    logger.warn(`[TIRAGE TEST] ${optInAutoCount} opt-in automatiques appliques`);
 
     // ========================================
-    // ETAPE 5 : FILTRER LES MEMBRES ELIGIBLES
+    // ETAPE 6 : FILTRER LES PARTICIPANTS ELIGIBLES
     // ========================================
-    logger.warn(`ETAPE 4 (TEST): Filtrage des participants...`);
-    
-    const membresEligibles = tontineReload.membres.filter(
-      m => !tiragesExistants.some(t => t.equals(m.userId._id)) 
-        && m.participeTirage === true
+    logger.warn(`[TIRAGE TEST] ETAPE 4: Filtrage des eligibles...`);
+
+    const membresEligibles = tontineReload.membres.filter(m => 
+      m.participeTirage === true && 
+      !tiragesExistants.some(t => t.equals(m.userId._id))
     );
 
-    logger.warn(`Membres eligibles: ${membresEligibles.length}`);
+    logger.info(`[TIRAGE TEST] Membres eligibles: ${membresEligibles.length}`);
 
     if (membresEligibles.length === 0) {
       throw new AppError('Aucun membre n\'a confirme sa participation', 400);
     }
 
     // ========================================
-    // ETAPE 6 : EFFECTUER LE TIRAGE (MODE TEST)
+    // ETAPE 7 : EFFECTUER LE TIRAGE
     // ========================================
-    logger.warn(`ETAPE 5 (TEST): Tirage aleatoire...`);
-    
-    // Selectionner au hasard
+    logger.warn(`[TIRAGE TEST] ETAPE 5: Tirage aleatoire...`);
+
     const beneficiaire = membresEligibles[
       Math.floor(Math.random() * membresEligibles.length)
     ];
 
     const montantTotal = tontineReload.montantCotisation * tontineReload.membres.length;
+    const numeroTirage = await Tirage.getProchainNumero(tontineId);
 
-    // Calculer le prochain numéro de tirage
-const numeroTirage = await Tirage.getProchainNumero(tontineId);
+    const nouveauTirage = await Tirage.create({
+      tontineId,
+      beneficiaireId: beneficiaire.userId._id,
+      numeroTirage,
+      montantDistribue: montantTotal,
+      dateTirage: new Date(),
+      methodeTirage: 'aleatoire',
+      statutPaiement: 'en_attente',
+      createdBy: req.user.id
+    });
 
-const nouveauTirage = await Tirage.create({
-  tontineId,
-  beneficiaireId: beneficiaire.userId._id,
-  numeroTirage,                        // AJOUTÉ
-  montantDistribue: montantTotal,      //  CORRIGÉ
-  dateTirage: new Date(),              //  CORRIGÉ
-  methodeTirage: 'aleatoire',          //  CORRIGÉ ('aleatoire', 'tour_de_role', 'manuel')
-  statutPaiement: 'en_attente',        //  CORRIGÉ ('en_attente', 'paye', 'echec')
-  createdBy: req.user.id               //  CORRIGÉ
-});
     await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');
 
-    logger.warn(`GAGNANT (TEST): ${beneficiaire.userId.email} - Montant: ${montantTotal} FCFA`);
+    logger.warn(`[TIRAGE TEST] GAGNANT: ${beneficiaire.userId.email} - ${montantTotal} FCFA`);
 
     // ========================================
-    // ETAPE 7 : CREER LOG D'AUDIT
+    // ETAPE 8 : LOG D'AUDIT
     // ========================================
-    
-
-
     try {
       await AuditLog.create({
         userId: req.user._id,
@@ -1076,42 +1036,33 @@ const nouveauTirage = await Tirage.create({
           beneficiaire: beneficiaire.userId._id,
           montant: montantTotal,
           numeroTirage,
-          mode: 'TEST COMPLET',
-          etapes: {
-            notificationsEnvoyees: notificationsSent,
-            delaiOptInMinutes: tontine.delaiOptIn,
-            optInAutomatiques: optInAutoCount,
-            membresEligibles: membresEligibles.length,
-          },
-          avertissement: 'Tirage TEST avec notification (membres + admin + tresorier) + opt-in complet'
+          mode: 'TEST COMPLET INTELLIGENT'
         },
         statusCode: 201,
         success: true,
         severity: 'warning',
-        tags: ['tirage', 'test', 'automatique', 'avec-notification', 'admin-tresorier']
+        tags: ['tirage', 'test', 'automatique', 'intelligent']
       });
     } catch (auditError) {
-      logger.error('Erreur creation AuditLog:', auditError);
+      logger.error('[TIRAGE TEST] Erreur AuditLog:', auditError.message);
     }
 
     // ========================================
-    // ETAPE 8 : ENVOYER LES RESULTATS
+    // ETAPE 9 : ENVOYER LES RESULTATS
     // ========================================
-    logger.warn(`ETAPE 6 (TEST): Envoi des resultats...`);
+    logger.warn(`[TIRAGE TEST] ETAPE 6: Envoi des resultats...`);
 
-    // Email au gagnant
     try {
       await notificationService.sendTirageWinnerNotification(
         beneficiaire.userId,
         nouveauTirage,
         tontineReload
       );
-      logger.info(`Email gagnant envoye a ${beneficiaire.userId.email}`);
-    } catch (emailError) {
-      logger.error('Erreur email gagnant:', emailError);
+      logger.info(`[TIRAGE TEST] Email gagnant envoye`);
+    } catch (error) {
+      logger.error('[TIRAGE TEST] Erreur email gagnant:', error.message);
     }
 
-    // Emails aux autres membres
     const autresMembres = tontineReload.membres.filter(
       m => !m.userId._id.equals(beneficiaire.userId._id)
     );
@@ -1124,13 +1075,16 @@ const nouveauTirage = await Tirage.create({
           tontineReload,
           beneficiaire.userId
         );
-      } catch (emailError) {
-        logger.error(`Erreur email resultat ${membre.userId.email}:`, emailError);
+      } catch (error) {
+        logger.error(`[TIRAGE TEST] Erreur email ${membre.userId.email}:`, error.message);
       }
     }
 
-    logger.warn(`TIRAGE TEST TERMINE - Tontine: ${tontineReload.nom}`);
+    logger.warn(`[TIRAGE TEST] TERMINE - Tontine: ${tontineReload.nom}`);
 
+    // ========================================
+    // REPONSE FINALE
+    // ========================================
     return ApiResponse.success(res, {
       tirage: {
         id: nouveauTirage._id,
@@ -1142,27 +1096,28 @@ const nouveauTirage = await Tirage.create({
         },
         montant: nouveauTirage.montantDistribue,
         dateTirage: nouveauTirage.dateTirage,
-        methodeTirage: nouveauTirage.methodeTirage,
-        statutPaiement: nouveauTirage.statutPaiement
+        methodeTirage: nouveauTirage.methodeTirage
       },
       tontine: {
         id: tontineReload._id,
         nom: tontineReload.nom
       },
       details: {
-        mode: 'TEST COMPLET',
-        etape1_notificationsEnvoyees: notificationsSent,
-        etape2_delaiOptInMinutes: tontine.delaiOptIn,
-        etape3_optInAutomatiques: optInAutoCount,
-        etape4_membresEligibles: membresEligibles.length,
-        etape5_tirageEffectue: true,
-        etape6_resultatEnvoyee: true,
-        message: 'Tirage TEST avec notification (membres + admin + tresorier), opt-in, et resultats'
+        mode: 'TEST INTELLIGENT',
+        participants_total: participants.length,
+        notifications_envoyees: notificationsSent,
+        delai_opt_in_minutes: tontine.delaiOptIn,
+        tous_ont_confirme: tousOntConfirme,
+        opt_in_automatiques: optInAutoCount,
+        membres_eligibles: membresEligibles.length,
+        message: tousOntConfirme 
+          ? 'Tous les participants ont confirme. Tirage commence immediatement.'
+          : `Delai d'opt-in ecoule. ${optInAutoCount} participants confirmes automatiquement.`
       }
-    }, 'Tirage TEST effectue avec succes', 201);
+    }, 'Tirage effectue avec succes', 201);
 
   } catch (error) {
-    logger.error('Erreur tirage TEST:', error);
+    logger.error('[TIRAGE TEST] Erreur:', error.message);
     next(error);
   }
 };
