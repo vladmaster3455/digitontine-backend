@@ -1012,45 +1012,27 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
         400
       );
     }
+// ========================================
+// ETAPE 7 : CALCULER LE MONTANT **AVANT** LA CRÉATION
+// ========================================
+logger.warn(`[TIRAGE TEST] ETAPE 6: Calcul du montant...`);
 
-    // ========================================
-    // ETAPE 7 : CALCULER LE MONTANT **AVANT** LA CRÉATION
-    // ========================================
-    logger.warn(`[TIRAGE TEST] ETAPE 6: Calcul du montant...`);
+const echeanceActuelle = tiragesExistants.length + 1;
 
-    const echeanceActuelle = tiragesExistants.length + 1;
+// 🔧 MODE TEST: Utiliser le montant théorique sans vérifier les cotisations
+// const cotisationsValidees = await Transaction.aggregate([...]) -- SUPPRIMÉ
 
-    const cotisationsValidees = await Transaction.aggregate([
-      {
-        $match: {
-          tontineId: tontineReload._id,
-          echeanceNumero: echeanceActuelle,
-          statut: 'Validee',
-          type: 'Cotisation'
-        }
-      },
-      {
-        $group: {
-          _id: '$userId',
-          count: { $sum: 1 }
-        }
-      }
-    ]);
+// 🔧 CALCULER LE MONTANT THÉORIQUE (pour le test)
+const montantTotal = tontineReload.montantCotisation * tontineReload.membres.length;
 
-    const nombreMembresAyantCotise = cotisationsValidees.length;
+logger.info(
+  `[TIRAGE TEST]  Montant (théorique): ${tontineReload.membres.length} membres × ` +
+  `${tontineReload.montantCotisation} FCFA = ${montantTotal} FCFA`
+);
 
-    //  CALCULER LE MONTANT ICI (AVANT LE TIRAGE)
-    const montantTotal = tontineReload.montantCotisation * nombreMembresAyantCotise;
-
-    logger.info(
-      `[TIRAGE TEST]  Montant: ${nombreMembresAyantCotise} cotisations × ` +
-      `${tontineReload.montantCotisation} FCFA = ${montantTotal} FCFA`
-    );
-
-    if (nombreMembresAyantCotise === 0) {
-      throw new AppError('Aucune cotisation validée pour cette échéance', 400);
-    }
-
+if (montantTotal === 0) {
+  throw new AppError('Montant de cotisation invalide', 400);
+}
     // ========================================
     // ETAPE 8 : EFFECTUER LE TIRAGE
     // ========================================
