@@ -8,7 +8,7 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const logger = require('../utils/logger');
-const { authenticateUser } = require('../middleware/auth.middleware');
+const { verifyToken } = require('../middleware/auth.middleware');
 
 /**
  * Middleware proxy : Ajoute la clé API à toutes les requêtes
@@ -36,7 +36,7 @@ const proxyWithApiKey = async (req, res, next) => {
 router.use(proxyWithApiKey);
 
 // Route proxy générique : forwarder TOUTES les requêtes avec la clé API
-router.all('/*', authenticateUser, async (req, res) => {
+router.all('/*', verifyToken, async (req, res) => {
   try {
     const path = req.params[0] || '';
     const fullUrl = `${process.env.BASE_URL}/digitontine/${path}`;
