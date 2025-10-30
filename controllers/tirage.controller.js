@@ -1045,137 +1045,140 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
       );
     }
 
-    // ========================================
-    // ETAPE 8 : EFFECTUER LE TIRAGE
-    // ========================================
-    logger.warn(`[TIRAGE TEST] ETAPE 7: Tirage aleatoire...`);
+   // ========================================
+// ETAPE 8 : EFFECTUER LE TIRAGE (CORRIGÉ)
+// ========================================
+logger.warn(`[TIRAGE TEST] ETAPE 7: Tirage aleatoire...`);
 
-    const indexGagnant = Math.floor(Math.random() * membresEligibles.length);
-    const membreGagnant = membresEligibles[indexGagnant];
-    const beneficiaire = membreGagnant;
+const indexGagnant = Math.floor(Math.random() * membresEligibles.length);
+const membreGagnant = membresEligibles[indexGagnant];
+const beneficiaire = membreGagnant;
 
-    // CALCUL CORRECT DU MONTANT
-    const echeanceActuelle = tiragesExistants.length + 1;
+//  CALCUL CORRECT DU MONTANT **AVANT** LA CRÉATION DU TIRAGE
+const echeanceActuelle = tiragesExistants.length + 1;
 
-    const cotisationsValidees = await Transaction.aggregate([
-      {
-        $match: {
-          tontineId: tontineReload._id,
-          echeanceNumero: echeanceActuelle,
-          statut: 'Validee',
-          type: 'Cotisation'
-        }
-      },
-      {
-        $group: {
-          _id: '$userId',
-          count: { $sum: 1 }
-        }
-      }
-    ]);
-
-    const nombreMembresAyantCotise = cotisationsValidees.length;
-    const montantTotal = tontineReload.montantCotisation * nombreMembresAyantCotise;
-
-    logger.info(
-      `[TIRAGE TEST] Montant: ${nombreMembresAyantCotise} cotisations × ` +
-      `${tontineReload.montantCotisation} FCFA = ${montantTotal} FCFA`
-    );
-
-    // Vérification optionnelle
-    if (nombreMembresAyantCotise === 0) {
-      throw new AppError('Aucune cotisation validee pour cette echeance', 400);
+const cotisationsValidees = await Transaction.aggregate([
+  {
+    $match: {
+      tontineId: tontineReload._id,
+      echeanceNumero: echeanceActuelle,
+      statut: 'Validee',
+      type: 'Cotisation'
     }
+  },
+  {
+    $group: {
+      _id: '$userId',
+      count: { $sum: 1 }
+    }
+  }
+]);
 
-    const numeroTirage = await Tirage.getProchainNumero(tontineId);
+const nombreMembresAyantCotise = cotisationsValidees.length;
 
-    const nouveauTirage = await Tirage.create({
+// CALCULER LE MONTANT **AVANT** DE CRÉER LE TIRAGE
+const montantTotal = tontineReload.montantCotisation * nombreMembresAyantCotise;
+
+logger.info(
+  `[TIRAGE TEST] Montant: ${nombreMembresAyantCotise} cotisations × ` +
+  `${tontineReload.montantCotisation} FCFA = ${montantTotal} FCFA`
+);
+
+// Vérification optionnelle
+if (nombreMembresAyantCotise === 0) {
+  throw new AppError('Aucune cotisation validee pour cette echeance', 400);
+}
+
+const numeroTirage = await Tirage.getProchainNumero(tontineId);
+
+//  MAINTENANT ON CRÉE LE TIRAGE AVEC LE BON MONTANT
+const nouveauTirage = await Tirage.create({
+  tontineId,
+  beneficiaireId: beneficiaire.userId._id,
+  numeroTirage,
+  montantDistribue: montantTotal,  //  Variable déjà calculée
+  dateTirage: new Date(),
+  methodeTirage: 'aleatoire',
+  statutPaiement: 'en_attente',
+  createdBy: req.user.id
+});
+
+await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');
+
+logger.warn(`[TIRAGE TEST] 🎉 GAGNANT: ${beneficiaire.userId.email} - ${montantTotal} FCFA`);
+
+// ========================================
+// ETAPE 9 : LOG D'AUDIT
+// ========================================
+try {
+  await AuditLog.create({
+    userId: req.user._id,
+    userEmail: req.user.email,
+    userRole: normalizeRoleForAudit(req.user.role),
+    action: 'CREATE_TIRAGE',
+    resource: 'Tirage',
+    resourceId: nouveauTirage._id,
+    details: {
+      method: req.method,
+      url: req.originalUrl,
+      ip: req.ip,
+      userAgent: req.get('user-agent'),
       tontineId,
-      beneficiaireId: beneficiaire.userId._id,
+      beneficiaire: beneficiaire.userId._id,
+      montant: montantTotal,
       numeroTirage,
-      montantDistribue: montantTotal,
-      dateTirage: new Date(),
-      methodeTirage: 'aleatoire',
-      statutPaiement: 'en_attente',
-      createdBy: req.user.id
-    });
+      mode: 'TEST COMPLET INTELLIGENT',
+      confirmations: confirmationsFinales,
+      refus: refusFinaux,
+      optInAuto: optInAutoCount,
+      nonRepondants: nonRepondants,
+      raisonSortie: raisonSortie,
+      delaiOptInMinutes: tontine.delaiOptIn
+    },
+    statusCode: 201,
+    success: true,
+    severity: 'warning',
+    tags: ['tirage', 'test', 'automatique', 'intelligent']
+  });
+} catch (auditError) {
+  logger.error('[TIRAGE TEST] Erreur AuditLog:', auditError.message);
+}
 
-    await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');
+// ========================================
+// ETAPE 10 : ENVOYER LES RESULTATS
+// ========================================
+logger.warn(`[TIRAGE TEST] ETAPE 8: Envoi des resultats...`);
 
-    logger.warn(`[TIRAGE TEST] 🎉 GAGNANT: ${beneficiaire.userId.email} - ${montantTotal} FCFA`);
+try {
+  await notificationService.sendTirageWinnerNotification(
+    beneficiaire.userId,
+    nouveauTirage,
+    tontineReload
+  );
+  logger.info(`[TIRAGE TEST]  Email gagnant envoye`);
+} catch (error) {
+  logger.error('[TIRAGE TEST]  Erreur email gagnant:', error.message);
+}
 
-    // ========================================
-    // ETAPE 9 : LOG D'AUDIT
-    // ========================================
-    try {
-      await AuditLog.create({
-        userId: req.user._id,
-        userEmail: req.user.email,
-        userRole: normalizeRoleForAudit(req.user.role),
-        action: 'CREATE_TIRAGE',
-        resource: 'Tirage',
-        resourceId: nouveauTirage._id,
-        details: {
-          method: req.method,
-          url: req.originalUrl,
-          ip: req.ip,
-          userAgent: req.get('user-agent'),
-          tontineId,
-          beneficiaire: beneficiaire.userId._id,
-          montant: montantTotal,
-          numeroTirage,
-          mode: 'TEST COMPLET INTELLIGENT',
-          confirmations: confirmationsFinales,
-          refus: refusFinaux,
-          optInAuto: optInAutoCount,
-          nonRepondants: nonRepondants,
-          raisonSortie: raisonSortie,
-          delaiOptInMinutes: tontine.delaiOptIn
-        },
-        statusCode: 201,
-        success: true,
-        severity: 'warning',
-        tags: ['tirage', 'test', 'automatique', 'intelligent']
-      });
-    } catch (auditError) {
-      logger.error('[TIRAGE TEST] Erreur AuditLog:', auditError.message);
-    }
+const autresMembres = tontineReload.membres.filter(
+  m => !m.userId._id.equals(beneficiaire.userId._id)
+);
 
-    // ========================================
-    // ETAPE 10 : ENVOYER LES RESULTATS
-    // ========================================
-    logger.warn(`[TIRAGE TEST] ETAPE 8: Envoi des resultats...`);
-
-    try {
-      await notificationService.sendTirageWinnerNotification(
-        beneficiaire.userId,
-        nouveauTirage,
-        tontineReload
-      );
-      logger.info(`[TIRAGE TEST] Email gagnant envoye`);
-    } catch (error) {
-      logger.error('[TIRAGE TEST] Erreur email gagnant:', error.message);
-    }
-
-    const autresMembres = tontineReload.membres.filter(
-      m => !m.userId._id.equals(beneficiaire.userId._id)
+for (const membre of autresMembres) {
+  try {
+    await notificationService.sendTirageResultNotification(
+      membre.userId,
+      nouveauTirage,
+      tontineReload,
+      beneficiaire.userId
     );
-    
-    for (const membre of autresMembres) {
-      try {
-        await notificationService.sendTirageResultNotification(
-          membre.userId,
-          nouveauTirage,
-          tontineReload,
-          beneficiaire.userId
-        );
-      } catch (error) {
-        logger.error(`[TIRAGE TEST] Erreur email ${membre.userId.email}:`, error.message);
-      }
-    }
+    logger.info(`[TIRAGE TEST]  Email résultat envoyé à ${membre.userId.email}`);
+  } catch (error) {
+    logger.error(`[TIRAGE TEST] Erreur email ${membre.userId.email}:`, error.message);
+  }
+}
 
-    logger.warn(`[TIRAGE TEST]  TERMINE - Tontine: ${tontineReload.nom}`);
-
+logger.warn(`[TIRAGE TEST]  TERMINE - Tontine: ${tontineReload.nom}`);
     // ========================================
     // REPONSE FINALE
     // ========================================
