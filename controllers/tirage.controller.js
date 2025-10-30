@@ -1003,32 +1003,63 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     }
 
     // ========================================
-    // ETAPE 8 : EFFECTUER LE TIRAGE
-    // ========================================
-    logger.warn(`[TIRAGE TEST] ETAPE 7: Tirage aleatoire...`);
+// ETAPE 8 : EFFECTUER LE TIRAGE
+// ========================================
+logger.warn(`[TIRAGE TEST] ETAPE 7: Tirage aleatoire...`);
 
-    const indexGagnant = Math.floor(Math.random() * membresEligibles.length);
-    const membreGagnant = membresEligibles[indexGagnant];
-    const beneficiaire = membreGagnant;
+const indexGagnant = Math.floor(Math.random() * membresEligibles.length);
+const membreGagnant = membresEligibles[indexGagnant];
+const beneficiaire = membreGagnant;
 
-    const montantTotal = tontineReload.montantCotisation * tontineReload.membres.length;
-    const numeroTirage = await Tirage.getProchainNumero(tontineId);
+//  CALCUL CORRECT DU MONTANT
+const echeanceActuelle = tiragesExistants.length + 1;
 
-    const nouveauTirage = await Tirage.create({
-      tontineId,
-      beneficiaireId: beneficiaire.userId._id,
-      numeroTirage,
-      montantDistribue: montantTotal,
-      dateTirage: new Date(),
-      methodeTirage: 'aleatoire',
-      statutPaiement: 'en_attente',
-      createdBy: req.user.id
-    });
+const cotisationsValidees = await Transaction.aggregate([
+  {
+    $match: {
+      tontineId: tontineReload._id,
+      echeanceNumero: echeanceActuelle,
+      statut: 'Validee',
+      type: 'Cotisation'
+    }
+  },
+  {
+    $group: {
+      _id: '$userId',
+      count: { $sum: 1 }
+    }
+  }
+]);
 
-    await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');
+const nombreMembresAyantCotise = cotisationsValidees.length;
+const montantTotal = tontineReload.montantCotisation * nombreMembresAyantCotise;
 
-    logger.warn(`[TIRAGE TEST] 🎉 GAGNANT: ${beneficiaire.userId.email} - ${montantTotal} FCFA`);
+logger.info(
+  `[TIRAGE TEST] Montant: ${nombreMembresAyantCotise} cotisations × ` +
+  `${tontineReload.montantCotisation} FCFA = ${montantTotal} FCFA`
+);
 
+//  Vérification optionnelle
+if (nombreMembresAyantCotise === 0) {
+  throw new AppError('Aucune cotisation validée pour cette échéance', 400);
+}
+
+const numeroTirage = await Tirage.getProchainNumero(tontineId);
+
+const nouveauTirage = await Tirage.create({
+  tontineId,
+  beneficiaireId: beneficiaire.userId._id,
+  numeroTirage,
+  montantDistribue: montantTotal,  //  Montant correct
+  dateTirage: new Date(),
+  methodeTirage: 'aleatoire',
+  statutPaiement: 'en_attente',
+  createdBy: req.user.id
+});
+
+await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');
+
+logger.warn(`[TIRAGE TEST]  GAGNANT: ${beneficiaire.userId.email} - ${montantTotal} FCFA`);
     // ========================================
     // ETAPE 9 : LOG D'AUDIT
     // ========================================
