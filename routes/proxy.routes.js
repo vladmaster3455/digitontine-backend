@@ -91,8 +91,16 @@ router.all('/*', conditionalAuth, async (req, res) => {
   try {
     const path = req.params[0] || '';
     const fullUrl = `${process.env.BASE_URL}/digitontine/${path}`;
+     console.log('=== DEBUG PROXY ===');
+    console.log('req.body:', req.body);
+    console.log('req.body type:', typeof req.body);
+    console.log('req.body keys:', Object.keys(req.body || {}));
+    console.log('req.headers content-type:', req.headers['content-type']);
+    console.log('==================');
     
     logger.info(`[PROXY] → Forwardage vers: ${fullUrl}`);
+    
+ 
     
     // Construire les headers proprement
     const headers = {
