@@ -90,6 +90,74 @@ router.post(
   auditLog('TIRAGE_OPT_OUT', 'Tirage'),
   tirageController.optOutForTirage
 );
+//  NOUVELLE ROUTE: Confirmer participation au tirage
+router.post(
+  '/tontine/:tontineId/confirm-participation',
+  verifyToken,
+  body('participate')
+    .isBoolean()
+    .withMessage('participate doit être true ou false'),
+  auditLog('TIRAGE_CONFIRM_PARTICIPATION', 'Tirage'),
+  tirageController.confirmParticipationTirage
+);
+
+// ========================================
+// Les autres routes restent inchangées
+// ========================================
+
+/**
+ * @swagger
+ * /digitontine/tirages/tontine/{tontineId}/confirm-participation:
+ *   post:
+ *     summary: Confirmer ou refuser participation au tirage
+ *     tags: [Tirages]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tontineId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la tontine
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - participate
+ *             properties:
+ *               participate:
+ *                 type: boolean
+ *                 example: true
+ *                 description: "true pour confirmer la participation, false pour refuser"
+ *     responses:
+ *       200:
+ *         description: Participation confirmée/refusée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     participate:
+ *                       type: boolean
+ *                     message:
+ *                       type: string
+ *                       example: "Vous participez au tirage"
+ *       400:
+ *         description: Paramètres invalides
+ *       404:
+ *         description: Tontine ou utilisateur introuvable
+ */
+
 /**
  * @swagger
  * /digitontine/tirages/tontine/{tontineId}/notify:

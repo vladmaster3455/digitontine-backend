@@ -793,7 +793,6 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     }).distinct('beneficiaireId');
 
     logger.info(`[TIRAGE TEST] Tirages existants: ${tiragesExistants.length}`);
-    logger.info(`[TIRAGE TEST] Tontine "${tontine.nom}" a ${tontine.membres.length} membres`);
 
     // ========================================
     // ETAPE 2 : REINITIALISER LES CONFIRMATIONS
@@ -819,12 +818,14 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     const dateTirageProchaine = new Date(Date.now() + tontine.delaiOptIn * 60 * 1000);
     let notificationsSent = 0;
     const membresANotifier = [];
+    const membresIdANotifier = new Set();
 
     for (const membre of tontine.membres) {
       const aDejaGagne = tiragesExistants.some(t => t.equals(membre.userId._id));
       
       if (!aDejaGagne) {
         membresANotifier.push(membre);
+        membresIdANotifier.add(membre.userId._id.toString());
         
         try {
           await notificationService.sendTirageNotification(
@@ -849,7 +850,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     logger.warn(`[TIRAGE TEST] ETAPE 3: Attente intelligente (delai max: ${tontine.delaiOptIn} min)...`);
 
     const timeoutMs = tontine.delaiOptIn * 60 * 1000;
-    const pollIntervalMs = 5000; // Verifier toutes les 5 secondes
+    const pollIntervalMs = 3000; // Verifier toutes les 3 secondes (plus rapide)
     const startTime = Date.now();
     let tousOntConfirme = false;
 
@@ -858,34 +859,61 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
       const tontineActuelle = await Tontine.findById(tontineId)
         .populate('membres.userId', 'prenom nom email numeroTelephone');
 
-      // Compter combien de participants ont EXPLICITEMENT confirme (participeTirage = true)
+      if (!tontineActuelle) {
+        throw new AppError('Tontine supprimée pendant le tirage', 404);
+      }
+
+      // Compter les confirmations et refus
       let confirmations = 0;
-      for (const membre of membresANotifier) {
+      let refus = 0;
+      let enAttente = 0;
+
+      for (const membreIdStr of membresIdANotifier) {
         const membreActuel = tontineActuelle.membres.find(m => 
-          m.userId._id.equals(membre.userId._id)
+          m.userId._id.toString() === membreIdStr
         );
         
-        // Une confirmation = participeTirage = true (explicitement confirme)
-        if (membreActuel && membreActuel.participeTirage === true) {
-          confirmations++;
-          logger.debug(`[TIRAGE TEST] Confirmation de: ${membreActuel.userId.email}`);
+        if (membreActuel) {
+          if (membreActuel.participeTirage === true) {
+            confirmations++;
+            logger.debug(`[TIRAGE TEST] ✅ CONFIRMÉ: ${membreActuel.userId.email}`);
+          } else if (membreActuel.participeTirage === false && membreActuel.dateOptIn) {
+            // dateOptIn existe = a explicitement cliqué "refuser"
+            refus++;
+            logger.debug(`[TIRAGE TEST] ❌ REFUSÉ: ${membreActuel.userId.email}`);
+          } else {
+            enAttente++;
+            logger.debug(`[TIRAGE TEST] ⏳ EN ATTENTE: ${membreActuel.userId.email}`);
+          }
         }
       }
 
-      logger.debug(`[TIRAGE TEST] Confirmations: ${confirmations}/${membresANotifier.length}`);
+      logger.info(
+        `[TIRAGE TEST] Status: ${confirmations} confirmés, ${refus} refusés, ${enAttente} en attente`
+      );
 
-      // Si tous ont EXPLICITEMENT confirme -> commencer immediatement
-      if (confirmations === membresANotifier.length) {
+      // Scenario 1: TOUS ONT CONFIRMÉ → Tirage immédiat
+      if (confirmations === membresIdANotifier.size) {
         tousOntConfirme = true;
         const tempsEcoule = Date.now() - startTime;
         const minutesEcoulees = Math.round(tempsEcoule / 60000 * 10) / 10;
-        logger.warn(`[TIRAGE TEST] ✅ Tous les participants ont confirme apres ${minutesEcoulees} min`);
+        logger.warn(`[TIRAGE TEST] ✅ TOUS LES CONFIRMÉS après ${minutesEcoulees} min`);
         break;
+      }
+
+      // Scenario 2: ON NE PEUT PLUS AVOIR 100% → Délai écoulé
+      // (Si confirmés + refusés = total, on sait qu'on ne peut plus avoir 100%)
+      if (confirmations + refus === membresIdANotifier.size && confirmations < membresIdANotifier.size) {
+        logger.warn(
+          `[TIRAGE TEST] ⚠️ CONFIRMATIONS INCOMPLÈTES (${confirmations}/${membresIdANotifier.size})`
+        );
+        logger.warn(`[TIRAGE TEST] Certains ont refusé. Attente délai complet...`);
+        // Continue jusqu'au délai complet
       }
 
       // Verifier si delai ecoule
       if (Date.now() - startTime >= timeoutMs) {
-        logger.warn(`[TIRAGE TEST] ⏰ Delai d'opt-in ecoule`);
+        logger.warn(`[TIRAGE TEST] ⏰ DÉLAI D'OPT-IN ÉCOULÉ (${tontine.delaiOptIn} min)`);
         break;
       }
 
@@ -894,28 +922,57 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     }
 
     // ========================================
-    // ETAPE 5 : APPLIQUER OPT-IN AUTOMATIQUE
+    // ETAPE 5 : VÉRIFIER QU'ON A ASSEZ DE PARTICIPANTS
     // ========================================
-    logger.warn(`[TIRAGE TEST] ETAPE 4: Opt-in automatique pour les non-repondants...`);
+    logger.warn(`[TIRAGE TEST] ETAPE 4: Vérification des confirmations finales...`);
 
     const tontineReload = await Tontine.findById(tontineId)
       .populate('membres.userId', 'prenom nom email numeroTelephone');
     
-    let optInAutoCount = 0;
+    let confirmationsFinales = 0;
+    let refusFinaux = 0;
 
-    for (const membre of membresANotifier) {
+    for (const membreIdStr of membresIdANotifier) {
       const membreActuel = tontineReload.membres.find(m => 
-        m.userId._id.equals(membre.userId._id)
+        m.userId._id.toString() === membreIdStr
       );
       
-      // Si pas confirme (participeTirage = false), appliquer opt-in auto
-      if (membreActuel && membreActuel.participeTirage === false) {
+      if (membreActuel) {
+        if (membreActuel.participeTirage === true) {
+          confirmationsFinales++;
+        } else if (membreActuel.dateOptIn) {
+          refusFinaux++;
+        }
+      }
+    }
+
+    logger.info(`[TIRAGE TEST] Confirmations finales: ${confirmationsFinales}/${membresIdANotifier.size}`);
+    logger.info(`[TIRAGE TEST] Refus: ${refusFinaux}/${membresIdANotifier.size}`);
+
+    // ========================================
+    // ETAPE 6 : APPLIQUER OPT-IN AUTOMATIQUE
+    // ========================================
+    logger.warn(`[TIRAGE TEST] ETAPE 5: Opt-in automatique pour les non-répondants...`);
+
+    let optInAutoCount = 0;
+
+    for (const membreIdStr of membresIdANotifier) {
+      const membreActuel = tontineReload.membres.find(m => 
+        m.userId._id.toString() === membreIdStr
+      );
+      
+      // Si pas de dateOptIn = n'a PAS cliqué (ni oui ni non)
+      // → Opt-in automatique
+      if (membreActuel && !membreActuel.dateOptIn) {
         membreActuel.participeTirage = true;
         membreActuel.optInAutomatique = true;
         membreActuel.dateOptIn = Date.now();
         optInAutoCount++;
         
         logger.info(`[TIRAGE TEST] Opt-in AUTO: ${membreActuel.userId.email}`);
+      } else if (membreActuel && membreActuel.participeTirage === false) {
+        // A explicitement refusé → ne pas changer
+        logger.info(`[TIRAGE TEST] SKIP (refusé): ${membreActuel.userId.email}`);
       }
     }
 
@@ -923,32 +980,35 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     logger.warn(`[TIRAGE TEST] ${optInAutoCount} opt-in automatiques appliques`);
 
     // ========================================
-    // ETAPE 6 : FILTRER LES ELIGIBLES
+    // ETAPE 7 : FILTRER LES ÉLIGIBLES
     // ========================================
-    logger.warn(`[TIRAGE TEST] ETAPE 5: Filtrage des eligibles...`);
+    logger.warn(`[TIRAGE TEST] ETAPE 6: Filtrage des eligibles...`);
 
-    // ✅ CORRECTION: Utiliser la tontine reloadee avec populate
     const membresEligibles = tontineReload.membres.filter(m => 
       m.participeTirage === true && 
       !tiragesExistants.some(t => t.equals(m.userId._id))
     );
 
     logger.info(`[TIRAGE TEST] Membres eligibles: ${membresEligibles.length}`);
-    logger.debug(`[TIRAGE TEST] Eligibles:`, membresEligibles.map(m => m.userId.email).join(', '));
 
     if (membresEligibles.length === 0) {
-      throw new AppError('Aucun membre n\'a confirme sa participation', 400);
+      logger.error(`[TIRAGE TEST] ❌ IMPOSSIBLE: Aucun participant!`);
+      logger.error(`[TIRAGE TEST] Confirmations: ${confirmationsFinales}, Refus: ${refusFinaux}`);
+      throw new AppError(
+        `Tirage annulé: Pas assez de participants. ` +
+        `${confirmationsFinales} confirmés, ${refusFinaux} ont refusé. ` +
+        `Minimum 1 requis.`,
+        400
+      );
     }
 
     // ========================================
-    // ETAPE 7 : EFFECTUER LE TIRAGE
+    // ETAPE 8 : EFFECTUER LE TIRAGE
     // ========================================
-    logger.warn(`[TIRAGE TEST] ETAPE 6: Tirage aleatoire...`);
+    logger.warn(`[TIRAGE TEST] ETAPE 7: Tirage aleatoire...`);
 
     const indexGagnant = Math.floor(Math.random() * membresEligibles.length);
     const membreGagnant = membresEligibles[indexGagnant];
-    
-    // ✅ CORRECTION: Le gagnant est membreGagnant, pas membreGagnant.userId
     const beneficiaire = membreGagnant;
 
     const montantTotal = tontineReload.montantCotisation * tontineReload.membres.length;
@@ -956,7 +1016,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
 
     const nouveauTirage = await Tirage.create({
       tontineId,
-      beneficiaireId: beneficiaire.userId._id,  // ✅ Maintenant c'est correct
+      beneficiaireId: beneficiaire.userId._id,
       numeroTirage,
       montantDistribue: montantTotal,
       dateTirage: new Date(),
@@ -967,10 +1027,10 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
 
     await nouveauTirage.populate('beneficiaireId', 'prenom nom email numeroTelephone');
 
-    logger.warn(`[TIRAGE TEST] GAGNANT: ${beneficiaire.userId.email} - ${montantTotal} FCFA`);
+    logger.warn(`[TIRAGE TEST] 🎉 GAGNANT: ${beneficiaire.userId.email} - ${montantTotal} FCFA`);
 
     // ========================================
-    // ETAPE 8 : LOG D'AUDIT
+    // ETAPE 9 : LOG D'AUDIT
     // ========================================
     try {
       await AuditLog.create({
@@ -989,7 +1049,10 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
           beneficiaire: beneficiaire.userId._id,
           montant: montantTotal,
           numeroTirage,
-          mode: 'TEST COMPLET INTELLIGENT'
+          mode: 'TEST COMPLET INTELLIGENT',
+          confirmations: confirmationsFinales,
+          refus: refusFinaux,
+          optInAuto: optInAutoCount
         },
         statusCode: 201,
         success: true,
@@ -1001,9 +1064,9 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
     }
 
     // ========================================
-    // ETAPE 9 : ENVOYER LES RESULTATS
+    // ETAPE 10 : ENVOYER LES RÉSULTATS
     // ========================================
-    logger.warn(`[TIRAGE TEST] ETAPE 7: Envoi des resultats...`);
+    logger.warn(`[TIRAGE TEST] ETAPE 8: Envoi des resultats...`);
 
     try {
       await notificationService.sendTirageWinnerNotification(
@@ -1033,10 +1096,10 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
       }
     }
 
-    logger.warn(`[TIRAGE TEST] TERMINE - Tontine: ${tontineReload.nom}`);
+    logger.warn(`[TIRAGE TEST] ✅ TERMINÉ - Tontine: ${tontineReload.nom}`);
 
     // ========================================
-    // REPONSE FINALE
+    // RÉPONSE FINALE
     // ========================================
     return ApiResponse.success(res, {
       tirage: {
@@ -1057,21 +1120,73 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
       },
       details: {
         mode: 'TEST INTELLIGENT',
-        participants_total: membresANotifier.length,
+        participants_total: membresIdANotifier.size,
         notifications_envoyees: notificationsSent,
         delai_opt_in_minutes: tontine.delaiOptIn,
-        tous_ont_confirme: tousOntConfirme,
+        confirmations_finales: confirmationsFinales,
+        refus_finaux: refusFinaux,
         opt_in_automatiques: optInAutoCount,
         membres_eligibles: membresEligibles.length,
+        tous_ont_confirme: tousOntConfirme,
         message: tousOntConfirme 
           ? 'Tous les participants ont confirme. Tirage commence immediatement.'
-          : `Delai d'opt-in ecoule. ${optInAutoCount} participants confirmes automatiquement.`
+          : `Delai d'opt-in ecoule. ${optInAutoCount} participants confirmes automatiquement. ${refusFinaux} ont refuse.`
       }
     }, 'Tirage effectue avec succes', 201);
 
   } catch (error) {
     logger.error('[TIRAGE TEST] Erreur:', error.message);
     next(error);
+  }
+};
+
+/**
+ * @desc    Confirmer participation au tirage
+ * @route   POST /digitontine/tirages/:tontineId/confirm-participation
+ * @access  Private (Membre)
+ */
+const confirmParticipationTirage = async (req, res) => {
+  try {
+    const { tontineId } = req.params;
+    const { participate } = req.body; // true = OUI, false = NON
+    const user = req.user;
+
+    if (typeof participate !== 'boolean') {
+      return ApiResponse.error(res, 'participate doit être true ou false', 400);
+    }
+
+    const tontine = await Tontine.findById(tontineId);
+    if (!tontine) {
+      return ApiResponse.notFound(res, 'Tontine introuvable');
+    }
+
+    const membre = tontine.membres.find(
+      m => m.userId.toString() === user._id.toString()
+    );
+    
+    if (!membre) {
+      return ApiResponse.forbidden(res, 'Vous n\'etes pas membre de cette tontine');
+    }
+
+    // Marquer la réponse
+    membre.participeTirage = participate;
+    membre.dateOptIn = Date.now(); // ← IMPORTANT: Marque qu'il a répondu
+    
+    await tontine.save();
+
+    logger.info(
+      `[TIRAGE] ${user.email} - ${participate ? '✅ CONFIRME' : '❌ REFUSÉ'} participation - ${tontine.nom}`
+    );
+
+    return ApiResponse.success(res, {
+      participate,
+      message: participate 
+        ? 'Vous participez au tirage' 
+        : 'Vous refusez de participer',
+    });
+  } catch (error) {
+    logger.error('Erreur confirmation tirage:', error);
+    return ApiResponse.serverError(res);
   }
 };
 
@@ -1130,7 +1245,8 @@ const optOutForTirage = async (req, res) => {
 module.exports = {
   effectuerTirageAutomatique,
   effectuerTirageManuel,
-  effectuerTirageAutomatiqueTest,  //  NOUVEAU
+  effectuerTirageAutomatiqueTest,
+  confirmParticipationTirage,  //  NOUVEAU
   annulerTirage,
   listeTiragesTontine,
   mesGains,
