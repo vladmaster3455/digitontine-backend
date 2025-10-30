@@ -182,7 +182,7 @@ const effectuerTirageAutomatique = async (req, res, next) => {
 
     // Envoyer notification au gagnant
     try {
-      await emailService.sendTirageWinnerNotification(
+      await notificationService.sendTirageWinnerNotification(
         beneficiaire.userId,
         nouveauTirage,
         tontine
@@ -198,7 +198,7 @@ const effectuerTirageAutomatique = async (req, res, next) => {
     
     for (const membre of autresMembres) {
       try {
-        await emailService.sendTirageResultNotification(
+        await notificationService.sendTirageResultNotification(
           membre.userId,
           nouveauTirage,
           tontine,
@@ -549,7 +549,7 @@ const effectuerTirageManuel = async (req, res, next) => {
     const beneficiaire = await User.findById(beneficiaireId);
     
     try {
-      await emailService.sendTirageWinnerNotification(
+      await notificationService.sendTirageWinnerNotification(
         beneficiaire,
         nouveauTirage,
         tontine
@@ -822,7 +822,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
         membre.optInAutomatique = false; // Reset
         
         try {
-          await emailService.sendTirageNotification(
+          await notificationService.sendTirageNotification(
             membre.userId, 
             tontine, 
             dateTirageProchaine,
@@ -857,7 +857,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
       });
 
       try {
-        await emailService.sendTirageNotification(
+        await notificationService.sendTirageNotification(
           adminLanceur, 
           tontine, 
           dateTirageProchaine,
@@ -890,7 +890,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
         });
 
         try {
-          await emailService.sendTirageNotification(
+          await notificationService.sendTirageNotification(
             tontine.createdBy, 
             tontine, 
             dateTirageProchaine,
@@ -926,7 +926,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
           });
 
           try {
-            await emailService.sendTirageNotification(
+            await notificationService.sendTirageNotification(
               tresorier, 
               tontine, 
               dateTirageProchaine,
@@ -1085,7 +1085,7 @@ const nouveauTirage = await Tirage.create({
 
     // Email au gagnant
     try {
-      await emailService.sendTirageWinnerNotification(
+      await notificationService.sendTirageWinnerNotification(
         beneficiaire.userId,
         nouveauTirage,
         tontineReload
@@ -1102,7 +1102,7 @@ const nouveauTirage = await Tirage.create({
     
     for (const membre of autresMembres) {
       try {
-        await emailService.sendTirageResultNotification(
+        await notificationService.sendTirageResultNotification(
           membre.userId,
           nouveauTirage,
           tontineReload,

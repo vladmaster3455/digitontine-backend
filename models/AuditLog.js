@@ -185,7 +185,7 @@ AuditLogSchema.statics.logUserAction = async function (data) {
       tags: data.tags || [],
     });
   } catch (error) {
-    console.error('❌ Erreur lors du logging audit:', error);
+    console.error(' Erreur lors du logging audit:', error);
   }
 };
 
@@ -214,7 +214,7 @@ AuditLogSchema.statics.logError = async function (error, req, user = null) {
       tags: ['error'],
     });
   } catch (logError) {
-    console.error('❌ Erreur lors du logging d\'erreur:', logError);
+    console.error(' Erreur lors du logging d\'erreur:', logError);
   }
 };
 
