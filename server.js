@@ -470,6 +470,14 @@ app.get('/confirm', async (req, res) => {
     `);
   }
 });
+
+
+
+// ========================================
+// PROXY ROUTES (avec clé API automatique)
+// ========================================
+const proxyRoutes = require('./routes/proxy.routes');
+app.use('/api/proxy', proxyRoutes);
 // ========================================
 // MIDDLEWARE POUR ROUTES PROTEGEES
 // ========================================
