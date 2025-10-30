@@ -35,8 +35,36 @@ const proxyWithApiKey = async (req, res, next) => {
 // Appliquer le middleware proxy à toutes les routes
 router.use(proxyWithApiKey);
 
+/**
+ * Routes publiques (sans authentification JWT)
+ * Ces routes ne nécessitent PAS de token car elles servent à créer le token
+ */
+const publicRoutes = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+  '/auth/verify-email'
+];
+
+/**
+ * Middleware conditionnel : applique verifyToken sauf pour les routes publiques
+ */
+const conditionalAuth = (req, res, next) => {
+  const path = req.params[0] || '';
+  const isPublicRoute = publicRoutes.some(route => path.startsWith(route.substring(1)));
+  
+  if (isPublicRoute) {
+    logger.info(`[PROXY] Route publique détectée: ${path} - authentification ignorée`);
+    return next();
+  }
+  
+  logger.info(`[PROXY] Route protégée: ${path} - authentification requise`);
+  return verifyToken(req, res, next);
+};
+
 // Route proxy générique : forwarder TOUTES les requêtes avec la clé API
-router.all('/*', verifyToken, async (req, res) => {
+router.all('/*', conditionalAuth, async (req, res) => {
   try {
     const path = req.params[0] || '';
     const fullUrl = `${process.env.BASE_URL}/digitontine/${path}`;
