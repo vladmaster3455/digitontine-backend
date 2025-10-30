@@ -13,15 +13,31 @@ const { verifyToken } = require('../middleware/auth.middleware');
 /**
  * Routes publiques (sans authentification JWT)
  * Ces routes ne nécessitent PAS de token car elles servent à créer le token
+ * OU sont accessibles sans connexion
  */
 const publicRoutes = [
+  // Auth - Connexion
   '/auth/login',
   '/auth/verify-login-otp',
+  
+  // Auth - Inscription (si vous l'ajoutez plus tard)
   '/auth/register',
+  
+  // Auth - Récupération mot de passe
   '/auth/forgot-password',
   '/auth/reset-password',
+  
+  // Auth - Confirmation changement mot de passe
+  '/auth/confirm-password-change',
+  
+  // Auth - Vérification email (si nécessaire)
   '/auth/verify-email',
-  '/auth/refresh-token'
+  
+  // Auth - Refresh token (si vous l'implémentez)
+  '/auth/refresh-token',
+  
+  // Webhook paiements (si nécessaire)
+  '/transactions/webhook/wave'
 ];
 
 /**
@@ -31,7 +47,9 @@ const proxyWithApiKey = async (req, res, next) => {
   try {
     // Logger la requête
     logger.info(`[PROXY] ${req.method} ${req.originalUrl}`);
-    logger.info(`[PROXY] Body:`, JSON.stringify(req.body));
+    if (req.body && Object.keys(req.body).length > 0) {
+      logger.info(`[PROXY] Body:`, JSON.stringify(req.body));
+    }
     
     next();
   } catch (error) {
@@ -49,14 +67,19 @@ const proxyWithApiKey = async (req, res, next) => {
  */
 const conditionalAuth = (req, res, next) => {
   const path = req.params[0] || '';
-  const isPublicRoute = publicRoutes.some(route => path.startsWith(route.substring(1)));
+  
+  // Vérifier si la route est publique
+  const isPublicRoute = publicRoutes.some(route => {
+    const routePath = route.substring(1); // Enlever le '/' initial
+    return path === routePath || path.startsWith(routePath + '/');
+  });
   
   if (isPublicRoute) {
-    logger.info(`[PROXY] Route publique détectée: ${path} - authentification ignorée`);
+    logger.info(`[PROXY] Route publique: ${path} - authentification ignorée`);
     return next();
   }
   
-  logger.info(`[PROXY] Route protégée: ${path} - authentification requise`);
+  logger.info(`[PROXY]  Route protégée: ${path} - authentification requise`);
   return verifyToken(req, res, next);
 };
 
@@ -69,7 +92,7 @@ router.all('/*', conditionalAuth, async (req, res) => {
     const path = req.params[0] || '';
     const fullUrl = `${process.env.BASE_URL}/digitontine/${path}`;
     
-    logger.info(`[PROXY] Forwardage vers: ${fullUrl}`);
+    logger.info(`[PROXY] → Forwardage vers: ${fullUrl}`);
     
     // Construire les headers proprement
     const headers = {
@@ -80,6 +103,7 @@ router.all('/*', conditionalAuth, async (req, res) => {
     // Ajouter le token JWT si présent (pour routes protégées)
     if (req.headers.authorization) {
       headers['Authorization'] = req.headers.authorization;
+      logger.info(`[PROXY] → Token JWT transmis`);
     }
     
     // Préparer la config axios
@@ -93,34 +117,29 @@ router.all('/*', conditionalAuth, async (req, res) => {
     // Ajouter query params si présents
     if (Object.keys(req.query).length > 0) {
       axiosConfig.params = req.query;
+      logger.info(`[PROXY] → Query params:`, req.query);
     }
     
     // Ajouter body si méthode POST/PUT/PATCH
     if (['POST', 'PUT', 'PATCH'].includes(req.method) && req.body) {
       axiosConfig.data = req.body;
-      logger.info(`[PROXY] Envoi data:`, JSON.stringify(req.body));
+      logger.info(`[PROXY] → Body envoyé:`, JSON.stringify(req.body));
     }
     
     // Forwarder la requête
-    logger.info(`[PROXY] Config axios:`, JSON.stringify({
-      method: axiosConfig.method,
-      url: axiosConfig.url,
-      hasData: !!axiosConfig.data,
-      headers: Object.keys(axiosConfig.headers)
-    }));
-    
     const response = await axios(axiosConfig);
     
-    logger.info(`[PROXY] Réponse: ${response.status}`);
+    logger.info(`[PROXY] ← Réponse: ${response.status}`);
     
     // Retourner la réponse
     res.status(response.status).json(response.data);
     
   } catch (error) {
-    logger.error('[PROXY] Erreur forwardage:', error.message);
+    logger.error('[PROXY]  Erreur forwardage:', error.message);
     
     // Si erreur axios avec réponse
     if (error.response) {
+      logger.error(`[PROXY]  Statut: ${error.response.status}`);
       return res.status(error.response.status).json(error.response.data);
     }
     
