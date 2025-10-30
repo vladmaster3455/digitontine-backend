@@ -801,6 +801,22 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
 
     logger.info(`Tirages existants: ${tiragesExistants.length}`);
 
+    logger.info(`📊 Tontine "${tontine.nom}" a ${tontine.membres.length} membres`);
+
+logger.info(`🏆 Tirages existants: ${tiragesExistants.length}`);
+logger.info(`Membres déjà gagnants:`);
+
+for (const id of tiragesExistants) {
+  const user = await User.findById(id);
+  logger.info(`  - ${user?.email}`);
+}
+
+logger.info(`Membres à notifier:`);
+for (const membre of tontine.membres) {
+  const aDejaGagne = tiragesExistants.some(t => t.equals(membre.userId._id));
+  logger.info(`  ${aDejaGagne ? '' : ''} ${membre.userId.email} (aDejaGagne: ${aDejaGagne})`);
+}
+
     // ========================================
     // ETAPE 2 : ENVOYER EMAILS DE NOTIFICATION
     // ========================================
