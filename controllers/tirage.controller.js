@@ -814,7 +814,7 @@ const effectuerTirageAutomatiqueTest = async (req, res, next) => {
       const aDejaGagne = tiragesExistants.some(
         t => t.equals(membre.userId._id)
       );
-      
+        logger.info(`   aDejaGagne: ${aDejaGagne}`); 
       if (!aDejaGagne) {
         // Enregistrer la date de notification
         membre.dateNotificationTirage = Date.now();
