@@ -40,7 +40,7 @@ const NotificationSchema = new mongoose.Schema(
     message: {
       type: String,
       required: true,
-      maxlength: 1000,
+      maxlength: 2500,
     },
 
     // Données contextuelles
@@ -279,12 +279,15 @@ NotificationSchema.statics.createTirageWinnerNotification = async function (user
 /**
  * Créer une notification d'invitation à une tontine
  */
+/**
+ * Créer une notification d'invitation à une tontine
+ */
 NotificationSchema.statics.createInvitationTontine = async function (userId, tontine) {
   return await this.create({
     userId,
     type: 'TONTINE_INVITATION',
     titre: ` Invitation à rejoindre "${tontine.nom}"`,
-    message: tontine.description, // Contient le règlement complet
+    message: tontine.reglement || tontine.description, //  NOUVEAU CODE
     data: {
       tontineId: tontine._id,
       montant: tontine.montantCotisation,

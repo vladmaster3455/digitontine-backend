@@ -13,11 +13,19 @@ const TontineSchema = new mongoose.Schema(
       maxlength: [100, 'Le nom ne peut pas dépasser 100 caractères'],
       unique: true,
     },
-    description: {
-      type: String,
-      trim: true,
-      maxlength: [500, 'La description ne peut pas dépasser 500 caractères'],
-    },
+ // Ajoute ce champ après "description"
+reglement: {
+  type: String,
+  trim: true,
+  maxlength: [2000, 'Le règlement ne peut pas dépasser 2000 caractères'],
+  description: 'Règlement automatique généré + règles complémentaires'
+},
+
+description: {
+  type: String,
+  trim: true,
+  maxlength: [1000, 'La description ne peut pas dépasser 1000 caractères'], // Augmenté à 1000
+},
 
  montantCotisation: {
   type: Number,

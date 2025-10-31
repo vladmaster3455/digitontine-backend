@@ -71,11 +71,16 @@ const createTontine = async (req, res) => {
       membres: [], //  Tableau vide au départ
     });
 
-    //  Générer règlement automatique
-    const reglementGenere = tontine.genererReglement();
-    tontine.description = description 
-      ? `${reglementGenere}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n RÈGLES COMPLÉMENTAIRES\n\n${description}` 
-      : reglementGenere;
+  //  Générer règlement automatique dans un champ séparé
+const reglementGenere = tontine.genererReglement();
+
+//  Stocker règlement + description complémentaire dans "reglement"
+tontine.reglement = description 
+  ? `${reglementGenere}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n RÈGLES COMPLÉMENTAIRES\n\n${description}` 
+  : reglementGenere;
+
+//  Garder uniquement la description utilisateur dans "description"
+tontine.description = description || '';
 
     //  NOUVEAU : Ajouter Admin ET Trésorier SANS vérification de limite
     // Car ils sont obligatoires et ne comptent pas dans nombreMembresMax
@@ -988,10 +993,11 @@ const listTontines = async (req, res) => {
  * @route   GET /digitontine/tontines/:tontineId
  * @access  Private (tous les utilisateurs authentifiés)
  * 
- * ✅ Si Admin/Trésorier → Retourne TOUS les détails
- * ✅ Si Membre → Vérifie qu'il fait partie de la tontine, retourne détails limités
+ *  Si Admin/Trésorier → Retourne TOUS les détails
+ *  Si Membre → Vérifie qu'il fait partie de la tontine, retourne détails limités
  */
-// ✅ NOUVEAU CODE - Vérifie si trésorier assigné OU membre
+// 
+// NOUVEAU CODE - Vérifie si trésorier assigné OU membre
 const getTontineDetailsWithRoleCheck = async (req, res) => {
   try {
     const { tontineId } = req.params;
@@ -1082,6 +1088,7 @@ const getTontineDetails = async (req, res) => {
         id: tontine._id,
         nom: tontine.nom,
         description: tontine.description,
+        reglement: tontine.reglement,
         montantCotisation: tontine.montantCotisation,
         frequence: tontine.frequence,
         dateDebut: tontine.dateDebut,
