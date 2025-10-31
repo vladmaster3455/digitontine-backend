@@ -6,6 +6,7 @@ const {
   createTontine,
   addMembers,
   removeMember,
+  inviterMembres,
   activateTontine,
   updateTontine,
   blockTontine,
@@ -162,7 +163,15 @@ router.post(
   auditLog('ADD_MEMBRES_TONTINE', 'Tontine'),
   addMembers
 );
-
+router.post(
+  '/:tontineId/inviter-membres',
+  verifyToken,
+  isAdmin,
+  validateAddMembers,
+  validate,
+  auditLog('INVITE_MEMBRES_TONTINE', 'Tontine'),
+  inviterMembres
+);
 /**
  * @route   POST /digitontine/tontines/:tontineId/opt-in
  * @desc    Confirmer participation au prochain tirage

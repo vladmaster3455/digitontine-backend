@@ -69,5 +69,26 @@ router.delete(
   verifyToken,
   notificationController.deleteNotification
 );
+/**
+ * @route   POST /digitontine/notifications/:notificationId/accepter-invitation
+ * @desc    Accepter invitation à une tontine
+ * @access  Private
+ */
+router.post(
+  '/:notificationId/accepter-invitation',
+  verifyToken,
+  notificationController.accepterInvitationTontine
+);
+
+/**
+ * @route   POST /digitontine/notifications/:notificationId/refuser-invitation
+ * @desc    Refuser invitation à une tontine
+ * @access  Private
+ */
+router.post(
+  '/:notificationId/refuser-invitation',
+  verifyToken,
+  notificationController.refuserInvitationTontine
+);
 
 module.exports = router;

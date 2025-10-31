@@ -271,5 +271,26 @@ NotificationSchema.statics.createTirageWinnerNotification = async function (user
     expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // Expire après 90 jours
   });
 };
+/**
+ * Créer une notification d'invitation à une tontine
+ */
+NotificationSchema.statics.createInvitationTontine = async function (userId, tontine) {
+  return await this.create({
+    userId,
+    type: 'TONTINE_INVITATION',
+    titre: ` Invitation à rejoindre "${tontine.nom}"`,
+    message: tontine.description, // Contient le règlement complet
+    data: {
+      tontineId: tontine._id,
+      montant: tontine.montantCotisation,
+      frequence: tontine.frequence,
+      nombreMembres: tontine.membres.length,
+      nombreMembresMax: tontine.nombreMembresMax,
+      dateDebut: tontine.dateDebut,
+    },
+    requiresAction: true,
+    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expire après 30 jours
+  });
+};
 
 module.exports = mongoose.model('Notification', NotificationSchema);

@@ -389,6 +389,60 @@ TontineSchema.methods.cloturer = function () {
   this.statut = TONTINE_STATUS.TERMINEE;
   this.dateCloture = Date.now();
 };
+/**
+ * Générer le règlement automatique de la tontine
+ */
+TontineSchema.methods.genererReglement = function () {
+  const frequenceText = this.frequence === 'hebdomadaire' ? 'semaine' : 'mois';
+  const montantText = this.montantCotisation.toLocaleString('fr-FR');
+  
+  return ` RÈGLEMENT DE LA TONTINE "${this.nom.toUpperCase()}"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ FRÉQUENCE : ${frequenceText}
+ COTISATION : ${montantText} FCFA par ${frequenceText}
+ MEMBRES : Minimum ${this.nombreMembresMin} - Maximum ${this.nombreMembresMax}
+ DURÉE : Du ${new Date(this.dateDebut).toLocaleDateString('fr-FR')} au ${new Date(this.dateFin).toLocaleDateString('fr-FR')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ PÉNALITÉS (NON MODIFIABLE)
+Ces paramètres sont fixés et ne peuvent être modifiés :
+
+- Taux de pénalité : ${this.tauxPenalite}% du montant dû
+- Délai de grâce : ${this.delaiGrace} jour(s) après échéance
+- Application automatique après le délai de grâce
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ RÈGLES GÉNÉRALES
+
+1. COTISATION
+   • Chaque membre cotise ${montantText} FCFA par ${frequenceText}
+   • Le paiement doit être effectué avant la date d'échéance
+   • Retards sanctionnés selon les pénalités ci-dessus
+
+2. TIRAGE AU SORT
+   • Le tirage détermine l'ordre de réception de la cagnotte
+   • Chaque membre reçoit la totalité de la cagnotte une seule fois
+   • Les membres doivent confirmer leur participation avant chaque tirage
+
+3. DISTRIBUTION
+   • Le montant distribué = Total des cotisations collectées
+   • Le bénéficiaire est notifié immédiatement après le tirage
+   • Le paiement est effectué par le trésorier
+
+4. ENGAGEMENT
+   • En acceptant cette invitation, vous vous engagez à respecter ce règlement
+   • Le non-respect peut entraîner votre exclusion de la tontine
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ RÈGLES COMPLÉMENTAIRES (Modifiables par l'administrateur)
+
+`;
+};
 
 /**
  * Mettre à jour les statistiques

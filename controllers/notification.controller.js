@@ -184,6 +184,111 @@ const deleteNotification = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};/**
+ * @desc    Accepter invitation tontine
+ * @route   POST /digitontine/notifications/:notificationId/accepter-invitation
+ * @access  Private
+ */
+const accepterInvitationTontine = async (req, res, next) => {
+  try {
+    const { notificationId } = req.params;
+    const userId = req.user._id;
+
+    const notificationService = require('../services/notification.service');
+    const result = await notificationService.acceptInvitationTontine(notificationId, userId);
+
+    if (!result.success) {
+      throw new AppError(result.error, 400);
+    }
+
+    const notification = result.notification;
+
+    //  Ajouter membre à la tontine
+    if (notification.data?.tontineId) {
+      const Tontine = require('../models/Tontine');
+      const tontine = await Tontine.findById(notification.data.tontineId);
+
+      if (tontine) {
+        try {
+          tontine.ajouterMembre(userId);
+          await tontine.save();
+
+          logger.info(` ${req.user.email} a rejoint "${tontine.nom}"`);
+
+          //  Notifier le trésorier
+          if (tontine.tresorierAssigne) {
+            const Notification = require('../models/Notification');
+            await Notification.create({
+              userId: tontine.tresorierAssigne,
+              type: 'SYSTEM',
+              titre: ` ${req.user.nomComplet} a rejoint "${tontine.nom}"`,
+              message: `Un nouveau membre a accepté l'invitation et rejoint la tontine.`,
+              data: { tontineId: tontine._id },
+              requiresAction: false,
+            });
+          }
+        } catch (error) {
+          logger.error('Erreur ajout membre après acceptation:', error);
+          throw new AppError('Erreur lors de l\'ajout à la tontine', 500);
+        }
+      }
+    }
+
+    return ApiResponse.success(res, {
+      message: 'Vous avez rejoint la tontine avec succès',
+      notification,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Refuser invitation tontine
+ * @route   POST /digitontine/notifications/:notificationId/refuser-invitation
+ * @access  Private
+ */
+const refuserInvitationTontine = async (req, res, next) => {
+  try {
+    const { notificationId } = req.params;
+    const userId = req.user._id;
+
+    const notificationService = require('../services/notification.service');
+    const result = await notificationService.refuseInvitationTontine(notificationId, userId);
+
+    if (!result.success) {
+      throw new AppError(result.error, 400);
+    }
+
+    const notification = result.notification;
+
+    //  Notifier le trésorier du refus
+    if (notification.data?.tontineId) {
+      const Tontine = require('../models/Tontine');
+      const Notification = require('../models/Notification');
+      const tontine = await Tontine.findById(notification.data.tontineId);
+
+      if (tontine && tontine.tresorierAssigne) {
+        await Notification.create({
+          userId: tontine.tresorierAssigne,
+          type: 'SYSTEM',
+          titre: ` ${req.user.nomComplet} a refusé l'invitation`,
+          message: `L'invitation pour "${tontine.nom}" a été déclinée.`,
+          data: { tontineId: tontine._id },
+          requiresAction: false,
+        });
+      }
+    }
+
+    logger.info(` ${req.user.email} a refusé l'invitation`);
+
+    return ApiResponse.success(res, {
+      message: 'Invitation refusée',
+      notification,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = {
@@ -193,4 +298,6 @@ module.exports = {
   markAllAsRead,
   takeAction,
   deleteNotification,
+  accepterInvitationTontine,    
+  refuserInvitationTontine, 
 };

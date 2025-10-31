@@ -196,6 +196,83 @@ const cleanupExpired = async () => {
     return { success: false, error: error.message };
   }
 };
+/**
+ * Créer notification d'invitation tontine
+ */
+const sendInvitationTontine = async (user, tontine) => {
+  try {
+    const notification = await Notification.createInvitationTontine(
+      user._id,
+      tontine
+    );
+
+    logger.info(`Invitation tontine envoyée à ${user.email} pour "${tontine.nom}"`);
+    return { success: true, notification };
+  } catch (error) {
+    logger.error(` Erreur invitation tontine pour ${user.email}:`, error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Accepter invitation tontine
+ */
+const acceptInvitationTontine = async (notificationId, userId) => {
+  try {
+    const notification = await Notification.findOne({
+      _id: notificationId,
+      userId,
+      type: 'TONTINE_INVITATION',
+    });
+
+    if (!notification) {
+      return { success: false, error: 'Invitation introuvable' };
+    }
+
+    if (notification.actionTaken) {
+      return { success: false, error: 'Invitation déjà traitée' };
+    }
+
+    notification.recordAction('accepted');
+    await notification.save();
+
+    logger.info(` ${userId} a accepté l'invitation tontine ${notification.data.tontineId}`);
+    return { success: true, notification };
+  } catch (error) {
+    logger.error(` Erreur acceptation invitation:`, error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Refuser invitation tontine
+ */
+const refuseInvitationTontine = async (notificationId, userId) => {
+  try {
+    const notification = await Notification.findOne({
+      _id: notificationId,
+      userId,
+      type: 'TONTINE_INVITATION',
+    });
+
+    if (!notification) {
+      return { success: false, error: 'Invitation introuvable' };
+    }
+
+    if (notification.actionTaken) {
+      return { success: false, error: 'Invitation déjà traitée' };
+    }
+
+    notification.recordAction('refused');
+    await notification.save();
+
+    logger.info(` ${userId} a refusé l'invitation tontine ${notification.data.tontineId}`);
+    return { success: true, notification };
+  } catch (error) {
+    logger.error(` Erreur refus invitation:`, error);
+    return { success: false, error: error.message };
+  }
+};
 
 module.exports = {
   sendTirageNotification,
@@ -208,4 +285,7 @@ module.exports = {
   getUnreadCount,
   deleteNotification,
   cleanupExpired,
+   sendInvitationTontine,     
+  acceptInvitationTontine,      
+  refuseInvitationTontine,
 };

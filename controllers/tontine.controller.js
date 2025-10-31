@@ -52,28 +52,34 @@ const createTontine = async (req, res) => {
       }
     }
 
-   const tontine = await Tontine.create({
+const tontine = await Tontine.create({
   nom,
-  description,
+  description: '', //  Vide pour l'instant, sera rempli après
   montantCotisation,
   frequence,
   dateDebut,
   dateFin,
-  nombreMembresMin: nombreMembresMin || 1,  // ✅ CHANGÉ : min=1
+  nombreMembresMin: nombreMembresMin || 1,
   nombreMembresMax: nombreMembresMax || 50,
   tauxPenalite: tauxPenalite || 5,
   delaiGrace: delaiGrace || 2,
-  delaiOptIn: 15,  // ✅ NOUVEAU : délai opt-in par défaut
+  delaiOptIn: 15,
   tresorierAssigne: tresorierAssigneId || null,
   statut: TONTINE_STATUS.EN_ATTENTE,
   createdBy: admin._id,
-  membres: [],  //  Vide au départ
+  membres: [],
 });
 
-//  NOUVEAU : Ajouter automatiquement l'Admin
+//  NOUVEAU : Générer règlement automatique
+const reglementGenere = tontine.genererReglement();
+tontine.description = description 
+  ? `${reglementGenere}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n RÈGLES COMPLÉMENTAIRES\n\n${description}` 
+  : reglementGenere;
+
+// Ajouter automatiquement l'Admin
 tontine.ajouterMembre(admin._id);
 
-//  NOUVEAU : Si Trésorier assigné, l'ajouter aussi
+// Si Trésorier assigné, l'ajouter aussi
 if (tresorierAssigneId) {
   tontine.ajouterMembre(tresorierAssigneId);
 }
@@ -312,7 +318,100 @@ const removeMember = async (req, res) => {
     return ApiResponse.serverError(res);
   }
 };
+/**
+ * @desc    Inviter des membres à une tontine (avec notification + règlement)
+ * @route   POST /digitontine/tontines/:tontineId/inviter-membres
+ * @access  Admin
+ */
+const inviterMembres = async (req, res) => {
+  try {
+    const { tontineId } = req.params;
+    const { membresIds } = req.body;
+    const admin = req.user;
 
+    const tontine = await Tontine.findById(tontineId);
+    if (!tontine) {
+      return ApiResponse.notFound(res, 'Tontine introuvable');
+    }
+
+    if (tontine.statut !== TONTINE_STATUS.EN_ATTENTE) {
+      return ApiResponse.error(
+        res,
+        'Impossible d\'inviter des membres après activation',
+        400
+      );
+    }
+
+    const invitationsEnvoyees = [];
+    const erreurs = [];
+
+    for (const userId of membresIds) {
+      try {
+        const user = await User.findById(userId);
+        if (!user) {
+          erreurs.push({ userId, message: 'Utilisateur introuvable' });
+          continue;
+        }
+
+        if (!user.isActive) {
+          erreurs.push({ userId, message: 'Compte désactivé' });
+          continue;
+        }
+
+        if (user.role !== ROLES.MEMBRE) {
+          erreurs.push({ userId, message: 'Seuls les membres peuvent être invités' });
+          continue;
+        }
+
+        // Vérifier si déjà membre
+        const estDejaMembre = tontine.membres.some(
+          m => m.userId.toString() === userId.toString()
+        );
+        if (estDejaMembre) {
+          erreurs.push({ userId, message: 'Déjà membre de la tontine' });
+          continue;
+        }
+
+        //  Créer notification d'invitation avec règlement
+        const notificationService = require('../services/notification.service');
+        const notifResult = await notificationService.sendInvitationTontine(user, tontine);
+
+        if (!notifResult.success) {
+          erreurs.push({ userId, message: 'Erreur envoi notification' });
+          continue;
+        }
+
+        invitationsEnvoyees.push({
+          userId: user._id,
+          nom: user.nomComplet,
+          email: user.email,
+          notificationId: notifResult.notification._id,
+        });
+
+        logger.info(` Invitation envoyée à ${user.email} pour "${tontine.nom}"`);
+      } catch (error) {
+        erreurs.push({ userId, message: error.message });
+      }
+    }
+
+    logger.info(
+      `Invitations tontine "${tontine.nom}" - ${invitationsEnvoyees.length}/${membresIds.length} réussies`
+    );
+
+    return ApiResponse.success(res, {
+      message: `${invitationsEnvoyees.length} invitation(s) envoyée(s)`,
+      tontine: {
+        id: tontine._id,
+        nom: tontine.nom,
+      },
+      invitationsEnvoyees,
+      erreurs: erreurs.length > 0 ? erreurs : undefined,
+    });
+  } catch (error) {
+    logger.error('Erreur inviterMembres:', error);
+    return ApiResponse.serverError(res);
+  }
+};
 /**
  * @desc    Activer une tontine
  * @route   POST /digitontine/tontines/:tontineId/activate
@@ -1124,6 +1223,7 @@ module.exports = {
   addMembers,
   removeMember,
   activateTontine,
+  inviterMembres,
   updateTontine,
   blockTontine,
   unblockTontine,
