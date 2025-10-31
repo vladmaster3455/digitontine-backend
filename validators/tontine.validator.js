@@ -77,22 +77,22 @@ body('montantCotisation')
       return true;
     }),
 
-  body('nombreMembresMin')
-    .optional()
-    .isInt({ min: 2 })
-    .withMessage('Le nombre minimum de membres doit être au moins 2'),
+body('nombreMembresMin')
+  .optional()
+  .isInt({ min: 1 })  // 
+  .withMessage('Le nombre minimum de membres supplémentaires doit être au moins 1'),
 
   body('nombreMembresMax')
-    .optional()
-    .isInt({ min: 2, max: 100 })
-    .withMessage('Le nombre maximum de membres doit être entre 2 et 100')
-    .custom((value, { req }) => {
-      const min = req.body.nombreMembresMin || 3;
-      if (value < min) {
-        throw new Error('Le maximum doit être supérieur ou égal au minimum');
-      }
-      return true;
-    }),
+  .optional()
+  .isInt({ min: 1, max: 100 })  //  CHANGÉ : 1 au lieu de 2
+  .withMessage('Le nombre maximum de membres doit être entre 1 et 100')
+  .custom((value, { req }) => {
+    const min = req.body.nombreMembresMin || 1;  // CHANGÉ : 1 au lieu de 3
+    if (value < min) {
+      throw new Error('Le maximum doit être supérieur ou égal au minimum');
+    }
+    return true;
+  }),
 
   body('tauxPenalite')
     .optional()

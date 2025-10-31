@@ -105,22 +105,22 @@ tresorierAssigne: {
   }
 },
     nombreMembresMin: {
-      type: Number,
-      default: 3,
-      min: [2, 'Minimum 2 membres requis'],
-    },
+  type: Number,
+  default: 1,  //  CHANGÉ : 1 au lieu de 3
+  min: [1, 'Minimum 1 membre supplémentaire requis'],  //  CHANGÉ
+},
     
-    nombreMembresMax: {
-      type: Number,
-      default: 50,
-      min: [2, 'Maximum doit être au moins 2'],
-      validate: {
-        validator: function (value) {
-          return value >= this.nombreMembresMin;
-        },
-        message: 'Le maximum doit être supérieur ou égal au minimum',
-      },
+  nombreMembresMax: {
+  type: Number,
+  default: 50,
+  min: [1, 'Maximum doit être au moins 1'],  //  CHANGÉ : 1 au lieu de 2
+  validate: {
+    validator: function (value) {
+      return value >= this.nombreMembresMin;
     },
+    message: 'Le maximum doit être supérieur ou égal au minimum',
+  },
+},
 delaiOptIn: {
   type: Number,
   default: 15,  //  15 minutes par défaut
@@ -301,12 +301,6 @@ TontineSchema.methods.genererCalendrierCotisations = function () {
   const dateLimite = new Date(this.dateFin);
   let numeroEcheance = 1;
 
-  // Incrément selon fréquence
-  const increment =
-    this.frequence === FREQUENCES.HEBDOMADAIRE
-      ? 7 // 7 jours
-      : 30; // ~1 mois
-
   while (dateEcheance <= dateLimite) {
     calendrier.push({
       numeroEcheance,
@@ -315,8 +309,13 @@ TontineSchema.methods.genererCalendrierCotisations = function () {
       statut: 'en_attente',
     });
 
-    // Prochaine échéance
-    dateEcheance.setDate(dateEcheance.getDate() + increment);
+    //  CORRECTION : Utiliser setMonth pour mensuel, setDate pour hebdo
+    if (this.frequence === FREQUENCES.HEBDOMADAIRE) {
+      dateEcheance.setDate(dateEcheance.getDate() + 7);
+    } else {
+      dateEcheance.setMonth(dateEcheance.getMonth() + 1);  // Vrai mois (28-31 jours)
+    }
+    
     numeroEcheance++;
   }
 
@@ -332,18 +331,20 @@ TontineSchema.methods.activer = function () {
     throw new Error('La tontine n\'est pas en attente');
   }
 
-  //  NOUVEAU : Validation avec admin + trésorier
-  const minRequis = 3;  // Admin + Trésorier + 1 membre minimum
-  if (this.membres.length < minRequis) {
-    throw new Error(
-      `Au moins ${minRequis} membres requis (Admin, Trésorier, et minimum 1 membre). ` +
-      `Actuellement : ${this.membres.length}`
-    );
-  }
-  
-  // ✅ Vérification trésorier obligatoire
+  //  Vérification trésorier obligatoire
   if (!this.tresorierAssigne) {
     throw new Error('Un trésorier doit être assigné avant l\'activation');
+  }
+  
+  //  Calculer minimum dynamiquement : Admin + Trésorier + nombreMembresMin
+  const minAttendu = 2 + this.nombreMembresMin;  // 2 = Admin + Trésorier
+  
+  if (this.membres.length < minAttendu) {
+    throw new Error(
+      `Au moins ${minAttendu} membres requis : ` +
+      `Admin + Trésorier + ${this.nombreMembresMin} membre(s) supplémentaire(s). ` +
+      `Actuellement : ${this.membres.length} membre(s) dans la tontine`
+    );
   }
 
   // Générer le calendrier si pas déjà fait
