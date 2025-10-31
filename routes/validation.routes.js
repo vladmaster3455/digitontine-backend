@@ -4,12 +4,11 @@ const router = express.Router();
 
 const {
   createValidationRequest,
-  confirmTresorierOTP,
+  acceptValidation,
   rejectValidationRequest,
   getPendingRequests,
   getMyRequests,
   getRequestDetails,
-  resendOTP,
 } = require('../controllers/validation.controller');
 
 const {
