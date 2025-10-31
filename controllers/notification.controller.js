@@ -290,6 +290,152 @@ const refuserInvitationTontine = async (req, res, next) => {
     next(error);
   }
 };
+/**
+ * @desc    Refuser invitation tontine
+ * @route   POST /digitontine/notifications/:notificationId/refuser-invitation
+ * @access  Private
+ */
+
+
+//  AJOUTER ICI
+/**
+ * @desc    Accepter demande de validation
+ * @route   POST /digitontine/notifications/:notificationId/accepter-validation
+ * @access  Trésorier
+ */
+const accepterDemandeValidation = async (req, res, next) => {
+  try {
+    const { notificationId } = req.params;
+    const userId = req.user._id;
+
+    // Vérifier notification
+    const Notification = require('../models/Notification');
+    const notification = await Notification.findOne({
+      _id: notificationId,
+      userId,
+      type: 'VALIDATION_REQUEST',
+    });
+
+    if (!notification) {
+      throw new AppError('Notification de validation introuvable', 404);
+    }
+
+    if (notification.actionTaken) {
+      throw new AppError('Action déjà traitée', 400);
+    }
+
+    // Accepter la notification
+    notification.recordAction('accepted');
+    await notification.save();
+
+    // Accepter la ValidationRequest
+    const ValidationRequest = require('../models/ValidationRequest');
+    const validationRequest = await ValidationRequest.findById(
+      notification.data.validationRequestId
+    );
+
+    if (!validationRequest) {
+      throw new AppError('Demande de validation introuvable', 404);
+    }
+
+    validationRequest.accept();
+    await validationRequest.save();
+
+    // Notifier l'Admin
+    const User = require('../models/User');
+    const admin = await User.findById(validationRequest.initiatedBy);
+    
+    await Notification.create({
+      userId: admin._id,
+      type: 'SYSTEM',
+      titre: ` Demande acceptée par ${req.user.nomComplet}`,
+      message: `Votre demande "${validationRequest.actionType}" a été acceptée. Vous pouvez maintenant exécuter l'action.`,
+      data: { validationRequestId: validationRequest._id },
+      requiresAction: false,
+    });
+
+    logger.info(` ${req.user.email} a accepté la demande ${validationRequest._id}`);
+
+    return ApiResponse.success(res, {
+      message: 'Demande de validation acceptée',
+      validationRequest,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Refuser demande de validation
+ * @route   POST /digitontine/notifications/:notificationId/refuser-validation
+ * @access  Trésorier
+ */
+const refuserDemandeValidation = async (req, res, next) => {
+  try {
+    const { notificationId } = req.params;
+    const { reason } = req.body;
+    const userId = req.user._id;
+
+    if (!reason || reason.length < 10) {
+      throw new AppError('Raison du refus requise (min 10 caractères)', 400);
+    }
+
+    // Vérifier notification
+    const Notification = require('../models/Notification');
+    const notification = await Notification.findOne({
+      _id: notificationId,
+      userId,
+      type: 'VALIDATION_REQUEST',
+    });
+
+    if (!notification) {
+      throw new AppError('Notification de validation introuvable', 404);
+    }
+
+    if (notification.actionTaken) {
+      throw new AppError('Action déjà traitée', 400);
+    }
+
+    // Refuser la notification
+    notification.recordAction('refused');
+    await notification.save();
+
+    // Rejeter la ValidationRequest
+    const ValidationRequest = require('../models/ValidationRequest');
+    const validationRequest = await ValidationRequest.findById(
+      notification.data.validationRequestId
+    );
+
+    if (!validationRequest) {
+      throw new AppError('Demande de validation introuvable', 404);
+    }
+
+    validationRequest.reject(reason);
+    await validationRequest.save();
+
+    // Notifier l'Admin
+    const User = require('../models/User');
+    const admin = await User.findById(validationRequest.initiatedBy);
+    
+    await Notification.create({
+      userId: admin._id,
+      type: 'SYSTEM',
+      titre: ` Demande refusée par ${req.user.nomComplet}`,
+      message: `Votre demande "${validationRequest.actionType}" a été refusée. Raison : ${reason}`,
+      data: { validationRequestId: validationRequest._id },
+      requiresAction: false,
+    });
+
+    logger.info(` ${req.user.email} a refusé la demande ${validationRequest._id}`);
+
+    return ApiResponse.success(res, {
+      message: 'Demande de validation refusée',
+      validationRequest,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   getMyNotifications,
@@ -299,5 +445,7 @@ module.exports = {
   takeAction,
   deleteNotification,
   accepterInvitationTontine,    
-  refuserInvitationTontine, 
+  refuserInvitationTontine,
+  accepterDemandeValidation, //JOUTER
+  refuserDemandeValidation,  
 };

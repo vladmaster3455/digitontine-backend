@@ -588,7 +588,7 @@ const toggleActivation = async (req, res) => {
     }
 
     const validationRequest = await ValidationRequest.findById(validationRequestId);
-    if (!validationRequest || validationRequest.status !== 'completed') {
+    if (!validationRequest || validationRequest.status !== 'accepted') {
       return ApiResponse.error(res, 'Validation incomplète ou invalide', 403);
     }
 
@@ -669,7 +669,7 @@ const deleteUser = async (req, res) => {
     }
 
     const validationRequest = await ValidationRequest.findById(validationRequestId);
-    if (!validationRequest || validationRequest.status !== 'completed') {
+    if (!validationRequest || validationRequest.status !== 'accepted') {
       return ApiResponse.error(res, 'Validation incomplète ou invalide', 403);
     }
 

@@ -46,23 +46,7 @@ initiatedByRole: {
   required: true,
 },
 
-    // Code OTP Admin (celui qui initie)
-    adminOTP: {
-      code: String,
-      codeExpiry: Date,
-      verified: { type: Boolean, default: false },
-      verifiedAt: Date,
-      attempts: { type: Number, default: 0 },
-    },
-
-    // Code OTP Trésorier
-    tresorierOTP: {
-      code: String,
-      codeExpiry: Date,
-      verified: { type: Boolean, default: false },
-      verifiedAt: Date,
-      attempts: { type: Number, default: 0 },
-    },
+   
 
     // Trésorier qui doit valider
     assignedTresorier: {
@@ -70,11 +54,14 @@ initiatedByRole: {
       ref: 'User',
       index: true,
     },
+    notificationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Notification',
+    },
 
-    // Statut global
-    status: {
+   status: {
       type: String,
-      enum: ['pending', 'admin_validated', 'completed', 'rejected', 'expired'],
+      enum: ['pending', 'accepted', 'rejected', 'expired'], // Changé
       default: 'pending',
       index: true,
     },
@@ -98,6 +85,10 @@ initiatedByRole: {
     completedAt: Date,
     rejectedAt: Date,
     rejectionReason: String,
+     expiresAt: {
+      type: Date,
+      default: () => Date.now() + 24 * 60 * 60 * 1000, // 24 heures
+    },
     expiredAt: Date,
 
     // Notifications envoyées
@@ -120,94 +111,7 @@ ValidationRequestSchema.index({ actionType: 1, resourceId: 1 });
 
 // METHODES D'INSTANCE
 
-/**
- * Générer et hasher un code OTP à 6 chiffres
- */
-ValidationRequestSchema.methods.generateOTP = function () {
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-  const hashedCode = crypto.createHash('sha256').update(code).digest('hex');
-  return { plainCode: code, hashedCode };
-};
 
-/**
- * Définir l'OTP de l'Admin
- */
-ValidationRequestSchema.methods.setAdminOTP = function () {
-  const { plainCode, hashedCode } = this.generateOTP();
-  this.adminOTP.code = hashedCode;
-  this.adminOTP.codeExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
-  this.adminOTP.verified = false;
-  this.adminOTP.attempts = 0;
-  return plainCode;
-};
-
-/**
- * Définir l'OTP du Trésorier
- */
-ValidationRequestSchema.methods.setTresorierOTP = function () {
-  const { plainCode, hashedCode } = this.generateOTP();
-  this.tresorierOTP.code = hashedCode;
-  this.tresorierOTP.codeExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
-  this.tresorierOTP.verified = false;
-  this.tresorierOTP.attempts = 0;
-  return plainCode;
-};
-
-/**
- * Vérifier l'OTP de l'Admin
- */
-ValidationRequestSchema.methods.verifyAdminOTP = function (code) {
-  if (Date.now() > this.adminOTP.codeExpiry) {
-    return { success: false, message: 'Code Admin expiré' };
-  }
-
-  if (this.adminOTP.attempts >= 3) {
-    return { success: false, message: 'Nombre maximum de tentatives atteint' };
-  }
-
-  const hashedInput = crypto.createHash('sha256').update(code).digest('hex');
-  this.adminOTP.attempts += 1;
-
-  if (hashedInput === this.adminOTP.code) {
-    this.adminOTP.verified = true;
-    this.adminOTP.verifiedAt = Date.now();
-    this.status = 'admin_validated';
-    return { success: true, message: 'Code Admin validé' };
-  }
-
-  return { success: false, message: 'Code Admin incorrect' };
-};
-
-/**
- * Vérifier l'OTP du Trésorier
- */
-ValidationRequestSchema.methods.verifyTresorierOTP = function (code) {
-  if (Date.now() > this.tresorierOTP.codeExpiry) {
-    return { success: false, message: 'Code Trésorier expiré' };
-  }
-
-  if (this.tresorierOTP.attempts >= 3) {
-    return { success: false, message: 'Nombre maximum de tentatives atteint' };
-  }
-
-  const hashedInput = crypto.createHash('sha256').update(code).digest('hex');
-  this.tresorierOTP.attempts += 1;
-
-  if (hashedInput === this.tresorierOTP.code) {
-    this.tresorierOTP.verified = true;
-    this.tresorierOTP.verifiedAt = Date.now();
-    
-    // ✅ Si Admin a déjà validé, on passe à completed
-    if (this.adminOTP.verified) {
-      this.status = 'completed';
-      this.completedAt = Date.now();
-    }
-    
-    return { success: true, message: 'Code Trésorier validé' };
-  }
-
-  return { success: false, message: 'Code Trésorier incorrect' };
-};
 
 /**
  * Marquer comme expiré
@@ -216,6 +120,16 @@ ValidationRequestSchema.methods.markAsExpired = function () {
   this.status = 'expired';
   this.expiredAt = Date.now();
 };
+
+
+/**
+ * Accepter la demande
+ */
+ValidationRequestSchema.methods.accept = function () {
+  this.status = 'accepted';
+  this.completedAt = Date.now();
+};
+
 
 /**
  * Rejeter la demande
@@ -257,7 +171,7 @@ ValidationRequestSchema.statics.existsPending = async function (actionType, reso
   const count = await this.countDocuments({
     actionType,
     resourceId,
-    status: { $in: ['pending', 'admin_validated'] },
+    status: 'pending', // Changé
   });
   return count > 0;
 };
@@ -269,11 +183,8 @@ ValidationRequestSchema.statics.cleanupExpired = async function () {
   const now = Date.now();
   
   const expired = await this.find({
-    status: { $in: ['pending', 'admin_validated'] },
-    $or: [
-      { 'adminOTP.codeExpiry': { $lt: now } },
-      { 'tresorierOTP.codeExpiry': { $lt: now } },
-    ],
+    status: 'pending', // Changé
+    expiresAt: { $lt: now }, // Changé
   });
 
   for (const request of expired) {

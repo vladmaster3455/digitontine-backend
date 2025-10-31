@@ -90,5 +90,39 @@ router.post(
   verifyToken,
   notificationController.refuserInvitationTontine
 );
+/**
+ * @route   POST /digitontine/notifications/:notificationId/refuser-invitation
+ * @desc    Refuser invitation à une tontine
+ * @access  Private
+ */
+router.post(
+  '/:notificationId/refuser-invitation',
+  verifyToken,
+  notificationController.refuserInvitationTontine
+);
 
+// ✅ AJOUTER ICI
+/**
+ * @route   POST /digitontine/notifications/:notificationId/accepter-validation
+ * @desc    Accepter demande de validation
+ * @access  Trésorier
+ */
+router.post(
+  '/:notificationId/accepter-validation',
+  verifyToken,
+  notificationController.accepterDemandeValidation
+);
+
+/**
+ * @route   POST /digitontine/notifications/:notificationId/refuser-validation
+ * @desc    Refuser demande de validation
+ * @access  Trésorier
+ */
+router.post(
+  '/:notificationId/refuser-validation',
+  verifyToken,
+  notificationController.refuserDemandeValidation
+);
+
+module.exports = router;
 module.exports = router;

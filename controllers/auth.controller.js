@@ -180,7 +180,7 @@ const verifyLoginOTP = async (req, res) => {
 
 /**
  * @desc    Changement de mot de passe (premiere connexion OBLIGATOIRE)
- * @route   POST /api/v1/auth/first-password-change
+ * @route   POST /
  * @access  Private
  */
 const firstPasswordChange = async (req, res) => {
@@ -212,34 +212,35 @@ const firstPasswordChange = async (req, res) => {
       return ApiResponse.error(res, 'Le nouveau mot de passe doit etre different', 400);
     }
 
-    // Creer demande de confirmation
-    const confirmationToken = await user.createPendingPasswordChange(nouveauMotDePasse);
+    // CHANGEMENT DIRECT (pas de confirmation email pour première connexion)
+    user.motDePasse = nouveauMotDePasse;
+    user.isFirstLogin = false;
+    user.lastPasswordChange = Date.now();
     await user.save();
 
-    // Envoyer email de confirmation
+    // Email informatif simple (pas de boutons)
     try {
-      await emailService.sendPasswordChangeConfirmationRequest(user, confirmationToken);
+      await emailService.sendPasswordChangeConfirmation(user);
     } catch (emailError) {
       logger.error('Erreur envoi email:', emailError);
-      user.pendingPasswordChange = undefined;
-      await user.save();
-      return ApiResponse.error(res, 'Erreur lors de l\'envoi de l\'email', 500);
+      // On continue même si l'email échoue
     }
 
-    logger.info(`Demande changement MDP premiere connexion envoyee a ${user.email}`);
+    logger.info(` MDP premiere connexion change - ${user.email}`);
 
+    //  REPONSE COMPATIBLE AVEC TON FRONTEND
     return ApiResponse.success(res, {
-      requiresConfirmation: true,
-      message: 'Un email de confirmation a ete envoye. Veuillez confirmer le changement pour acceder a l\'application.',
-      email: user.email,
-    }, 'Confirmation requise');
+      message: 'Mot de passe change avec succes. Vous pouvez vous reconnecter.',
+      requiresConfirmation: false,  //  Important pour ton frontend
+      canLogin: true,
+      passwordChanged: true,
+    }, 'Mot de passe change');
 
   } catch (error) {
     logger.error('Erreur firstPasswordChange:', error);
     return ApiResponse.serverError(res);
   }
 };
-
 
 
 /**

@@ -273,7 +273,26 @@ const refuseInvitationTontine = async (notificationId, userId) => {
     return { success: false, error: error.message };
   }
 };
+/**
+ * Créer notification de demande de validation
+ */
+const sendValidationRequestNotification = async (tresorier, admin, validationRequest, actionType, resourceName) => {
+  try {
+    const notification = await Notification.createValidationRequestNotification(
+      tresorier,
+      admin,
+      validationRequest,
+      actionType,
+      resourceName
+    );
 
+    logger.info(` Notification validation envoyée à ${tresorier.email}`);
+    return { success: true, notification };
+  } catch (error) {
+    logger.error(` Erreur notification validation pour ${tresorier.email}:`, error);
+    return { success: false, error: error.message };
+  }
+};
 module.exports = {
   sendTirageNotification,
   sendTirageResultNotification,
@@ -288,4 +307,5 @@ module.exports = {
    sendInvitationTontine,     
   acceptInvitationTontine,      
   refuseInvitationTontine,
+  sendValidationRequestNotification,
 };

@@ -15,6 +15,7 @@ const NotificationSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: [
+        'VALIDATION_REQUEST',   // Demande de validation
         'TIRAGE_NOTIFICATION',     // Notification de tirage à venir
         'TIRAGE_RESULTAT',         // Résultat du tirage
         'TIRAGE_GAGNANT',          // Tu as gagné !
@@ -44,6 +45,10 @@ const NotificationSchema = new mongoose.Schema(
 
     // Données contextuelles
     data: {
+        validationRequestId: { //  AJOUTER EN PREMIER
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ValidationRequest',
+      },
       tontineId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Tontine',
@@ -292,5 +297,49 @@ NotificationSchema.statics.createInvitationTontine = async function (userId, ton
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expire après 30 jours
   });
 };
+/**
+ * Créer une notification d'invitation à une tontine
+ */
+NotificationSchema.statics.createInvitationTontine = async function (userId, tontine) {
+  // ... code existant
+};
+
+//  AJOUTER ICI
+/**
+ * Créer notification de demande de validation
+ */
+NotificationSchema.statics.createValidationRequestNotification = async function (
+  tresorier,
+  admin,
+  validationRequest,
+  actionType,
+  resourceName
+) {
+  const actionLabels = {
+    DELETE_USER: 'Suppression d\'utilisateur',
+    DELETE_TONTINE: 'Suppression de tontine',
+    BLOCK_TONTINE: 'Blocage de tontine',
+    UNBLOCK_TONTINE: 'Déblocage de tontine',
+    ACTIVATE_USER: 'Activation d\'utilisateur',
+    DEACTIVATE_USER: 'Désactivation d\'utilisateur',
+  };
+
+  return await this.create({
+    userId: tresorier._id,
+    type: 'VALIDATION_REQUEST',
+    titre: ` Validation requise - ${actionLabels[actionType]}`,
+    message: `L'Admin ${admin.prenom} ${admin.nom} demande votre autorisation pour : ${actionLabels[actionType]} - ${resourceName}. Raison : ${validationRequest.reason}`,
+    data: {
+      validationRequestId: validationRequest._id,
+      actionType,
+      resourceName,
+      adminId: admin._id,
+      adminName: `${admin.prenom} ${admin.nom}`,
+    },
+    requiresAction: true,
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
+  });
+};
+
 
 module.exports = mongoose.model('Notification', NotificationSchema);

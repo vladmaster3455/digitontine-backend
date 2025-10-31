@@ -84,26 +84,32 @@ const createValidationRequest = async (req, res) => {
       },
     });
 
-    //  Générer OTP pour le TRÉSORIER (pas l'Admin)
-    const tresorierOTPCode = validationRequest.setTresorierOTP();
+    // Générer  new accept
+    //  Créer notification pour le Trésorier
+    const notificationService = require('../services/notification.service');
+    const notifResult = await notificationService.sendValidationRequestNotification(
+      tresorier,
+      admin,
+      validationRequest,
+      actionType,
+      resourceName
+    );
 
-    // Sauvegarder
-    await validationRequest.save();
-
-    //  Envoyer OTP par email au TRÉSORIER
-    try {
-      await otpService.sendTresorierOTP(
-        tresorier, 
-        tresorierOTPCode, 
-        actionType, 
-        resourceName
-      );
-      validationRequest.notificationsSent.tresorierOTPSent = true;
-      await validationRequest.save();
-    } catch (emailError) {
-      logger.error('Erreur envoi email OTP Trésorier:', emailError);
+    if (!notifResult.success) {
+      logger.error('Erreur création notification:', notifResult.error);
+      return ApiResponse.error(res, 'Erreur lors de la création de la notification', 500);
     }
 
+    validationRequest.notificationId = notifResult.notification._id;
+    await validationRequest.save();
+
+    //  Envoyer email informatif (pas d'OTP)
+    try {
+      const emailService = require('../services/email.service');
+      await emailService.sendValidationRequestEmail(tresorier, admin, actionType, resourceName);
+    } catch (emailError) {
+      logger.error('Erreur envoi email:', emailError);
+    }
     logger.info(` Demande validation créée par ADMIN ${admin.email} - Action: ${actionType} - Validation par Trésorier ${tresorier.email}`);
 
     return ApiResponse.success(
@@ -117,7 +123,7 @@ const createValidationRequest = async (req, res) => {
           nom: tresorier.nom,
           email: tresorier.email,
         },
-        nextStep: 'Le Trésorier doit entrer le code OTP reçu par email',
+       nextStep: 'Le Trésorier doit accepter ou refuser cette demande via sa notification',
       },
       'Demande de validation créée. Le Trésorier a reçu le code.',
       201
@@ -129,60 +135,59 @@ const createValidationRequest = async (req, res) => {
 };
 
 /**
- * @desc    Confirmer OTP Trésorier (validation finale)
- * @route   POST /api/v1/validation/confirm/tresorier/:validationRequestId
+ * @desc    Accepter une demande de validation
+ * @route   POST /api/v1/validation/accept/:validationRequestId
  * @access  Trésorier (assigné)
- * 
- *  LOGIQUE CORRIGÉE : Le Trésorier valide et l'action est exécutée
  */
-const confirmTresorierOTP = async (req, res) => {
+const acceptValidation = async (req, res) => {
   try {
-    const { code } = req.body;
     const { validationRequest, user } = req;
 
-    // Vérifier le code
-    const result = validationRequest.verifyTresorierOTP(code);
-
-    if (!result.success) {
-      await validationRequest.save(); // Sauvegarder les tentatives
-      return ApiResponse.error(res, result.message, 400);
-    }
-
-    //  Validation complète - L'action peut être exécutée
+    // Accepter la demande
+    validationRequest.accept();
     await validationRequest.save();
 
     // Récupérer l'Admin initiateur
     const admin = await User.findById(validationRequest.initiatedBy);
 
-    // Envoyer notification de validation complète
+    // Créer notification pour l'Admin
+    const Notification = require('../models/Notification');
+    await Notification.create({
+      userId: admin._id,
+      type: 'SYSTEM',
+      titre: `Demande acceptée par ${user.nomComplet}`,
+      message: `Votre demande "${validationRequest.actionType}" pour "${validationRequest.metadata.resourceName}" a été acceptée. Vous pouvez maintenant exécuter l'action.`,
+      data: { validationRequestId: validationRequest._id },
+      requiresAction: false,
+    });
+
+    // Envoyer email à l'Admin
     try {
-      await otpService.sendValidationCompleteNotification(
+      const emailService = require('../services/email.service');
+      await emailService.sendValidationAcceptedEmail(
         admin,
         user,
         validationRequest.actionType,
         validationRequest.metadata.resourceName
       );
-      validationRequest.notificationsSent.tresorierConfirmed = true;
-      await validationRequest.save();
     } catch (emailError) {
-      logger.error(' Erreur envoi notification complète:', emailError);
+      logger.error('Erreur envoi email acceptation:', emailError);
     }
 
-    logger.info(` Trésorier ${user.email} a validé - Action ${validationRequest.actionType} autorisée`);
+    logger.info(`Trésorier ${user.email} a accepté - Action ${validationRequest.actionType}`);
 
     return ApiResponse.success(res, {
-      status: 'completed',
+      status: 'accepted',
       validationRequestId: validationRequest._id,
-      message: 'Validation complète ! L\'action peut maintenant être exécutée.',
+      message: 'Demande acceptée ! L\'Admin peut maintenant exécuter l\'action.',
       actionType: validationRequest.actionType,
       resourceId: validationRequest.resourceId,
     });
   } catch (error) {
-    logger.error(' Erreur confirmTresorierOTP:', error);
+    logger.error('Erreur acceptValidation:', error);
     return ApiResponse.serverError(res);
   }
 };
-
 /**
  * @desc    Rejeter une demande de validation (Trésorier)
  * @route   POST /api/v1/validation/reject/:validationRequestId
@@ -200,16 +205,26 @@ const rejectValidationRequest = async (req, res) => {
     await validationRequest.save();
 
     // Notifier l'Admin
+   // Notifier l'Admin
     const admin = await User.findById(validationRequest.initiatedBy);
+    
+    // Créer notification
+    const Notification = require('../models/Notification');
+    await Notification.create({
+      userId: admin._id,
+      type: 'SYSTEM',
+      titre: ` Demande refusée par ${user.nomComplet}`,
+      message: `Votre demande "${validationRequest.actionType}" pour "${validationRequest.metadata.resourceName}" a été refusée. Raison : ${reason}`,
+      data: { validationRequestId: validationRequest._id },
+      requiresAction: false,
+    });
+
+    // Envoyer email
     try {
-      await otpService.sendRejectionNotification(
-        admin,
-        validationRequest.actionType,
-        validationRequest.metadata.resourceName,
-        reason
-      );
+      const emailService = require('../services/email.service');
+      await emailService.sendValidationRejectedEmail(admin, validationRequest, reason);
     } catch (emailError) {
-      logger.error(' Erreur envoi notification rejet:', emailError);
+      logger.error('Erreur envoi email rejet:', emailError);
     }
 
     logger.info(` Trésorier ${user.email} a rejeté la demande Admin - Raison: ${reason}`);
@@ -252,7 +267,7 @@ const getPendingRequests = async (req, res) => {
         reason: r.reason,
         status: r.status,
         createdAt: r.createdAt,
-        expiresAt: r.tresorierOTP.codeExpiry,
+        expiresAt: r.expiresAt,
       })),
     });
   } catch (error) {
@@ -348,11 +363,9 @@ const getRequestDetails = async (req, res) => {
             email: validationRequest.assignedTresorier.email,
           }
         : null,
-      tresorier: {
-        verified: validationRequest.tresorierOTP.verified,
-        verifiedAt: validationRequest.tresorierOTP.verifiedAt,
-        attemptsRemaining: 3 - validationRequest.tresorierOTP.attempts,
-        expiresAt: validationRequest.tresorierOTP.codeExpiry,
+    tresorier: {
+        hasAccepted: validationRequest.status === 'accepted',
+        expiresAt: validationRequest.expiresAt,
       },
       createdAt: validationRequest.createdAt,
       completedAt: validationRequest.completedAt,
@@ -365,48 +378,14 @@ const getRequestDetails = async (req, res) => {
   }
 };
 
-/**
- * @desc    Renvoyer un code OTP
- * @route   POST /api/v1/validation/resend-otp/:validationRequestId
- * @access  Trésorier
- */
-const resendOTP = async (req, res) => {
-  try {
-    const { validationRequest, user } = req;
 
-    // Vérifier que c'est le Trésorier assigné
-    if (
-      !validationRequest.assignedTresorier ||
-      validationRequest.assignedTresorier._id.toString() !== user._id.toString()
-    ) {
-      return ApiResponse.forbidden(res, 'Seul le Trésorier assigné peut renvoyer son OTP');
-    }
-
-    // Régénérer OTP
-    const newCode = validationRequest.setTresorierOTP();
-    await validationRequest.save();
-
-    // Renvoyer email
-    await otpService.sendTresorierOTP(
-      user,
-      newCode,
-      validationRequest.actionType,
-      validationRequest.metadata.resourceName
-    );
-
-    return ApiResponse.success(res, { message: 'Code Trésorier renvoyé par email' });
-  } catch (error) {
-    logger.error(' Erreur resendOTP:', error);
-    return ApiResponse.serverError(res);
-  }
-};
 
 module.exports = {
   createValidationRequest,
-  confirmTresorierOTP,
+  acceptValidation, 
   rejectValidationRequest,
   getPendingRequests,
   getMyRequests,
   getRequestDetails,
-  resendOTP,
+
 };

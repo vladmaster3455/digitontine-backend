@@ -49,25 +49,20 @@ router.post(
 );
 
 /**
- * @route   POST /api/v1/validation/confirm/tresorier/:validationRequestId
- * @desc    Confirmer OTP Trésorier (validation finale)
+ * @route   POST /api/v1/validation/accept/:validationRequestId
+ * @desc    Accepter une demande de validation
  * @access  Trésorier (assigné)
  */
 router.post(
-  '/confirm/tresorier/:validationRequestId',
+  '/accept/:validationRequestId',
   verifyToken,
   isTresorier,
-  validateConfirmTresorierOTP,
-  validate,
   validateRequestExists,
-  isTresorierAssigned,  // ✅ BON NOM ICI AUSSI
+  isTresorierAssigned,
   checkStatusAllowsAction(['pending']),
-  checkNotExpired,
-  checkRemainingAttempts('tresorier'),
-  auditLog('CONFIRM_TRESORIER_OTP', 'ValidationRequest'),
-  confirmTresorierOTP
+  auditLog('ACCEPT_VALIDATION_REQUEST', 'ValidationRequest'),
+  acceptValidation //  Nouvelle fonction
 );
-
 /**
  * @route   GET /api/v1/validation/pending
  * @desc    Obtenir les demandes en attente (Trésorier)
@@ -126,20 +121,6 @@ router.get(
   getRequestDetails
 );
 
-/**
- * @route   POST /api/v1/validation/resend-otp/:validationRequestId
- * @desc    Renvoyer un code OTP
- * @access  Trésorier
- */
-router.post(
-  '/resend-otp/:validationRequestId',
-  verifyToken,
-  isTresorier,
-  validateResendOTP,
-  validate,
-  validateRequestExists,
-  checkNotExpired,
-  resendOTP
-);
+
 
 module.exports = router;

@@ -618,7 +618,7 @@ const updateTontine = async (req, res) => {
 const blockTontine = async (req, res) => {
   try {
     const { tontineId } = req.params;
-    const { motif } = req.body;
+    const { motif, validationRequestId } = req.body;
     const admin = req.user;
 
     const tontine = await Tontine.findById(tontineId).populate(
@@ -628,6 +628,13 @@ const blockTontine = async (req, res) => {
     
     if (!tontine) {
       return ApiResponse.notFound(res, 'Tontine introuvable');
+    }
+    if (!validationRequestId) {
+      return ApiResponse.error(
+        res,
+        'Cette action nécessite une validation. ',
+        400
+      );
     }
 
     tontine.bloquer();
@@ -685,6 +692,7 @@ const blockTontine = async (req, res) => {
 const unblockTontine = async (req, res) => {
   try {
     const { tontineId } = req.params;
+      const { validationRequestId } = req.body; 
     const admin = req.user;
 
     const tontine = await Tontine.findById(tontineId).populate(
@@ -694,6 +702,13 @@ const unblockTontine = async (req, res) => {
     
     if (!tontine) {
       return ApiResponse.notFound(res, 'Tontine introuvable');
+    }
+    if (!validationRequestId) {
+      return ApiResponse.error(
+        res,
+        'Cette action nécessite une validation. Créez une demande',
+        400
+      );
     }
 
     tontine.reactiver();
@@ -815,7 +830,7 @@ const closeTontine = async (req, res) => {
 const deleteTontine = async (req, res) => {
   try {
     const { tontineId } = req.params;
-    const { confirmation } = req.body;
+    const { confirmation, validationRequestId } = req.body;
     const admin = req.user;
 
     if (confirmation !== 'SUPPRIMER') {
@@ -825,6 +840,13 @@ const deleteTontine = async (req, res) => {
     const tontine = await Tontine.findById(tontineId);
     if (!tontine) {
       return ApiResponse.notFound(res, 'Tontine introuvable');
+    }
+     if (!validationRequestId) {
+      return ApiResponse.error(
+        res,
+        'Cette action nécessite une validation. Créez une demande via /api/v1/validation/request',
+        400
+      );
     }
 
     if (tontine.statut === TONTINE_STATUS.ACTIVE || tontine.statut === TONTINE_STATUS.BLOQUEE) {

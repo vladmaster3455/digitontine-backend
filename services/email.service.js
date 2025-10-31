@@ -930,6 +930,138 @@ const sendTirageNotification = async (user, tontine, dateTirage, delaiOptIn = 15
     throw error;
   }
 };
+
+/**
+ * Envoyer email de demande de validation
+ */
+const sendValidationRequestEmail = async (tresorier, admin, actionType, resourceName) => {
+  try {
+    const actionLabels = {
+      DELETE_USER: 'Suppression d\'utilisateur',
+      DELETE_TONTINE: 'Suppression de tontine',
+      BLOCK_TONTINE: 'Blocage de tontine',
+      UNBLOCK_TONTINE: 'Déblocage de tontine',
+      ACTIVATE_USER: 'Activation d\'utilisateur',
+      DEACTIVATE_USER: 'Désactivation d\'utilisateur',
+    };
+
+    const content = `
+      <p>Bonjour <strong>${tresorier.prenom} ${tresorier.nom}</strong>,</p>
+      
+      <div class="warning-box">
+        <strong> Validation requise</strong><br>
+        L'Admin ${admin.prenom} ${admin.nom} demande votre autorisation pour :
+      </div>
+      
+      <div class="info-box">
+        <strong>Action :</strong> ${actionLabels[actionType]}<br>
+        <strong>Ressource :</strong> ${resourceName}
+      </div>
+      
+      <p>Veuillez consulter vos notifications dans l'application pour accepter ou refuser cette demande.</p>
+      
+      <div style="text-align: center;">
+        <a href="${process.env.FRONTEND_URL}/notifications" class="button">Voir mes notifications</a>
+      </div>
+    `;
+
+    await sendEmail(
+      tresorier.email,
+      `Validation requise - ${actionLabels[actionType]}`,
+      getEmailTemplate('Validation requise', content)
+    );
+
+    logger.info(`Email validation envoyé à ${tresorier.email}`);
+    return true;
+  } catch (error) {
+    logger.error('Erreur envoi email validation:', error);
+    throw error;
+  }
+};
+/**
+ * Envoyer email de rejet de validation
+ */
+const sendValidationRejectedEmail = async (admin, validationRequest, reason) => {
+  try {
+    const actionLabels = {
+      DELETE_USER: 'Suppression d\'utilisateur',
+      DELETE_TONTINE: 'Suppression de tontine',
+      BLOCK_TONTINE: 'Blocage de tontine',
+      UNBLOCK_TONTINE: 'Déblocage de tontine',
+      ACTIVATE_USER: 'Activation d\'utilisateur',
+      DEACTIVATE_USER: 'Désactivation d\'utilisateur',
+    };
+
+    const content = `
+      <p>Bonjour <strong>${admin.prenom} ${admin.nom}</strong>,</p>
+      
+      <div class="warning-box">
+        <strong> Demande refusée</strong>
+      </div>
+      
+      <div class="info-box">
+        <strong>Action :</strong> ${actionLabels[validationRequest.actionType]}<br>
+        <strong>Ressource :</strong> ${validationRequest.metadata.resourceName}<br>
+        <strong>Raison du refus :</strong> ${reason}
+      </div>
+    `;
+
+    await sendEmail(
+      admin.email,
+      `Demande refusée - ${actionLabels[validationRequest.actionType]}`,
+      getEmailTemplate('Demande refusée', content)
+    );
+
+    logger.info(`Email refus envoyé à ${admin.email}`);
+    return true;
+  } catch (error) {
+    logger.error('Erreur envoi email refus:', error);
+    throw error;
+  }
+};
+/**
+ * Envoyer email d'acceptation de validation
+ */
+const sendValidationAcceptedEmail = async (admin, tresorier, actionType, resourceName) => {
+  try {
+    const actionLabels = {
+      DELETE_USER: 'Suppression d\'utilisateur',
+      DELETE_TONTINE: 'Suppression de tontine',
+      BLOCK_TONTINE: 'Blocage de tontine',
+      UNBLOCK_TONTINE: 'Déblocage de tontine',
+      ACTIVATE_USER: 'Activation d\'utilisateur',
+      DEACTIVATE_USER: 'Désactivation d\'utilisateur',
+    };
+
+    const content = `
+      <p>Bonjour <strong>${admin.prenom} ${admin.nom}</strong>,</p>
+      
+      <div class="success-box">
+        <strong> Demande acceptée</strong>
+      </div>
+      
+      <div class="info-box">
+        <strong>Action :</strong> ${actionLabels[actionType]}<br>
+        <strong>Ressource :</strong> ${resourceName}<br>
+        <strong>Validé par :</strong> ${tresorier.prenom} ${tresorier.nom}
+      </div>
+      
+      <p>Vous pouvez maintenant exécuter cette action en utilisant l'ID de validation correspondant.</p>
+    `;
+
+    await sendEmail(
+      admin.email,
+      `Demande acceptée - ${actionLabels[actionType]}`,
+      getEmailTemplate('Demande acceptée', content)
+    );
+
+    logger.info(`Email acceptation envoyé à ${admin.email}`);
+    return true;
+  } catch (error) {
+    logger.error('Erreur envoi email acceptation:', error);
+    throw error;
+  }
+};
 /**
  * Notifier ajout a tontine (ancienne fonction pour compatibilite)
  */
@@ -995,4 +1127,7 @@ module.exports = {
   sendPasswordChangeConfirmationRequest,
   sendPasswordChangeApproved,
   sendPasswordChangeRejected,
+  sendValidationRequestEmail,   //  AJOUTER
+  sendValidationAcceptedEmail,  //  AJOUTER
+  sendValidationRejectedEmail,
 };
