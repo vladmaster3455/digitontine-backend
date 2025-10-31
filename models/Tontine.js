@@ -28,10 +28,10 @@ const TontineSchema = new mongoose.Schema(
       validator: Number.isInteger,
       message: 'Le montant doit être un nombre entier',
     },
-    {
-      validator: (value) => value >= 0,
-      message: 'Le montant ne peut pas être négatif',
-    },
+   {
+  validator: (value) => value > 0,  //  CHANGÉ : > 0 au lieu de >= 0
+  message: 'Le montant doit être supérieur à 0',
+},
   ],
 },
     frequence: {
