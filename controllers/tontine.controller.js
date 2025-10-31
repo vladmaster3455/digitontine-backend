@@ -52,44 +52,54 @@ const createTontine = async (req, res) => {
       }
     }
 
-const tontine = await Tontine.create({
-  nom,
-  description: '', //  Vide pour l'instant, sera rempli après
-  montantCotisation,
-  frequence,
-  dateDebut,
-  dateFin,
-  nombreMembresMin: nombreMembresMin || 1,
-  nombreMembresMax: nombreMembresMax || 50,
-  tauxPenalite: tauxPenalite || 5,
-  delaiGrace: delaiGrace || 2,
-  delaiOptIn: 15,
-  tresorierAssigne: tresorierAssigneId || null,
-  statut: TONTINE_STATUS.EN_ATTENTE,
-  createdBy: admin._id,
-  membres: [],
-});
+    //  CORRECTION : Créer la tontine SANS ajout automatique
+    const tontine = await Tontine.create({
+      nom,
+      description: '', // Vide, sera rempli après
+      montantCotisation,
+      frequence,
+      dateDebut,
+      dateFin,
+      nombreMembresMin: nombreMembresMin || 1,
+      nombreMembresMax: nombreMembresMax || 50,
+      tauxPenalite: tauxPenalite || 5,
+      delaiGrace: delaiGrace || 2,
+      delaiOptIn: 15,
+      tresorierAssigne: tresorierAssigneId || null,
+      statut: TONTINE_STATUS.EN_ATTENTE,
+      createdBy: admin._id,
+      membres: [], //  Tableau vide au départ
+    });
 
-//  NOUVEAU : Générer règlement automatique
-const reglementGenere = tontine.genererReglement();
-tontine.description = description 
-  ? `${reglementGenere}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n RÈGLES COMPLÉMENTAIRES\n\n${description}` 
-  : reglementGenere;
+    //  Générer règlement automatique
+    const reglementGenere = tontine.genererReglement();
+    tontine.description = description 
+      ? `${reglementGenere}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n RÈGLES COMPLÉMENTAIRES\n\n${description}` 
+      : reglementGenere;
 
-// Ajouter automatiquement l'Admin
-tontine.ajouterMembre(admin._id);
+    //  NOUVEAU : Ajouter Admin ET Trésorier SANS vérification de limite
+    // Car ils sont obligatoires et ne comptent pas dans nombreMembresMax
+    tontine.membres.push({
+      userId: admin._id,
+      dateAjout: Date.now(),
+    });
 
-// Si Trésorier assigné, l'ajouter aussi
-if (tresorierAssigneId) {
-  tontine.ajouterMembre(tresorierAssigneId);
-}
+    if (tresorierAssigneId) {
+      // Vérifier si le trésorier n'est pas déjà l'admin
+      if (tresorierAssigneId.toString() !== admin._id.toString()) {
+        tontine.membres.push({
+          userId: tresorierAssigneId,
+          dateAjout: Date.now(),
+        });
+      }
+    }
 
-await tontine.save();
+    await tontine.save();
 
-logger.info(
-  `Tontine creee - ${tontine.nom} par ${admin.email} ` +
-  `(Admin + ${tresorierAssigneId ? 'Trésorier' : 'pas de trésorier'} auto-ajoutés)`
-);
+    logger.info(
+      `Tontine creee - ${tontine.nom} par ${admin.email} ` +
+      `(Admin + ${tresorierAssigneId ? 'Trésorier' : 'pas de trésorier'} auto-ajoutés)`
+    );
 
     return ApiResponse.success(
       res,
