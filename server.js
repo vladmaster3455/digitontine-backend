@@ -515,7 +515,7 @@ app.use(`${API_PREFIX}/tontines`, tontineRoutes);
 app.use(`${API_PREFIX}/transactions`, transactionRoutes);
 app.use(`${API_PREFIX}/tirages`, tirageRoutes);
 app.use(`${API_PREFIX}/dashboard`, dashboardRoutes);
-app.use(`${API_PREFIX}/validations`, validationRoutes);
+app.use(`${API_PREFIX}/validation`, validationRoutes);
 app.use(`${API_PREFIX}/notifications`, notificationRoutes);
 
 // ========================================
