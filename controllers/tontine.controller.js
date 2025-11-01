@@ -348,10 +348,10 @@ const removeMember = async (req, res) => {
 const inviterMembres = async (req, res) => {
   try {
     const { tontineId } = req.params;
-    const { membresIds } = req.body;
+    const { membresIds, reglementTexte } = req.body;
     const admin = req.user;
 
-    // ✅ Validation
+    //  Validation
     if (!membresIds || !Array.isArray(membresIds) || membresIds.length === 0) {
       return ApiResponse.error(res, 'Aucun membre à inviter', 400);
     }
@@ -371,20 +371,25 @@ const inviterMembres = async (req, res) => {
 
     const invitationsEnvoyees = [];
     const erreurs = [];
-
+//  Mettre à jour le règlement si personnalisé
+if (reglementTexte && reglementTexte.trim()) {
+  tontine.reglement = reglementTexte.trim();
+  await tontine.save();
+  console.log(' Règlement personnalisé appliqué');
+}
     for (const userId of membresIds) {
       try {
-        console.log(`\n📤 Traitement invitation pour userId: ${userId}`);
+        console.log(`\n Traitement invitation pour userId: ${userId}`);
 
         const user = await User.findById(userId);
         if (!user) {
-          console.error(`❌ Utilisateur ${userId} introuvable`);
+          console.error(` Utilisateur ${userId} introuvable`);
           erreurs.push({ userId, message: 'Utilisateur introuvable' });
           continue;
         }
 
         if (!user.isActive) {
-          console.error(`❌ Compte désactivé: ${user.email}`);
+          console.error(` Compte désactivé: ${user.email}`);
           erreurs.push({ userId, message: 'Compte désactivé' });
           continue;
         }
