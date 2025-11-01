@@ -1305,11 +1305,13 @@ const getTontineDetailsForMember = async (req, res) => {
 //  Dans tontine.controller.js - REMPLACER la fonction existante
 //  REMPLACER la fonction getTontineInvitations dans tontine.controller.js
 
+//  VERSION SIMPLE - REMPLACER getTontineInvitations dans tontine.controller.js
+
 const getTontineInvitations = async (req, res) => {
   try {
     const { tontineId } = req.params;
 
-    //  Vérifier que la tontine existe
+    // Vérifier que la tontine existe
     const tontine = await Tontine.findById(tontineId);
     if (!tontine) {
       return ApiResponse.notFound(res, 'Tontine introuvable');
@@ -1317,41 +1319,67 @@ const getTontineInvitations = async (req, res) => {
 
     const Notification = require('../models/Notification');
     
-    //  CORRECTION : Utiliser $or avec ObjectId ET String
-    const mongoose = require('mongoose');
-    const invitations = await Notification.find({
+    console.log(' Recherche invitations pour tontineId:', tontineId);
+
+    // MÉTHODE SIMPLE : Récupérer TOUTES les invitations, puis filtrer
+    const toutesLesInvitations = await Notification.find({
       type: 'TONTINE_INVITATION',
-      $or: [
-        { 'data.tontineId': mongoose.Types.ObjectId(tontineId) },
-        { 'data.tontineId': tontineId }, // Cas où c'est stocké en string
-      ]
     })
     .populate('userId', 'prenom nom email')
+    .populate('data.tontineId', 'nom')
     .sort({ createdAt: -1 })
     .lean();
 
-    console.log(` ${invitations.length} invitation(s) trouvée(s) pour tontineId: ${tontineId}`);
+    console.log(` ${toutesLesInvitations.length} invitations totales trouvées`);
 
-    //  Enrichir les données
+    //  Filtrer manuellement celles qui correspondent à notre tontine
+    const invitations = toutesLesInvitations.filter(inv => {
+      const invTontineId = inv.data?.tontineId;
+      
+      // Comparer avec l'_id si c'est un objet peuplé
+      if (invTontineId && invTontineId._id) {
+        return invTontineId._id.toString() === tontineId.toString();
+      }
+      
+      // Comparer directement si c'est un ObjectId
+      if (invTontineId) {
+        return invTontineId.toString() === tontineId.toString();
+      }
+      
+      return false;
+    });
+
+    console.log(` ${invitations.length} invitation(s) pour cette tontine`);
+
+    // Log détaillé
+    if (invitations.length > 0) {
+      invitations.forEach(inv => {
+        console.log(`  - ${inv.userId?.prenom} ${inv.userId?.nom} : ${inv.actionTaken || 'pending'}`);
+      });
+    }
+
+    // Enrichir les données
     const invitationsEnrichies = invitations.map(inv => ({
       notificationId: inv._id,
       memberId: inv.userId?._id,
       memberName: inv.userId ? `${inv.userId.prenom} ${inv.userId.nom}` : 'Utilisateur inconnu',
       memberEmail: inv.userId?.email || 'N/A',
-      statut: inv.actionTaken || 'pending', // pending, accepted, refused
+      statut: inv.actionTaken || 'pending',
       dateEnvoyee: inv.createdAt,
       dateResponse: inv.dateAction,
       requiresAction: inv.requiresAction,
       lu: inv.lu,
     }));
 
-    //  Calculer les compteurs
+    // Compteurs
     const compteurs = {
       total: invitationsEnrichies.length,
       pending: invitationsEnrichies.filter(i => i.statut === 'pending').length,
       accepted: invitationsEnrichies.filter(i => i.statut === 'accepted').length,
       refused: invitationsEnrichies.filter(i => i.statut === 'refused').length,
     };
+
+    console.log(' Compteurs:', compteurs);
 
     return ApiResponse.success(res, {
       invitations: invitationsEnrichies,
@@ -1360,6 +1388,8 @@ const getTontineInvitations = async (req, res) => {
     }, `${invitationsEnrichies.length} invitation(s) trouvée(s)`);
     
   } catch (error) {
+    console.error(' Erreur getTontineInvitations:', error);
+    console.error(' Stack:', error.stack);
     logger.error(' Erreur getTontineInvitations:', error);
     return ApiResponse.serverError(res);
   }
