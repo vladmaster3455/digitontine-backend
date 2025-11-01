@@ -1100,6 +1100,27 @@ const getTontineDetailsWithRoleCheck = async (req, res) => {
     return ApiResponse.serverError(res);
   }
 };
+// Dans tontine.controller.js - NOUVELLE FONCTION
+const getTontineInvitations = async (req, res) => {
+  try {
+    const { tontineId } = req.params;
+    const admin = req.user;
+
+    const Notification = require('../models/Notification');
+    
+    const invitations = await Notification.find({
+      type: 'TONTINE_INVITATION',
+      'data.tontineId': tontineId,
+    })
+    .populate('userId', 'prenom nom email')
+    .sort({ createdAt: -1 });
+
+    return ApiResponse.success(res, { invitations });
+  } catch (error) {
+    logger.error('Erreur getTontineInvitations:', error);
+    return ApiResponse.serverError(res);
+  }
+};
 /**
  * @desc    Details d'une tontine
  * @route   GET /digitontine/tontines/:tontineId

@@ -143,7 +143,13 @@ router.delete(
   auditLog('DELETE_TONTINE', 'Tontine'),
   deleteTontine
 );
-
+// Dans tontine.routes.js
+router.get(
+  '/:tontineId/invitations',
+  verifyToken,
+  isAdmin,
+  getTontineInvitations
+);
 // ========================================
 // ROUTES - GESTION MEMBRES
 // ========================================
