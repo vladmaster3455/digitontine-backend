@@ -1,6 +1,9 @@
 // controllers/notification.controller.js
-const notificationService = require('../services/notification.service');
+const notificationService = require('../services/notification.service'); //  DÉPLACÉ ICI
 const Tontine = require('../models/Tontine');
+const Notification = require('../models/Notification'); //  AJOUTÉ
+const User = require('../models/User'); //  AJOUTÉ
+const ValidationRequest = require('../models/ValidationRequest'); //  AJOUTÉ
 const ApiResponse = require('../utils/apiResponse');
 const logger = require('../utils/logger');
 const { AppError } = require('../utils/errors');
@@ -109,14 +112,13 @@ const markAllAsRead = async (req, res, next) => {
 const takeAction = async (req, res, next) => {
   try {
     const { notificationId } = req.params;
-    const { action } = req.body; // 'accepted' ou 'refused'
+    const { action } = req.body;
     const userId = req.user._id;
 
     if (!action || !['accepted', 'refused'].includes(action)) {
       throw new AppError('Action invalide (accepted ou refused)', 400);
     }
 
-    // Enregistrer l'action sur la notification
     const result = await notificationService.recordAction(notificationId, userId, action);
 
     if (!result.success) {
@@ -137,7 +139,7 @@ const takeAction = async (req, res, next) => {
         if (membre) {
           membre.participeTirage = (action === 'accepted');
           membre.dateOptIn = Date.now();
-          membre.optInAutomatique = false; // C'est un choix manuel
+          membre.optInAutomatique = false;
           await tontine.save();
 
           logger.info(
@@ -184,7 +186,9 @@ const deleteNotification = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};/**
+};
+
+/**
  * @desc    Accepter invitation tontine
  * @route   POST /digitontine/notifications/:notificationId/accepter-invitation
  * @access  Private
@@ -194,7 +198,7 @@ const accepterInvitationTontine = async (req, res, next) => {
     const { notificationId } = req.params;
     const userId = req.user._id;
 
-    const notificationService = require('../services/notification.service');
+    //  Valider notification
     const result = await notificationService.acceptInvitationTontine(notificationId, userId);
 
     if (!result.success) {
@@ -205,38 +209,65 @@ const accepterInvitationTontine = async (req, res, next) => {
 
     //  Ajouter membre à la tontine
     if (notification.data?.tontineId) {
-      const Tontine = require('../models/Tontine');
       const tontine = await Tontine.findById(notification.data.tontineId);
 
-      if (tontine) {
-        try {
-          tontine.ajouterMembre(userId);
-          await tontine.save();
+      if (!tontine) {
+        throw new AppError('Tontine introuvable', 404);
+      }
 
-          logger.info(` ${req.user.email} a rejoint "${tontine.nom}"`);
+      //  Vérifier si déjà membre
+      const dejaMembre = tontine.membres.some(
+        m => m.userId.toString() === userId.toString()
+      );
 
-          //  Notifier le trésorier
-          if (tontine.tresorierAssigne) {
-            const Notification = require('../models/Notification');
-            await Notification.create({
-              userId: tontine.tresorierAssigne,
-              type: 'SYSTEM',
-              titre: ` ${req.user.nomComplet} a rejoint "${tontine.nom}"`,
-              message: `Un nouveau membre a accepté l'invitation et rejoint la tontine.`,
-              data: { tontineId: tontine._id },
-              requiresAction: false,
-            });
-          }
-        } catch (error) {
-          logger.error('Erreur ajout membre après acceptation:', error);
-          throw new AppError('Erreur lors de l\'ajout à la tontine', 500);
+      if (dejaMembre) {
+        throw new AppError('Vous êtes déjà membre de cette tontine', 400);
+      }
+
+      //  Ajouter membre
+      try {
+        tontine.ajouterMembre(userId);
+        await tontine.save();
+
+        logger.info(` ${req.user.email} a rejoint "${tontine.nom}"`);
+
+        //  Notifier le trésorier ET l'admin
+        const notificationsToSend = [];
+
+        if (tontine.tresorierAssigne) {
+          notificationsToSend.push({
+            userId: tontine.tresorierAssigne,
+            type: 'SYSTEM',
+            titre: ` ${req.user.nomComplet} a rejoint "${tontine.nom}"`,
+            message: `Un nouveau membre a accepté l'invitation et rejoint la tontine.`,
+            data: { tontineId: tontine._id },
+            requiresAction: false,
+          });
         }
+
+        if (tontine.createdBy && tontine.createdBy.toString() !== tontine.tresorierAssigne?.toString()) {
+          notificationsToSend.push({
+            userId: tontine.createdBy,
+            type: 'SYSTEM',
+            titre: ` ${req.user.nomComplet} a rejoint "${tontine.nom}"`,
+            message: `Un nouveau membre a accepté l'invitation et rejoint la tontine.`,
+            data: { tontineId: tontine._id },
+            requiresAction: false,
+          });
+        }
+
+        await Notification.insertMany(notificationsToSend);
+
+      } catch (error) {
+        logger.error(' Erreur ajout membre après acceptation:', error);
+        throw new AppError(error.message || 'Erreur lors de l\'ajout à la tontine', 500);
       }
     }
 
     return ApiResponse.success(res, {
       message: 'Vous avez rejoint la tontine avec succès',
       notification,
+      tontineId: notification.data?.tontineId,
     });
   } catch (error) {
     next(error);
@@ -253,7 +284,6 @@ const refuserInvitationTontine = async (req, res, next) => {
     const { notificationId } = req.params;
     const userId = req.user._id;
 
-    const notificationService = require('../services/notification.service');
     const result = await notificationService.refuseInvitationTontine(notificationId, userId);
 
     if (!result.success) {
@@ -262,21 +292,36 @@ const refuserInvitationTontine = async (req, res, next) => {
 
     const notification = result.notification;
 
-    //  Notifier le trésorier du refus
+    //  Notifier le trésorier ET l'admin du refus
     if (notification.data?.tontineId) {
-      const Tontine = require('../models/Tontine');
-      const Notification = require('../models/Notification');
       const tontine = await Tontine.findById(notification.data.tontineId);
 
-      if (tontine && tontine.tresorierAssigne) {
-        await Notification.create({
-          userId: tontine.tresorierAssigne,
-          type: 'SYSTEM',
-          titre: ` ${req.user.nomComplet} a refusé l'invitation`,
-          message: `L'invitation pour "${tontine.nom}" a été déclinée.`,
-          data: { tontineId: tontine._id },
-          requiresAction: false,
-        });
+      if (tontine) {
+        const notificationsToSend = [];
+
+        if (tontine.tresorierAssigne) {
+          notificationsToSend.push({
+            userId: tontine.tresorierAssigne,
+            type: 'SYSTEM',
+            titre: ` ${req.user.nomComplet} a refusé l'invitation`,
+            message: `L'invitation pour "${tontine.nom}" a été déclinée.`,
+            data: { tontineId: tontine._id },
+            requiresAction: false,
+          });
+        }
+
+        if (tontine.createdBy && tontine.createdBy.toString() !== tontine.tresorierAssigne?.toString()) {
+          notificationsToSend.push({
+            userId: tontine.createdBy,
+            type: 'SYSTEM',
+            titre: ` ${req.user.nomComplet} a refusé l'invitation`,
+            message: `L'invitation pour "${tontine.nom}" a été déclinée.`,
+            data: { tontineId: tontine._id },
+            requiresAction: false,
+          });
+        }
+
+        await Notification.insertMany(notificationsToSend);
       }
     }
 
@@ -290,14 +335,7 @@ const refuserInvitationTontine = async (req, res, next) => {
     next(error);
   }
 };
-/**
- * @desc    Refuser invitation tontine
- * @route   POST /digitontine/notifications/:notificationId/refuser-invitation
- * @access  Private
- */
 
-
-//  AJOUTER ICI
 /**
  * @desc    Accepter demande de validation
  * @route   POST /digitontine/notifications/:notificationId/accepter-validation
@@ -308,8 +346,6 @@ const accepterDemandeValidation = async (req, res, next) => {
     const { notificationId } = req.params;
     const userId = req.user._id;
 
-    // Vérifier notification
-    const Notification = require('../models/Notification');
     const notification = await Notification.findOne({
       _id: notificationId,
       userId,
@@ -324,12 +360,9 @@ const accepterDemandeValidation = async (req, res, next) => {
       throw new AppError('Action déjà traitée', 400);
     }
 
-    // Accepter la notification
     notification.recordAction('accepted');
     await notification.save();
 
-    // Accepter la ValidationRequest
-    const ValidationRequest = require('../models/ValidationRequest');
     const validationRequest = await ValidationRequest.findById(
       notification.data.validationRequestId
     );
@@ -341,8 +374,6 @@ const accepterDemandeValidation = async (req, res, next) => {
     validationRequest.accept();
     await validationRequest.save();
 
-    // Notifier l'Admin
-    const User = require('../models/User');
     const admin = await User.findById(validationRequest.initiatedBy);
     
     await Notification.create({
@@ -380,8 +411,6 @@ const refuserDemandeValidation = async (req, res, next) => {
       throw new AppError('Raison du refus requise (min 10 caractères)', 400);
     }
 
-    // Vérifier notification
-    const Notification = require('../models/Notification');
     const notification = await Notification.findOne({
       _id: notificationId,
       userId,
@@ -396,12 +425,9 @@ const refuserDemandeValidation = async (req, res, next) => {
       throw new AppError('Action déjà traitée', 400);
     }
 
-    // Refuser la notification
     notification.recordAction('refused');
     await notification.save();
 
-    // Rejeter la ValidationRequest
-    const ValidationRequest = require('../models/ValidationRequest');
     const validationRequest = await ValidationRequest.findById(
       notification.data.validationRequestId
     );
@@ -413,8 +439,6 @@ const refuserDemandeValidation = async (req, res, next) => {
     validationRequest.reject(reason);
     await validationRequest.save();
 
-    // Notifier l'Admin
-    const User = require('../models/User');
     const admin = await User.findById(validationRequest.initiatedBy);
     
     await Notification.create({
@@ -444,8 +468,8 @@ module.exports = {
   markAllAsRead,
   takeAction,
   deleteNotification,
-  accepterInvitationTontine,    
+  accepterInvitationTontine,
   refuserInvitationTontine,
-  accepterDemandeValidation, //JOUTER
-  refuserDemandeValidation,  
+  accepterDemandeValidation,
+  refuserDemandeValidation,
 };
