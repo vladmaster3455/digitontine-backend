@@ -106,27 +106,33 @@ tontine.description = description || '';
       `(Admin + ${tresorierAssigneId ? 'Trésorier' : 'pas de trésorier'} auto-ajoutés)`
     );
 
-    return ApiResponse.success(
-      res,
-      {
-        tontine: {
-          id: tontine._id,
-          nom: tontine.nom,
-          description: tontine.description,
-          montantCotisation: tontine.montantCotisation,
-          frequence: tontine.frequence,
-          dateDebut: tontine.dateDebut,
-          dateFin: tontine.dateFin,
-          statut: tontine.statut,
-          nombreMembres: tontine.nombreMembres,
-          nombreMembresMin: tontine.nombreMembresMin,
-          nombreMembresMax: tontine.nombreMembresMax,
-          tresorierAssigne: tresorierAssigneId || null,
-        },
-      },
-      'Tontine creee avec succes',
-      201
-    );
+  // ✅ REMPLACER la section return dans createTontine (lignes 96-111)
+// Fichier: tontine.controller.js
+
+return ApiResponse.success(
+  res,
+  {
+    tontine: {
+      id: tontine._id,
+      nom: tontine.nom,
+      description: tontine.description,
+      reglement: tontine.reglement,           //  AJOUTÉ
+      montantCotisation: tontine.montantCotisation,
+      frequence: tontine.frequence,
+      dateDebut: tontine.dateDebut,
+      dateFin: tontine.dateFin,
+      statut: tontine.statut,
+      nombreMembres: tontine.nombreMembres,
+      nombreMembresMin: tontine.nombreMembresMin,
+      nombreMembresMax: tontine.nombreMembresMax,
+      tauxPenalite: tontine.tauxPenalite,     //  AJOUTÉ (utile pour l'affichage)
+      delaiGrace: tontine.delaiGrace,         // AJOUTÉ (utile pour l'affichage)
+      tresorierAssigne: tresorierAssigneId || null,
+    },
+  },
+  'Tontine creee avec succes',
+  201
+);
   } catch (error) {
     logger.error('Erreur createTontine:', error);
     return ApiResponse.serverError(res);
@@ -333,16 +339,19 @@ const removeMember = async (req, res) => {
     return ApiResponse.serverError(res);
   }
 };
-/**
- * @desc    Inviter des membres à une tontine (avec notification + règlement)
- * @route   POST /digitontine/tontines/:tontineId/inviter-membres
- * @access  Admin
- */
+// 
+// 
+
 const inviterMembres = async (req, res) => {
   try {
     const { tontineId } = req.params;
     const { membresIds } = req.body;
     const admin = req.user;
+
+    // ✅ Validation
+    if (!membresIds || !Array.isArray(membresIds) || membresIds.length === 0) {
+      return ApiResponse.error(res, 'Aucun membre à inviter', 400);
+    }
 
     const tontine = await Tontine.findById(tontineId);
     if (!tontine) {
@@ -362,18 +371,23 @@ const inviterMembres = async (req, res) => {
 
     for (const userId of membresIds) {
       try {
+        console.log(`\n📤 Traitement invitation pour userId: ${userId}`);
+
         const user = await User.findById(userId);
         if (!user) {
+          console.error(`❌ Utilisateur ${userId} introuvable`);
           erreurs.push({ userId, message: 'Utilisateur introuvable' });
           continue;
         }
 
         if (!user.isActive) {
+          console.error(`❌ Compte désactivé: ${user.email}`);
           erreurs.push({ userId, message: 'Compte désactivé' });
           continue;
         }
 
         if (user.role !== ROLES.MEMBRE) {
+          console.error(`❌ Rôle invalide: ${user.role}`);
           erreurs.push({ userId, message: 'Seuls les membres peuvent être invités' });
           continue;
         }
@@ -383,19 +397,29 @@ const inviterMembres = async (req, res) => {
           m => m.userId.toString() === userId.toString()
         );
         if (estDejaMembre) {
+          console.error(`❌ Déjà membre: ${user.email}`);
           erreurs.push({ userId, message: 'Déjà membre de la tontine' });
           continue;
         }
 
-        //  Créer notification d'invitation avec règlement
+        // ✅ CORRECTION: Créer notification d'invitation avec règlement
         const notificationService = require('../services/notification.service');
         const notifResult = await notificationService.sendInvitationTontine(user, tontine);
 
-        if (!notifResult.success) {
-          erreurs.push({ userId, message: 'Erreur envoi notification' });
+        console.log(`📬 Résultat notification:`, notifResult);
+
+        // ✅ CORRECTION: Vérifier le succès correctement
+        if (!notifResult.success || !notifResult.notification) {
+          console.error(`❌ Erreur envoi notification:`, notifResult.error);
+          erreurs.push({ 
+            userId, 
+            email: user.email,
+            message: notifResult.error || 'Erreur envoi notification' 
+          });
           continue;
         }
 
+        // ✅ SUCCÈS - Ajouter aux invitations envoyées
         invitationsEnvoyees.push({
           userId: user._id,
           nom: user.nomComplet,
@@ -403,18 +427,29 @@ const inviterMembres = async (req, res) => {
           notificationId: notifResult.notification._id,
         });
 
+        console.log(` Invitation envoyée avec succès à ${user.email}`);
         logger.info(` Invitation envoyée à ${user.email} pour "${tontine.nom}"`);
+        
       } catch (error) {
+        console.error(` Exception pour ${userId}:`, error);
         erreurs.push({ userId, message: error.message });
       }
     }
 
+    //  Log final
+    const successCount = invitationsEnvoyees.length;
+    const totalCount = membresIds.length;
+    
+    console.log(`\n RÉSULTAT FINAL:`);
+    console.log(`    Réussies: ${successCount}/${totalCount}`);
+    console.log(`    Erreurs: ${erreurs.length}`);
+
     logger.info(
-      `Invitations tontine "${tontine.nom}" - ${invitationsEnvoyees.length}/${membresIds.length} réussies`
+      `Invitations tontine "${tontine.nom}" - ${successCount}/${totalCount} réussies`
     );
 
     return ApiResponse.success(res, {
-      message: `${invitationsEnvoyees.length} invitation(s) envoyée(s)`,
+      message: `${successCount} invitation(s) envoyée(s) avec succès`,
       tontine: {
         id: tontine._id,
         nom: tontine.nom,
@@ -423,6 +458,7 @@ const inviterMembres = async (req, res) => {
       erreurs: erreurs.length > 0 ? erreurs : undefined,
     });
   } catch (error) {
+    console.error(' Erreur globale inviterMembres:', error);
     logger.error('Erreur inviterMembres:', error);
     return ApiResponse.serverError(res);
   }

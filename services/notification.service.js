@@ -196,19 +196,46 @@ const cleanupExpired = async () => {
     return { success: false, error: error.message };
   }
 };
+
 /**
- * Créer notification d'invitation tontine
+ * Créer notification d'invitation tontine (avec logs détaillés)
  */
 const sendInvitationTontine = async (user, tontine) => {
   try {
+    //  VÉRIFICATIONS ET LOGS
+    console.log(' Début création invitation notification');
+    console.log('   - User ID:', user._id);
+    console.log('   - User email:', user.email);
+    console.log('   - Tontine ID:', tontine._id);
+    console.log('   - Tontine nom:', tontine.nom);
+    console.log('   - Règlement présent:', !!tontine.reglement);
+    console.log('   - Description présente:', !!tontine.description);
+
+    //  Vérifier que tontine.reglement existe
+    if (!tontine.reglement && !tontine.description) {
+      logger.warn(` Aucun règlement/description pour ${tontine.nom}`);
+      // Générer le règlement si manquant
+      const Tontine = require('../models/Tontine');
+      const tontineComplete = await Tontine.findById(tontine._id);
+      if (tontineComplete && !tontineComplete.reglement) {
+        tontineComplete.reglement = tontineComplete.genererReglement();
+        await tontineComplete.save();
+        tontine.reglement = tontineComplete.reglement;
+        logger.info(` Règlement généré automatiquement`);
+      }
+    }
+
     const notification = await Notification.createInvitationTontine(
       user._id,
       tontine
     );
 
-    logger.info(`Invitation tontine envoyée à ${user.email} pour "${tontine.nom}"`);
+    console.log(' Notification créée avec ID:', notification._id);
+    logger.info(` Invitation tontine envoyée à ${user.email} pour "${tontine.nom}"`);
     return { success: true, notification };
   } catch (error) {
+    console.error(' Erreur création invitation:', error);
+    console.error('   Stack:', error.stack);
     logger.error(` Erreur invitation tontine pour ${user.email}:`, error);
     return { success: false, error: error.message };
   }

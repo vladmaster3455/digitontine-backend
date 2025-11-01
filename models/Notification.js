@@ -300,12 +300,7 @@ NotificationSchema.statics.createInvitationTontine = async function (userId, ton
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expire après 30 jours
   });
 };
-/**
- * Créer une notification d'invitation à une tontine
- */
-NotificationSchema.statics.createInvitationTontine = async function (userId, tontine) {
-  // ... code existant
-};
+
 
 //  AJOUTER ICI
 /**
