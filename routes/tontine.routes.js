@@ -17,6 +17,7 @@ const {
   deleteTontine,
   listTontines,
   getTontineDetails,
+  getTontineInvitations,  // ✅ AJOUTER ICI
   optInForTirage,
   mesTontines,
 } = require('../controllers/tontine.controller');
@@ -69,18 +70,6 @@ router.get(
   verifyToken,
   mesTontines
 );
-/**
- * @route   GET /digitontine/tontines/:tontineId/details
- * @desc    Details d'une tontine (accessible aux membres)
- * @access  Private (Membre de la tontine)
- */
-router.get(
-  '/:tontineId/details',
-  verifyToken,
-  validateTontineId,
-  validate,
-  getTontineDetailsForMember
-);
 
 /**
  * @route   POST /digitontine/tontines
@@ -99,9 +88,38 @@ router.post(
 );
 
 /**
+ * @route   GET /digitontine/tontines/:tontineId/details
+ * @desc    Details d'une tontine (accessible aux membres)
+ * @access  Private (Membre de la tontine)
+ * IMPORTANT: Cette route DOIT etre AVANT /:tontineId
+ */
+router.get(
+  '/:tontineId/details',
+  verifyToken,
+  validateTontineId,
+  validate,
+  getTontineDetailsForMember
+);
+
+/**
+ * @route   GET /digitontine/tontines/:tontineId/invitations
+ * @desc    Liste des invitations pour une tontine
+ * @access  Admin
+ * IMPORTANT: Cette route DOIT etre AVANT /:tontineId
+ */
+router.get(
+  '/:tontineId/invitations',
+  verifyToken,
+  isAdmin,
+  validateTontineId,
+  validate,
+  getTontineInvitations
+);
+
+/**
  * @route   GET /digitontine/tontines/:tontineId
  * @desc    Details d'une tontine
- * @access  Admin
+ * @access  Private (Admin/Tresorier/Membre)
  * US 2.11
  */
 router.get(
@@ -143,13 +161,7 @@ router.delete(
   auditLog('DELETE_TONTINE', 'Tontine'),
   deleteTontine
 );
-// Dans tontine.routes.js
-router.get(
-  '/:tontineId/invitations',
-  verifyToken,
-  isAdmin,
-  getTontineInvitations
-);
+
 // ========================================
 // ROUTES - GESTION MEMBRES
 // ========================================
@@ -169,6 +181,12 @@ router.post(
   auditLog('ADD_MEMBRES_TONTINE', 'Tontine'),
   addMembers
 );
+
+/**
+ * @route   POST /digitontine/tontines/:tontineId/inviter-membres
+ * @desc    Inviter des membres a une tontine
+ * @access  Admin
+ */
 router.post(
   '/:tontineId/inviter-membres',
   verifyToken,
@@ -178,6 +196,23 @@ router.post(
   auditLog('INVITE_MEMBRES_TONTINE', 'Tontine'),
   inviterMembres
 );
+
+/**
+ * @route   DELETE /digitontine/tontines/:tontineId/membres/:userId
+ * @desc    Retirer un membre d'une tontine
+ * @access  Admin
+ * US 2.3
+ */
+router.delete(
+  '/:tontineId/membres/:userId',
+  verifyToken,
+  isAdmin,
+  validateRemoveMember,
+  validate,
+  auditLog('REMOVE_MEMBRE_TONTINE', 'Tontine'),
+  removeMember
+);
+
 /**
  * @route   POST /digitontine/tontines/:tontineId/opt-in
  * @desc    Confirmer participation au prochain tirage
@@ -195,22 +230,6 @@ router.post(
   validate,
   auditLog('TIRAGE_OPT_IN', 'Tontine'),
   optInForTirage
-);
-
-/**
- * @route   DELETE /digitontine/tontines/:tontineId/membres/:userId
- * @desc    Retirer un membre d'une tontine
- * @access  Admin
- * US 2.3
- */
-router.delete(
-  '/:tontineId/membres/:userId',
-  verifyToken,
-  isAdmin,
-  validateRemoveMember,
-  validate,
-  auditLog('REMOVE_MEMBRE_TONTINE', 'Tontine'),
-  removeMember
 );
 
 // ========================================
@@ -280,160 +299,5 @@ router.post(
   auditLog('CLOSE_TONTINE', 'Tontine'),
   closeTontine
 );
-
-// ========================================
-// DOCUMENTATION SWAGGER
-// ========================================
-
-/**
- * @swagger
- * /digitontine/tontines/{tontineId}:
- *   get:
- *     tags: [Tontines]
- *     summary: Details d'une tontine
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: tontineId
- *         required: true
- *         schema: { type: string }
- *     responses:
- *       200:
- *         description: Details complets
- *   put:
- *     tags: [Tontines]
- *     summary: Modifier une tontine
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: tontineId
- *         required: true
- *         schema: { type: string }
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               description: { type: string }
- *               tauxPenalite: { type: number }
- *     responses:
- *       200:
- *         description: Tontine modifiee
- *   delete:
- *     tags: [Tontines]
- *     summary: Supprimer une tontine
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: tontineId
- *         required: true
- *         schema: { type: string }
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [confirmation]
- *             properties:
- *               confirmation: { type: string, example: "SUPPRIMER" }
- *     responses:
- *       200:
- *         description: Tontine supprimee
- */
-
-/**
- * @swagger
- * /digitontine/tontines/{tontineId}/membres:
- *   post:
- *     tags: [Tontines]
- *     summary: Ajouter des membres
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: tontineId
- *         required: true
- *         schema: { type: string }
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [membresIds]
- *             properties:
- *               membresIds: { type: array, items: { type: string } }
- *     responses:
- *       200:
- *         description: Membres ajoutes
- */
-
-/**
- * @swagger
- * /digitontine/tontines/{tontineId}/activate:
- *   post:
- *     tags: [Tontines]
- *     summary: Activer une tontine
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: tontineId
- *         required: true
- *         schema: { type: string }
- *     responses:
- *       200:
- *         description: Tontine activee
- */
-
-/**
- * @swagger
- * /digitontine/tontines/{tontineId}/block:
- *   post:
- *     tags: [Tontines]
- *     summary: Bloquer une tontine
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: tontineId
- *         required: true
- *         schema: { type: string }
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [motif]
- *             properties:
- *               motif: { type: string }
- *     responses:
- *       200:
- *         description: Tontine bloquee
- */
-
-/**
- * @swagger
- * /digitontine/tontines/{tontineId}/close:
- *   post:
- *     tags: [Tontines]
- *     summary: Cloturer une tontine
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: tontineId
- *         required: true
- *         schema: { type: string }
- *     responses:
- *       200:
- *         description: Tontine cloturee
- */
 
 module.exports = router;

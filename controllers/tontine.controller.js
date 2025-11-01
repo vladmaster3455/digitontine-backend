@@ -1100,27 +1100,7 @@ const getTontineDetailsWithRoleCheck = async (req, res) => {
     return ApiResponse.serverError(res);
   }
 };
-// Dans tontine.controller.js - NOUVELLE FONCTION
-const getTontineInvitations = async (req, res) => {
-  try {
-    const { tontineId } = req.params;
-    const admin = req.user;
 
-    const Notification = require('../models/Notification');
-    
-    const invitations = await Notification.find({
-      type: 'TONTINE_INVITATION',
-      'data.tontineId': tontineId,
-    })
-    .populate('userId', 'prenom nom email')
-    .sort({ createdAt: -1 });
-
-    return ApiResponse.success(res, { invitations });
-  } catch (error) {
-    logger.error('Erreur getTontineInvitations:', error);
-    return ApiResponse.serverError(res);
-  }
-};
 /**
  * @desc    Details d'une tontine
  * @route   GET /digitontine/tontines/:tontineId
@@ -1322,6 +1302,40 @@ const getTontineDetailsForMember = async (req, res) => {
     return ApiResponse.serverError(res);
   }
 };
+//  Dans tontine.controller.js - REMPLACER la fonction existante
+const getTontineInvitations = async (req, res) => {
+  try {
+    const { tontineId } = req.params;
+
+    const Notification = require('../models/Notification');
+    
+    const invitations = await Notification.find({
+      type: 'TONTINE_INVITATION',
+      'data.tontineId': tontineId,
+    })
+    .populate('userId', 'prenom nom email')
+    .sort({ createdAt: -1 })
+    .lean();
+
+    console.log(` ${invitations.length} invitation(s) trouvee(s) pour tontineId: ${tontineId}`);
+
+    return ApiResponse.success(res, {
+      invitations: invitations.map(inv => ({
+        notificationId: inv._id,
+        memberId: inv.userId?._id,
+        memberName: inv.userId?.prenom + ' ' + inv.userId?.nom,
+        memberEmail: inv.userId?.email,
+        statut: inv.actionTaken || 'pending', // pending, accepted, refused
+        dateEnvoyee: inv.createdAt,
+        dateResponse: inv.dateAction,
+      })),
+      total: invitations.length,
+    }, `${invitations.length} invitation(s) trouvee(s)`);
+  } catch (error) {
+    logger.error('Erreur getTontineInvitations:', error);
+    return ApiResponse.serverError(res);
+  }
+};
 module.exports = {
   createTontine,
   addMembers,
@@ -1336,6 +1350,7 @@ module.exports = {
   listTontines,
   getTontineDetails,
   getTontineDetailsForMember,  
+  getTontineInvitations, 
   getTontineDetailsWithRoleCheck,
   optInForTirage,
   mesTontines,
