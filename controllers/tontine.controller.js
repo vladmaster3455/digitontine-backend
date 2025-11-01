@@ -1303,36 +1303,64 @@ const getTontineDetailsForMember = async (req, res) => {
   }
 };
 //  Dans tontine.controller.js - REMPLACER la fonction existante
+//  REMPLACER la fonction getTontineInvitations dans tontine.controller.js
+
 const getTontineInvitations = async (req, res) => {
   try {
     const { tontineId } = req.params;
 
+    //  Vérifier que la tontine existe
+    const tontine = await Tontine.findById(tontineId);
+    if (!tontine) {
+      return ApiResponse.notFound(res, 'Tontine introuvable');
+    }
+
     const Notification = require('../models/Notification');
     
+    //  CORRECTION : Utiliser $or avec ObjectId ET String
+    const mongoose = require('mongoose');
     const invitations = await Notification.find({
       type: 'TONTINE_INVITATION',
-      'data.tontineId': tontineId,
+      $or: [
+        { 'data.tontineId': mongoose.Types.ObjectId(tontineId) },
+        { 'data.tontineId': tontineId }, // Cas où c'est stocké en string
+      ]
     })
     .populate('userId', 'prenom nom email')
     .sort({ createdAt: -1 })
     .lean();
 
-    console.log(` ${invitations.length} invitation(s) trouvee(s) pour tontineId: ${tontineId}`);
+    console.log(` ${invitations.length} invitation(s) trouvée(s) pour tontineId: ${tontineId}`);
+
+    //  Enrichir les données
+    const invitationsEnrichies = invitations.map(inv => ({
+      notificationId: inv._id,
+      memberId: inv.userId?._id,
+      memberName: inv.userId ? `${inv.userId.prenom} ${inv.userId.nom}` : 'Utilisateur inconnu',
+      memberEmail: inv.userId?.email || 'N/A',
+      statut: inv.actionTaken || 'pending', // pending, accepted, refused
+      dateEnvoyee: inv.createdAt,
+      dateResponse: inv.dateAction,
+      requiresAction: inv.requiresAction,
+      lu: inv.lu,
+    }));
+
+    //  Calculer les compteurs
+    const compteurs = {
+      total: invitationsEnrichies.length,
+      pending: invitationsEnrichies.filter(i => i.statut === 'pending').length,
+      accepted: invitationsEnrichies.filter(i => i.statut === 'accepted').length,
+      refused: invitationsEnrichies.filter(i => i.statut === 'refused').length,
+    };
 
     return ApiResponse.success(res, {
-      invitations: invitations.map(inv => ({
-        notificationId: inv._id,
-        memberId: inv.userId?._id,
-        memberName: inv.userId?.prenom + ' ' + inv.userId?.nom,
-        memberEmail: inv.userId?.email,
-        statut: inv.actionTaken || 'pending', // pending, accepted, refused
-        dateEnvoyee: inv.createdAt,
-        dateResponse: inv.dateAction,
-      })),
-      total: invitations.length,
-    }, `${invitations.length} invitation(s) trouvee(s)`);
+      invitations: invitationsEnrichies,
+      compteurs,
+      total: invitationsEnrichies.length,
+    }, `${invitationsEnrichies.length} invitation(s) trouvée(s)`);
+    
   } catch (error) {
-    logger.error('Erreur getTontineInvitations:', error);
+    logger.error(' Erreur getTontineInvitations:', error);
     return ApiResponse.serverError(res);
   }
 };
