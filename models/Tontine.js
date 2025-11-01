@@ -331,6 +331,7 @@ TontineSchema.methods.genererCalendrierCotisations = function () {
   return calendrier;
 };
 
+
 /**
  * Activer la tontine
  */
@@ -339,23 +340,35 @@ TontineSchema.methods.activer = function () {
     throw new Error('La tontine n\'est pas en attente');
   }
 
-  //  Vérification trésorier obligatoire
+  //  VÉRIFICATION 1 : Trésorier obligatoire
   if (!this.tresorierAssigne) {
     throw new Error('Un trésorier doit être assigné avant l\'activation');
   }
   
-  //  Calculer minimum dynamiquement : Admin + Trésorier + nombreMembresMin
-  const minAttendu = 2 + this.nombreMembresMin;  // 2 = Admin + Trésorier
+  //  VÉRIFICATION 2 : Le Trésorier doit avoir ACCEPTÉ l'invitation
+  const tresorierEstMembre = this.membres.some(
+    m => m.userId.toString() === this.tresorierAssigne.toString()
+  );
+  
+  if (!tresorierEstMembre) {
+    throw new Error(
+      `Le Trésorier assigné doit accepter l'invitation avant activation de la tontine`
+    );
+  }
+  
+  //  VÉRIFICATION 3 : Calculer minimum requis dynamiquement
+  // Admin (1) + Trésorier (1) + nombreMembresMin
+  const minAttendu = 1 + 1 + this.nombreMembresMin;
   
   if (this.membres.length < minAttendu) {
     throw new Error(
       `Au moins ${minAttendu} membres requis : ` +
-      `Admin + Trésorier + ${this.nombreMembresMin} membre(s) supplémentaire(s). ` +
-      `Actuellement : ${this.membres.length} membre(s) dans la tontine`
+      `Admin (1) + Trésorier (1) + ${this.nombreMembresMin} membre(s) supplémentaire(s). ` +
+      `Actuellement : ${this.membres.length} membre(s) ont accepté l'invitation`
     );
   }
 
-  // Générer le calendrier si pas déjà fait
+  //  GÉNÉRATION DU CALENDRIER
   if (this.calendrierCotisations.length === 0) {
     this.genererCalendrierCotisations();
   }
